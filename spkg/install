@@ -358,6 +358,32 @@ export ZODB
 ZNPOLY=`$newest zn_poly`
 export ZNPOLY
 
+# femhub stuff:
+
+CMAKE=`$newest cmake`
+export CMAKE
+
+JUDY=`$newest judy`
+export JUDY
+
+MESA=`$newest mesa`
+export MESA
+
+VTK=`$newest vtk-cvs`
+export VTK
+
+CONFIGOBJ=`$newest configobj`
+export CONFIGOBJ
+
+MAYAVI=`$newest mayavi`
+export MAYAVI
+
+PYPARSING=`$newest pyparsing`
+export PYPARSING
+
+SFEPY=`$newest sfepy`
+export SFEPY
+
 ########
 # NOW do the actual build
 

@@ -28,7 +28,16 @@ all: $(INST)/$(SAGE_SCRIPTS) $(INST)/$(SAGE) \
      $(INST)/$(PYNAC) $(INST)/$(DOCUTILS) $(INST)/$(JINJA) $(INST)/$(PYGMENTS) $(INST)/$(SPHINX) \
      $(INST)/$(JSMATH_SPKG) $(INST)/$(JQUERY_SPKG) $(INST)/$(JQUERYUI_SPKG) $(INST)/$(TINYMCE_SPKG) \
      $(INST)/$(DSAGE) \
-     $(INST)/$(SPD_NOTEBOOK)
+     $(INST)/$(SPD_NOTEBOOK) \
+     $(INST)/$(CMAKE) \
+     $(INST)/$(JUDY) \
+     $(INST)/$(MESA) \
+     $(INST)/$(VTK) \
+     $(INST)/$(CONFIGOBJ) \
+     $(INST)/$(MAYAVI) \
+     $(INST)/$(PYPARSING) \
+     $(INST)/$(SFEPY)
+
 
 base: $(BASE)
 
@@ -181,6 +190,30 @@ $(INST)/$(TWISTED): $(INST)/$(PYTHON) $(INST)/$(PYTHON_GNUTLS)
 
 $(INST)/$(SPD_NOTEBOOK): $(INST)/$(PYTHON) $(INST)/$(TWISTED)
 	$(SAGE_SPKG) $(SPD_NOTEBOOK) 2>&1
+
+$(INST)/$(CMAKE):
+	$(SAGE_SPKG) $(CMAKE) 2>&1
+
+$(INST)/$(JUDY):
+	$(SAGE_SPKG) $(JUDY) 2>&1
+
+$(INST)/$(MESA):
+	$(SAGE_SPKG) $(MESA) 2>&1
+
+$(INST)/$(VTK): $(INST)/$(MESA) $(INST)/$(CMAKE)
+	$(SAGE_SPKG) $(VTK) 2>&1
+
+$(INST)/$(CONFIGOBJ):
+	$(SAGE_SPKG) $(CONFIGOBJ) 2>&1
+
+$(INST)/$(MAYAVI): $(INST)/$(CONFIGOBJ) $(INST)/$(VTK)
+	$(SAGE_SPKG) $(MAYAVI) 2>&1
+
+$(INST)/$(PYPARSING): $(INST)/$(PYTHON)
+	$(SAGE_SPKG) $(PYPARSING) 2>&1
+
+$(INST)/$(SFEPY): $(INST)/$(PYPARSING) $(INST)/$(NUMPY) $(INST)/$(SCIPY)
+	$(SAGE_SPKG) $(SFEPY) 2>&1
 
 $(INST)/$(TWISTEDWEB2): $(INST)/$(TWISTED)
 	$(SAGE_SPKG) $(TWISTEDWEB2) 2>&1
