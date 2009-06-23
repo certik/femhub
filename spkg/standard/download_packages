@@ -44,3 +44,13 @@ $WGET $SAGE_STANDARD/freetype-2.3.5.p0.spkg
 $WGET $SAGE_STANDARD/libpng-1.2.35.spkg
 $WGET $SAGE_STANDARD/matplotlib-0.98.5.3rc0-svn6910.p3.spkg
 $WGET $SAGE_STANDARD/sympy-0.6.4.spkg
+
+# femhub things:
+$WGET http://femhub.googlecode.com/files/cmake-2.6.2.spkg
+$WGET http://femhub.googlecode.com/files/judy-1.0.5.spkg
+$WGET http://femhub.googlecode.com/files/mesa-7.2.spkg
+$WGET http://femhub.googlecode.com/files/vtk-cvs-20090316-minimal.spkg
+$WGET http://femhub.googlecode.com/files/configobj-4.5.3.spkg
+$WGET http://femhub.googlecode.com/files/mayavi-3.2.0-osmesa1.spkg
+$WGET http://femhub.googlecode.com/files/pyparsing-1.5.2.spkg
+$WGET http://femhub.googlecode.com/files/sfepy-2009.2.spkg
