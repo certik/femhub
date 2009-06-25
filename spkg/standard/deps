@@ -36,7 +36,8 @@ all: $(INST)/$(SAGE_SCRIPTS) $(INST)/$(SAGE) \
      $(INST)/$(CONFIGOBJ) \
      $(INST)/$(MAYAVI) \
      $(INST)/$(PYPARSING) \
-     $(INST)/$(SFEPY)
+     $(INST)/$(SFEPY) \
+     $(INST)/$(HERMES2D)
 
 
 base: $(BASE)
@@ -214,6 +215,9 @@ $(INST)/$(PYPARSING): $(INST)/$(PYTHON)
 
 $(INST)/$(SFEPY): $(INST)/$(PYPARSING) $(INST)/$(NUMPY) $(INST)/$(SCIPY)
 	$(SAGE_SPKG) $(SFEPY) 2>&1
+
+$(INST)/$(HERMES2D): $(INST)/$(NUMPY) $(INST)/$(SCIPY) $(INST)/$(CYTHON)
+	$(SAGE_SPKG) $(HERMES2D) 2>&1
 
 $(INST)/$(TWISTEDWEB2): $(INST)/$(TWISTED)
 	$(SAGE_SPKG) $(TWISTEDWEB2) 2>&1

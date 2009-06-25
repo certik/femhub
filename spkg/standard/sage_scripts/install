@@ -384,6 +384,9 @@ export PYPARSING
 SFEPY=`$newest sfepy`
 export SFEPY
 
+HERMES2D=`$newest hermes2d`
+export HERMES2D
+
 ########
 # NOW do the actual build
 
