@@ -53,5 +53,6 @@ $WGET http://femhub.googlecode.com/files/vtk-cvs-20090316-minimal.spkg
 $WGET http://femhub.googlecode.com/files/configobj-4.5.3.spkg
 $WGET http://femhub.googlecode.com/files/mayavi-3.2.0-osmesa1.spkg
 $WGET http://femhub.googlecode.com/files/pyparsing-1.5.2.spkg
+$WGET http://femhub.googlecode.com/files/swig-1.3.36.spkg
 $WGET http://femhub.googlecode.com/files/sfepy-2009.2.spkg
 $WGET http://femhub.googlecode.com/files/hermes2d-a559a87.spkg

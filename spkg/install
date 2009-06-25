@@ -381,6 +381,9 @@ export MAYAVI
 PYPARSING=`$newest pyparsing`
 export PYPARSING
 
+SWIG=`$newest swig`
+export SWIG
+
 SFEPY=`$newest sfepy`
 export SFEPY
 
