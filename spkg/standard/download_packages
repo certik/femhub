@@ -49,7 +49,7 @@ $WGET $SAGE_STANDARD/sympy-0.6.4.spkg
 $WGET http://femhub.googlecode.com/files/cmake-2.6.2.spkg
 $WGET http://femhub.googlecode.com/files/judy-1.0.5.spkg
 $WGET http://femhub.googlecode.com/files/mesa-7.4.4.p3.spkg
-$WGET http://femhub.googlecode.com/files/vtk-cvs-20090316-minimal.p1.spkg
+$WGET http://femhub.googlecode.com/files/vtk-cvs-20090316-minimal.p2.spkg
 $WGET http://femhub.googlecode.com/files/configobj-4.5.3.spkg
 $WGET http://femhub.googlecode.com/files/mayavi-3.2.0-osmesa1.spkg
 $WGET http://femhub.googlecode.com/files/pyparsing-1.5.2.spkg
