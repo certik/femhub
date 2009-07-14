@@ -2,6 +2,7 @@
 
 SAGE_STANDARD=http://www.sagemath.org/packages/standard
 SPD_STANDARD=http://spdproject.googlecode.com/files
+FEMHUB_STANDARD=http://femhub.googlecode.com/files
 
 if [ `uname` = 'Darwin' ]; then
     WGET="curl -O"
@@ -31,7 +32,7 @@ $WGET $SAGE_STANDARD/jquery-1.2.6.p0.spkg
 $WGET $SAGE_STANDARD/jqueryui-1.6r807svn.p0.spkg
 $WGET $SAGE_STANDARD/jsmath-3.6b.p1.spkg
 $WGET $SAGE_STANDARD/tinyMCE-3.2.0.2.p0.spkg
-$WGET $SPD_STANDARD/spd_notebook-3.4.1-5.spkg
+$WGET $FEMHUB_STANDARD/femhub_notebook-0.9.4.p1.spkg
 
 # numpy, scipy matplotlib and sympy
 $WGET $SAGE_STANDARD/fortran-20071120.p5.spkg
