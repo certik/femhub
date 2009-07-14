@@ -47,13 +47,13 @@ $WGET $SAGE_STANDARD/matplotlib-0.98.5.3rc0-svn6910.p3.spkg
 $WGET $SAGE_STANDARD/sympy-0.6.4.spkg
 
 # femhub things:
-$WGET http://femhub.googlecode.com/files/cmake-2.6.2.spkg
-$WGET http://femhub.googlecode.com/files/judy-1.0.5.spkg
-$WGET http://femhub.googlecode.com/files/mesa-7.4.4.p3.spkg
-$WGET http://femhub.googlecode.com/files/vtk-cvs-20090316-minimal.p2.spkg
-$WGET http://femhub.googlecode.com/files/configobj-4.5.3.spkg
-$WGET http://femhub.googlecode.com/files/mayavi-3.2.0-osmesa1.spkg
-$WGET http://femhub.googlecode.com/files/pyparsing-1.5.2.spkg
-$WGET http://femhub.googlecode.com/files/swig-1.3.36.spkg
-$WGET http://femhub.googlecode.com/files/sfepy-2009.2.spkg
-$WGET http://femhub.googlecode.com/files/hermes2d-a559a87.spkg
+$WGET $FEMHUB_STANDARD/cmake-2.6.2.spkg
+$WGET $FEMHUB_STANDARD/judy-1.0.5.spkg
+$WGET $FEMHUB_STANDARD/mesa-7.4.4.p3.spkg
+$WGET $FEMHUB_STANDARD/vtk-cvs-20090316-minimal.p2.spkg
+$WGET $FEMHUB_STANDARD/configobj-4.5.3.spkg
+$WGET $FEMHUB_STANDARD/mayavi-3.2.0-osmesa1.spkg
+$WGET $FEMHUB_STANDARD/pyparsing-1.5.2.spkg
+$WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
+$WGET $FEMHUB_STANDARD/sfepy-2009.2.spkg
+$WGET $FEMHUB_STANDARD/hermes2d-a559a87.spkg
