@@ -1,14 +1,24 @@
 Hello,
 
-This README.txt describes build instruction for Sage. If you downloaded
+This README.txt describes build instruction for Femhub. If you downloaded
 a binary, you do not need to do anything, just execute
 
- ./sage 
+ ./spd 
 
-from the command line and you are good to go. If you download the sources,
-please read below on how to build Sage and work around common issues. 
+from the command line and you are good to go. 
 
-----------------------------------------------------------------
+$ ./spd
+----------------------------------------------------------------------
+| Femhub (FEM Distribution), Version 0.9.3, Release Date: 2009-06-28 |
+| Type notebook() for the GUI.                                       |
+----------------------------------------------------------------------
+In [1]: notebook()
+
+and a browser will start with the web notebook. Visit "http://code.google.com/p/femhub/" and follow the instructions there to do your first calculation.
+
+If you download the sources, please read below on how to build Femhub and work around common issues. 
+
+----------------------------------------------------------------------
 
 VERY QUICK INSTRUCTIONS TO BUILD FROM SOURCE:
    1. Make sure you have the dependencies.
@@ -26,15 +36,20 @@ VERY QUICK INSTRUCTIONS TO BUILD FROM SOURCE:
      programs listed above.  Only OS X >= 10.4.x and certain
      Linux distributions are officially supported.  See below
      for a complete list. 
+
+   2. Download:
+          $ wget http://sage.math.washington.edu/home/ondrej/scratch/femhub/femhub-0.9.4.tar
  
    2. Extract the tarball:
-          tar xvf sage-*.tar
+          tar xf femhub-0.9.4-*.tar
 
    3. cd into the sage directory and type make:
-          cd sage-*
+          cd femhub-0.9.4
           make
  
-     That's it!  Everything is automatic and non-interactive.
+Depending on the speed of your computer, wait between 37 minutes to 1.5 hour. That's it. Everything is automatic and non-interactive.
+
+If you want, you can also download a binary from http://sage.math.washington.edu/home/ondrej/scratch/femhub/, however, if it doesn't work for you, compile from source, that should always work (if not, please report a bug).
 
 NOTE:  On Linux if you get this error message: 
   " restore segment prot after reloc: Permission denied "
