@@ -32,7 +32,7 @@ $WGET $SAGE_STANDARD/jquery-1.2.6.p0.spkg
 $WGET $SAGE_STANDARD/jqueryui-1.6r807svn.p0.spkg
 $WGET $SAGE_STANDARD/jsmath-3.6b.p1.spkg
 $WGET $SAGE_STANDARD/tinyMCE-3.2.0.2.p0.spkg
-$WGET $FEMHUB_STANDARD/femhub_notebook-0.9.5.p0.spkg
+$WGET $FEMHUB_STANDARD/femhub_notebook-0.9.5.p1.spkg
 
 # numpy, scipy matplotlib and sympy
 $WGET $SAGE_STANDARD/fortran-20071120.p5.spkg
