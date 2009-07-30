@@ -52,7 +52,7 @@ $WGET $FEMHUB_STANDARD/judy-1.0.5.spkg
 $WGET $FEMHUB_STANDARD/mesa-7.4.4.p3.spkg
 $WGET $FEMHUB_STANDARD/vtk-cvs-20090316-minimal.p4.spkg
 $WGET $FEMHUB_STANDARD/configobj-4.5.3.spkg
-$WGET $FEMHUB_STANDARD/mayavi-3.2.0-osmesa1.p1.spkg
+$WGET $FEMHUB_STANDARD/mayavi-3.3.1.p0.spkg
 $WGET $FEMHUB_STANDARD/pyparsing-1.5.2.spkg
 $WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
 $WGET $FEMHUB_STANDARD/sfepy-2009.3.spkg
