@@ -15,15 +15,6 @@ echo "Starting prerequisite check."
 echo "Machine: `uname -a`"
 
 if [ "$SAGE_PORT" = "" ]; then
-   if [ `uname | sed -e 's/WIN.\+/WIN/'` = "CYGWIN" ]; then
-      echo "Building or using SAGE with Cygwin is absolutely definitely"
-      echo "not supported, and will definitely not work.  The only way"
-      echo "to run SAGE on Windows, is via VMware (or Virtual PC or "
-      echo "some other virtualization system such as andLinux)."
-      echo "NOTE: SAGE used to support Cygwin several months ago (around March"
-      echo "2007), so you may have seen some old documentation about this."
-      exit -1
-   fi
    if [ `uname` = "SunOS" -a "`uname -p`" != "sparc" ]; then
       echo "Building or using Sage on non-Sparc Solaris is tricky and not supported"
       echo "at the moment. It is possible, but you should be well aware that"
