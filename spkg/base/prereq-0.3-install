@@ -75,12 +75,6 @@ check ranlib
 check tar
 check gcc
 
-if [ "$UNAME" = "CYGWIN" ]; then
-    echo "Unfortunately, building SAGE on Cygwin is no longer supported."
-    echo "Please use a virtualization solution instead, such as vmware."
-    exit 1
-fi
-
 #####################################################################################
 # A slightly more sophisticated test for relevant commands, and 
 # that they that actually work correctly.
