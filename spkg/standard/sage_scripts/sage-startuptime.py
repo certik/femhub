@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ###########################################################
 # Based on a script by Andrew Dalke: 
 #    http://projects.scipy.org/pipermail/numpy-discussion/2008-July/035415.html
@@ -21,7 +22,7 @@ level = 0
 parent = None
 children = {}
 
-def new_import(name, globals={}, locals={}, fromlist=[]):
+def new_import(name, globals={}, locals={}, fromlist=[], dummy=None):
      global level, parent
      if name in seen:
          return old_import(name, globals, locals, fromlist)

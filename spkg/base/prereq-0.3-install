@@ -24,8 +24,8 @@ if [ "$SAGE_PORT" = "" ]; then
       echo "2007), so you may have seen some old documentation about this."
       exit -1
    fi
-   if [ `uname` = "SunOS" ]; then
-      echo "Building or using Sage on Solaris is tricky and not supported"
+   if [ `uname` = "SunOS" -a "`uname -p`" != "sparc" ]; then
+      echo "Building or using Sage on non-Sparc Solaris is tricky and not supported"
       echo "at the moment. It is possible, but you should be well aware that"
       echo "some things do not work. To get past this message export the"
       echo "variable \$SAGE_PORT to something non-empty. Support for Solaris"

@@ -5,7 +5,7 @@ MAKEREL = cd $(SAGE_ROOT) && . local/bin/sage-env && cd local/bin/ && ./sage-mak
 ########################################
 # The base system; required in order to run spkg
 ########################################
-BASE    = $(INST)/$(PREREQ) $(INST)/$(DIR) $(INST)/$(SAGE_BZIP2) 
+BASE    = $(INST)/$(PREREQ) $(INST)/$(DIR) $(INST)/$(SAGE_BZIP2)
 
 all: $(INST)/$(SAGE_SCRIPTS) $(INST)/$(SAGE) \
      $(INST)/$(EXAMPLES) $(INST)/$(GAP) $(INST)/$(SINGULAR) $(INST)/$(MAXIMA) \
@@ -27,7 +27,7 @@ all: $(INST)/$(SAGE_SCRIPTS) $(INST)/$(SAGE) \
      $(INST)/$(ZNPOLY) $(INST)/$(POLYTOPES_DB) $(INST)/$(PYPROCESSING) $(INST)/$(GHMM) \
      $(INST)/$(PYNAC) $(INST)/$(DOCUTILS) $(INST)/$(JINJA) $(INST)/$(PYGMENTS) $(INST)/$(SPHINX) \
      $(INST)/$(JSMATH_SPKG) $(INST)/$(JQUERY_SPKG) $(INST)/$(JQUERYUI_SPKG) $(INST)/$(TINYMCE_SPKG) \
-     $(INST)/$(DSAGE) \
+     $(INST)/$(DSAGE) $(INST)/$(BOOST_CROPPED) \
      $(INST)/$(SPD_NOTEBOOK) \
      $(INST)/$(CMAKE) \
      $(INST)/$(JUDY) \
@@ -55,7 +55,7 @@ $(INST)/$(PREREQ): $(INST)/$(DIR)
 	base/$(PREREQ)-install
 
 $(INST)/$(SAGE_BZIP2): $(INST)/$(PREREQ) $(INST)/$(DIR)
-	base/$(SAGE_BZIP2)-install 2>&1 
+	base/$(SAGE_BZIP2)-install 2>&1
 
 ########################################
 # Building normal packages
@@ -66,6 +66,12 @@ $(INST)/$(ATLAS): $(BASE) $(INST)/$(LAPACK) $(INST)/$(PYTHON)
 
 $(INST)/$(BOEHM_GC): $(BASE)
 	$(SAGE_SPKG) $(BOEHM_GC) 2>&1
+
+$(INST)/$(BOOST_CROPPED): $(BASE)
+	$(SAGE_SPKG) $(BOOST_CROPPED) 2>&1
+
+$(INST)/$(CLIQUER): $(BASE) $(INST)/$(SCONS)
+	$(SAGE_SPKG) $(CLIQUER) 2>&1
 
 $(INST)/$(TERMCAP): $(BASE)
 	$(SAGE_SPKG) $(TERMCAP) 2>&1
@@ -94,28 +100,28 @@ $(INST)/$(PYGMENTS): $(INST)/$(PYTHON)
 $(INST)/$(GHMM): $(BASE) $(INST)/$(GSL)
 	$(SAGE_SPKG) $(GHMM) 2>&1
 
-$(INST)/$(GMP): $(BASE) 
-	$(SAGE_SPKG) $(GMP) 2>&1
+$(INST)/$(MPIR): $(BASE)
+	$(SAGE_SPKG) $(MPIR) 2>&1
 
 $(INST)/$(GSL): $(BASE) $(INST)/$(ATLAS)
 	$(SAGE_SPKG) $(GSL) 2>&1
 
-#$(INST)/$(FLEX): $(BASE) 
+#$(INST)/$(FLEX): $(BASE)
 #	$(SAGE_SPKG) $(FLEX) 2>&1
 
-#$(INST)/$(BISON): $(BASE) 
+#$(INST)/$(BISON): $(BASE)
 #	$(SAGE_SPKG) $(BISON) 2>&1
 
-$(INST)/$(NTL): $(BASE) $(INST)/$(GMP)
+$(INST)/$(NTL): $(BASE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(NTL) 2>&1
 
-$(INST)/$(FPLLL): $(BASE) $(INST)/$(GMP) $(INST)/$(MPFR)
+$(INST)/$(FPLLL): $(BASE) $(INST)/$(MPIR) $(INST)/$(MPFR)
 	$(SAGE_SPKG) $(FPLLL) 2 >&1
 
-$(INST)/$(PARI): $(BASE) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(GMP)
+$(INST)/$(PARI): $(BASE) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(PARI) 2>&1
 
-$(INST)/$(POLYBORI): $(BASE) $(INST)/$(PYTHON) $(INST)/$(SCONS)
+$(INST)/$(POLYBORI): $(BASE) $(INST)/$(PYTHON) $(INST)/$(SCONS) $(INST)/$(BOOST_CROPPED)
 	$(SAGE_SPKG) $(POLYBORI) 2>&1
 
 $(INST)/$(POLYTOPES_DB): $(BASE)
@@ -123,29 +129,29 @@ $(INST)/$(POLYTOPES_DB): $(BASE)
 
 $(INST)/$(PYPROCESSING): $(BASE) $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(PYPROCESSING) 2>&1
-	
-$(INST)/$(MPFR): $(BASE) $(INST)/$(GMP)
+
+$(INST)/$(MPFR): $(BASE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(MPFR) 2>&1
 
-$(INST)/$(MPFI): $(BASE) $(INST)/$(GMP) $(INST)/$(MPFR)
+$(INST)/$(MPFI): $(BASE) $(INST)/$(MPIR) $(INST)/$(MPFR)
 	$(SAGE_SPKG) $(MPFI) 2>&1
 
-$(INST)/$(QUADDOUBLE): $(BASE) $(INST)/$(GMP) $(INST)/$(MPFR)
+$(INST)/$(QUADDOUBLE): $(BASE) $(INST)/$(MPIR) $(INST)/$(MPFR)
 	$(SAGE_SPKG) $(QUADDOUBLE) 2>&1
 
-$(INST)/$(GIVARO): $(BASE) $(INST)/$(GMP)
+$(INST)/$(GIVARO): $(BASE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(GIVARO) 2>&1
 
-$(INST)/$(LINBOX): $(BASE) $(INST)/$(GMP) $(INST)/$(NTL) $(INST)/$(GIVARO) $(INST)/$(GSL) $(INST)/$(ATLAS)
+$(INST)/$(LINBOX): $(BASE) $(INST)/$(MPIR) $(INST)/$(NTL) $(INST)/$(GIVARO) $(INST)/$(GSL) $(INST)/$(ATLAS)
 	$(SAGE_SPKG) $(LINBOX) 2>&1
 
-$(INST)/$(IML): $(BASE) $(INST)/$(GMP) $(INST)/$(GSL) 
+$(INST)/$(IML): $(BASE) $(INST)/$(MPIR) $(INST)/$(GSL)
 	$(SAGE_SPKG) $(IML) 2>&1
 
-$(INST)/$(ECLIB): $(BASE) $(INST)/$(GMP) $(INST)/$(PARI) $(INST)/$(NTL)
+$(INST)/$(ECLIB): $(BASE) $(INST)/$(MPIR) $(INST)/$(PARI) $(INST)/$(NTL)
 	$(SAGE_SPKG) $(ECLIB) 2>&1
 
-$(INST)/$(G2RED): $(BASE) $(INST)/$(PARI) 
+$(INST)/$(G2RED): $(BASE) $(INST)/$(PARI)
 	$(SAGE_SPKG) $(G2RED) 2>&1
 
 $(INST)/$(PALP): $(BASE)
@@ -164,10 +170,10 @@ $(INST)/$(SYMMETRICA): $(BASE)
 	$(SAGE_SPKG) $(SYMMETRICA) 2>&1
 
 # gap requires SAGE so that gap_reset_workspace works.
-$(INST)/$(GAP): $(BASE)  $(INST)/$(GMP) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(SAGE)
+$(INST)/$(GAP): $(BASE)  $(INST)/$(MPIR) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(SAGE)
 	$(SAGE_SPKG) $(GAP) 2>&1
 
-$(INST)/$(IPYTHON): $(INST)/$(PYTHON) 
+$(INST)/$(IPYTHON): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(IPYTHON) 2>&1
 	$(MAKEREL)
 
@@ -175,16 +181,16 @@ $(INST)/$(DSAGE): $(INST)/$(PYTHON)  $(INST)/$(SAGE)
 	$(SAGE_SPKG) $(DSAGE) 2>&1
 	$(MAKEREL)
 
-$(INST)/$(PEXPECT): $(INST)/$(PYTHON) 
+$(INST)/$(PEXPECT): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(PEXPECT) 2>&1
 
-$(INST)/$(GD): $(INST)/$(LIBPNG) $(INST)/$(FREETYPE) 
+$(INST)/$(GD): $(INST)/$(LIBPNG) $(INST)/$(FREETYPE)
 	$(SAGE_SPKG) $(GD) 2>&1
 
-#$(INST)/$(DVIPNG): $(INST)/$(LIBPNG) $(INST)/$(FREETYPE) 
+#$(INST)/$(DVIPNG): $(INST)/$(LIBPNG) $(INST)/$(FREETYPE)
 #	$(SAGE_SPKG) $(DVIPNG) 2>&1
 
-$(INST)/$(GDMODULE): $(INST)/$(PYTHON) $(INST)/$(GD) 
+$(INST)/$(GDMODULE): $(INST)/$(PYTHON) $(INST)/$(GD)
 	$(SAGE_SPKG) $(GDMODULE) 2>&1
 
 $(INST)/$(TWISTED): $(INST)/$(PYTHON) $(INST)/$(PYTHON_GNUTLS)
@@ -229,7 +235,7 @@ $(INST)/$(TWISTEDWEB2): $(INST)/$(TWISTED)
 $(INST)/$(OPENCDK):  $(INST)/$(ZLIB)  $(INST)/$(LIBGCRYPT)
 	$(SAGE_SPKG) $(OPENCDK) 2>&1
 
-$(INST)/$(LIBGPG_ERROR):  
+$(INST)/$(LIBGPG_ERROR):
 	$(SAGE_SPKG) $(LIBGPG_ERROR) 2>&1
 
 $(INST)/$(LIBGCRYPT):  $(INST)/$(LIBGPG_ERROR)
@@ -253,11 +259,11 @@ $(INST)/$(SCONS):  $(INST)/$(PYTHON)
 $(INST)/$(RUBIKS): $(BASE)
 	$(SAGE_SPKG) $(RUBIKS) 2>&1
 
-# extcode must be built before moin moin because it has the jsmath in it. 
+# extcode must be built before moin moin because it has the jsmath in it.
 $(INST)/$(MOIN): $(INST)/$(PYTHON) $(INST)/$(TWISTED) $(INST)/$(EXTCODE)
 	$(SAGE_SPKG) $(MOIN) 2>&1
 
-$(INST)/$(SPHINX): $(INST)/$(DOCUTILS) $(INST)/$(JINJA) $(INST)/$(PYGMENTS) 
+$(INST)/$(SPHINX): $(INST)/$(DOCUTILS) $(INST)/$(JINJA) $(INST)/$(PYGMENTS)
 	$(SAGE_SPKG) $(INST)/$(SPHINX) 2>&1
 
 $(INST)/$(SQLALCHEMY): $(INST)/$(PYTHON) $(INST)/$(SETUPTOOLS)
@@ -266,14 +272,14 @@ $(INST)/$(SQLALCHEMY): $(INST)/$(PYTHON) $(INST)/$(SETUPTOOLS)
 $(INST)/$(SQLITE): $(INST)/$(TERMCAP) $(INST)/$(READLINE)
 	$(SAGE_SPKG) $(SQLITE) 2>&1
 
-$(INST)/$(MERCURIAL): $(INST)/$(PYTHON) 
+$(INST)/$(MERCURIAL): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(MERCURIAL) 2>&1
 	$(MAKEREL)
 
 $(INST)/$(SETUPTOOLS): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(SETUPTOOLS) 2>&1
 
-$(INST)/$(SINGULAR): $(BASE) $(INST)/$(GMP) $(INST)/$(NTL) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(MPFR)
+$(INST)/$(SINGULAR): $(BASE) $(INST)/$(MPIR) $(INST)/$(NTL) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(MPFR)
 	$(SAGE_SPKG) $(SINGULAR) 2>&1
 
 $(INST)/$(PYCRYPTO): $(BASE) $(INST)/$(PYTHON)
@@ -285,10 +291,13 @@ $(INST)/$(WEAVE): $(BASE) $(INST)/$(NUMPY)
 $(INST)/$(NETWORKX): $(BASE) $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(NETWORKX) 2>&1
 
+$(INST)/$(MPMATH): $(BASE) $(INST)/$(PYTHON)
+	$(SAGE_SPKG) $(MPMATH) 2>&1
+
 #$(INST)/$(GNUPLOT): $(BASE) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(LIBPNG)
 #	$(SAGE_SPKG) $(GNUPLOT) 2>&1
 
-$(INST)/$(ZLIB): $(BASE) 
+$(INST)/$(ZLIB): $(BASE)
 	$(SAGE_SPKG) $(ZLIB) 2>&1
 
 #$(INST)/$(GNUPLOTPY): $(BASE) $(INST)/$(PYTHON) $(INST)/$(NUMPY)
@@ -309,26 +318,29 @@ $(INST)/$(MATPLOTLIB): $(BASE) $(INST)/$(PYTHON) $(INST)/$(NUMPY) $(INST)/$(FREE
 
 ####
 
-$(INST)/$(CDDLIB): $(BASE) $(INST)/$(GMP)
+$(INST)/$(CDDLIB): $(BASE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(CDDLIB) 2>&1
 
-$(INST)/$(GFAN): $(BASE) $(INST)/$(GMP) $(INST)/$(CDDLIB)
+$(INST)/$(GFAN): $(BASE) $(INST)/$(MPIR) $(INST)/$(CDDLIB)
 	$(SAGE_SPKG) $(GFAN) 2>&1
 
 $(INST)/$(TACHYON): $(BASE) $(INST)/$(LIBPNG)
 	$(SAGE_SPKG) $(TACHYON) 2>&1
 
-$(INST)/$(ECM): $(BASE) $(INST)/$(GMP)
+$(INST)/$(ECM): $(BASE) $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(ECM) 2>&1
+
+$(INST)/$(RATPOINTS): $(BASE) $(INST)/$(MPIR)
+	$(SAGE_SPKG) $(RATPOINTS) 2>&1
 
 
 #$(INST)/$(LIBSIGSEGV): $(BASE)
 #	$(SAGE_SPKG) $(LIBSIGSEGV) 2>&1
 
-$(INST)/$(CLISP): $(BASE) $(INST)/$(GMP) $(INST)/$(TERMCAP) $(INST)/$(READLINE)
-	$(SAGE_SPKG) $(CLISP) 2>&1
+$(INST)/$(ECL): $(BASE) $(INST)/$(MPIR) $(INST)/$(TERMCAP) $(INST)/$(READLINE) $(INST)/$(BOEHM_GC)
+	$(SAGE_SPKG) $(ECL) 2>&1
 
-$(INST)/$(MAXIMA): $(BASE) $(INST)/$(CLISP)
+$(INST)/$(MAXIMA): $(BASE) $(INST)/$(ECL)
 	$(SAGE_SPKG) $(MAXIMA) 2>&1
 
 $(INST)/$(ZODB): $(INST)/$(PYTHON)
@@ -343,17 +355,18 @@ $(INST)/$(SYMPY): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(SYMPY) 2>&1
 	$(MAKEREL)
 
-$(INST)/$(CYTHON): $(INST)/$(PYTHON) 
+$(INST)/$(CYTHON): $(INST)/$(PYTHON)
 	$(SAGE_SPKG) $(CYTHON) 2>&1
 	$(MAKEREL)
 
-$(INST)/$(FLINTQS): $(INST)/$(GMP)
+$(INST)/$(FLINTQS): $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(FLINTQS) 2>&1
 
-$(INST)/$(FLINT): $(INST)/$(GMP) $(INST)/$(NTL)
+$(INST)/$(FLINT): $(INST)/$(MPIR) $(INST)/$(NTL)
 	$(SAGE_SPKG) $(FLINT) 2>&1
 
-$(INST)/$(EXTCODE): $(BASE)
+# Mercurial must be built before building extcode. See trac ticket #6508.
+$(INST)/$(EXTCODE): $(BASE) $(INST)/$(MERCURIAL)
 	$(SAGE_SPKG) $(EXTCODE) 2>&1
 
 $(INST)/$(EXAMPLES): $(BASE)
@@ -365,11 +378,12 @@ $(INST)/$(SAGE_SCRIPTS): $(BASE)
 $(INST)/$(LIBM4RI): $(BASE)
 	$(SAGE_SPKG) $(LIBM4RI) 2>&1
 
-$(INST)/$(ZNPOLY): $(INST)/$(GMP)
+$(INST)/$(ZNPOLY): $(INST)/$(MPIR)
 	$(SAGE_SPKG) $(ZNPOLY) 2>&1
 
 # All components that are linked against extensions need to be listed here
 $(INST)/$(SAGE):  $(INST)/$(SAGE_SCRIPTS) \
+		  $(INST)/$(CLIQUER) \
 	          $(INST)/$(CONWAY) \
                   $(INST)/$(ECLIB) \
 	          $(INST)/$(GRAPHS) \
@@ -377,7 +391,7 @@ $(INST)/$(SAGE):  $(INST)/$(SAGE_SCRIPTS) \
                   $(INST)/$(EXTCODE) \
 	          $(INST)/$(FLINT)  \
 	          $(INST)/$(GDMODULE)  \
-                  $(INST)/$(GMP)  \
+                  $(INST)/$(MPIR)  \
 		  $(INST)/$(IML) \
 	          $(INST)/$(IPYTHON)  \
 		  $(INST)/$(LINBOX) \
@@ -396,6 +410,7 @@ $(INST)/$(SAGE):  $(INST)/$(SAGE_SCRIPTS) \
                   $(INST)/$(ZODB) \
 		  $(INST)/$(NUMPY) \
 		  $(INST)/$(NETWORKX) \
+		  $(INST)/$(MPMATH) \
                   $(INST)/$(GIVARO) \
                   $(INST)/$(GSL) \
                   $(INST)/$(QUADDOUBLE) \
@@ -410,13 +425,14 @@ $(INST)/$(SAGE):  $(INST)/$(SAGE_SCRIPTS) \
 		  $(INST)/$(RUBIKS) \
 	          $(INST)/$(LIBM4RI) \
 		  $(INST)/$(ECM) \
+		  $(INST)/$(RATPOINTS) \
 		  $(INST)/$(ZNPOLY) \
 		  $(INST)/$(GHMM) \
 		  $(INST)/$(PYPROCESSING) \
 		  $(INST)/$(DOCUTILS) \
 		  $(INST)/$(SETUPTOOLS) \
 		  $(INST)/$(JINJA)
-	$(SAGE_SPKG) $(SAGE) 
+	$(SAGE_SPKG) $(SAGE)
 	$(MAKEREL)
 
 $(INST)/$(FORTRAN):
@@ -426,16 +442,16 @@ $(INST)/$(JMOL):
 	$(SAGE_SPKG) $(JMOL) 2>&1
 
 $(INST)/$(F2C): $(INST)/$(FORTRAN)
-	$(SAGE_SPKG) $(INST)/$(F2C) 2>&1 
+	$(SAGE_SPKG) $(INST)/$(F2C) 2>&1
 
 $(INST)/$(JINJA): $(INST)/$(DOCUTILS) $(INST)/$(SETUPTOOLS)
 	$(SAGE_SPKG) $(JINJA) 2>&1
 
 $(INST)/$(LAPACK): $(INST)/$(FORTRAN)
-	$(SAGE_SPKG) $(INST)/$(LAPACK) 2>&1 
+	$(SAGE_SPKG) $(INST)/$(LAPACK) 2>&1
 
 $(INST)/$(BLAS): $(INST)/$(FORTRAN)
-	$(SAGE_SPKG) $(INST)/$(BLAS) 2>&1 
+	$(SAGE_SPKG) $(INST)/$(BLAS) 2>&1
 
 $(INST)/$(NUMPY): $(BASE) $(INST)/$(PYTHON) $(INST)/$(FORTRAN) $(INST)/$(F2C) $(INST)/$(LAPACK) $(INST)/$(BLAS) $(INST)/$(ATLAS)
 	$(SAGE_SPKG) $(NUMPY) 2>&1
@@ -458,6 +474,6 @@ $(INST)/$(JQUERY_SPKG): $(INST)/$(JSMATH_SPKG)
 $(INST)/$(JQUERYUI_SPKG): $(INST)/$(JSMATH_SPKG) $(INST)/$(JQUERY_SPKG)
 	$(SAGE_SPKG) $(JQUERYUI_SPKG) 2>&1
 
-$(INST)/$(TINYMCE_SPKG): $(INST)/$(JSMATH_SPKG) $(INST)/$(JQUERY_SPKG) $(INST)/$(JQUERYUI_SPKG) 
+$(INST)/$(TINYMCE_SPKG): $(INST)/$(JSMATH_SPKG) $(INST)/$(JQUERY_SPKG) $(INST)/$(JQUERYUI_SPKG)
 	$(SAGE_SPKG) $(TINYMCE_SPKG) 2>&1
 

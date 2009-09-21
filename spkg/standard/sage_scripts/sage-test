@@ -61,8 +61,9 @@ def skip(F):
         print "%s (skipping) -- nodoctest.py file in directory"%sage_test_command(F)
         return True
 
-    if G == "all.py" or "__init__.py" in G \
-          or 'nodoctest' in open(G).read()[:50]:
+    if 'nodoctest' in open(G).read()[:50]:
+        return True
+    if G.find('doc/output') != -1:
         return True
 
     sys.stdout.write("%-60s"%sage_test_command(F)+"\n")
@@ -90,6 +91,9 @@ def test(F, cmd):
 
 
 def test_file(F):
+    if not os.path.exists(F):
+        if os.path.exists(os.environ["SAGE_ROOT"] + "/" + F):
+            F = os.environ["SAGE_ROOT"] + "/" + F
     if not os.path.exists(F):
         if F[:6] != "__test" and not F.endswith('.png'):
             print "ERROR: File %s/%s is missing"%(os.curdir,F)

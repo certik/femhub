@@ -1,4 +1,4 @@
-#!/usr/bin/env sage.bin
+#!/usr/bin/env python
 
 import os, sys
 
@@ -34,13 +34,16 @@ def install_moved():
 
 
 # The flags we care about recording in the local/lib/sage-flags.txt file
-# In SSE2 only mode remove pni and ssse3 flags
-try:
-    SAGE_SIMD_MODE = os.environ['SAGE_SIMD_MODE']
-except:
-    SAGE_SIMD_MODE = ""
+# In SAGE_FAT_BINARY mode we only require that ['sse', 'sse2', '3d',
+#  'mmx', 'cmov'] be available, and in particular, don't require pni
+#  or ssse3.
 
-if SAGE_SIMD_MODE == "SSE2":
+try:
+    SAGE_FAT_BINARY = os.environ['SAGE_FAT_BINARY']
+except:
+    SAGE_FAT_BINARY = ""
+
+if SAGE_FAT_BINARY == "yes":
     FLAGS = ['sse', 'sse2', '3d', 'mmx', 'cmov']
 else:
     FLAGS = ['sse', 'sse2', 'ssse3', '3d', 'mmx', 'pni', 'cmov']
@@ -170,10 +173,9 @@ if __name__ ==  '__main__':
     check_processor_flags()
     t, R = install_moved()
     if t:
-        print "The SAGE install tree may have moved."
-
-        print "Regenerating Python.pyo and .pyc files that hardcode the install PATH (please wait at"
-        print "most a few minutes)..."
+        print "The Sage install tree may have moved."
+        print "Regenerating Python.pyo and .pyc files that hardcode the install PATH"
+        print "(please wait at most a few minutes)..."
         print "Do not interrupt this."
 	update_library_files(R)
         update_hardcoded_files(SAGE_ROOT + '/local/lib/python/')

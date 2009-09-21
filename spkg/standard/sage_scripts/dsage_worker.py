@@ -42,14 +42,14 @@ from gnutls.interfaces.twisted import X509Credentials
 from sage.interfaces.sage0 import Sage
 from sage.misc.preparser import preparse_file
 
-from sage.dsage.database.job import Job, expand_job
-from sage.dsage.misc.hostinfo import HostInfo
-from sage.dsage.errors.exceptions import NoJobException
-from sage.dsage.twisted.pb import ClientFactory
-from sage.dsage.misc.constants import DELIMITER
-from sage.dsage.misc.constants import DSAGE_DIR
-from sage.dsage.misc.constants import TMP_WORKER_FILES
-from sage.dsage.misc.misc import random_str, get_uuid
+from dsage.database.job import Job, expand_job
+from dsage.misc.hostinfo import HostInfo
+from dsage.errors.exceptions import NoJobException
+from dsage.twisted.pb import ClientFactory
+from dsage.misc.constants import DELIMITER
+from dsage.misc.constants import DSAGE_DIR
+from dsage.misc.constants import TMP_WORKER_FILES
+from dsage.misc.misc import random_str, get_uuid
 
 START_MARKER = '\x01r\x01e' 
 END_MARKER = '\x01r\x01b'
@@ -219,7 +219,7 @@ class Worker(object):
         """
         Creates the temporary directory for the worker.
         
-        :type job: sage.dsage.database.job.Job
+        :type job: dsage.database.job.Job
         :param job: a Job object
         
         """
@@ -239,7 +239,7 @@ class Worker(object):
         """
         Extracts all the data that is in a job object.
         
-        :type job: sage.dsage.database.job.Job
+        :type job: dsage.database.job.Job
         :param job: a Job object
         
         """
@@ -283,7 +283,7 @@ class Worker(object):
         """
         Writes out the job file to be executed to disk.
         
-        :type job: sage.dsage.database.job.Job
+        :type job: dsage.database.job.Job
         :param job: A Job object
         
         """
@@ -324,7 +324,7 @@ except:
         """
         Executes a job
         
-        :type job: sage.dsage.database.job.Job
+        :type job: dsage.database.job.Job
         :param job: A Job object
 
         """
@@ -644,7 +644,7 @@ except:
                 if cur_mem >= (2 * self.base_mem):
                     self.stop(hard_reset=True)
             else:
-                from sage.dsage.misc.misc import timedelta_to_seconds
+                from dsage.misc.misc import timedelta_to_seconds
                 delta = datetime.datetime.now() - self.job_start_time
                 secs = timedelta_to_seconds(delta)
                 if secs >= (3*60): # more than 3 minutes, do a hard reset
@@ -910,7 +910,7 @@ class Monitor(pb.Referenceable):
         
         """
         
-        from sage.dsage.misc.misc import set_uuid
+        from dsage.misc.misc import set_uuid
         set_uuid(uuid)
     
 
@@ -923,7 +923,7 @@ class Monitor(pb.Referenceable):
         
         """
         
-        from sage.dsage.misc.misc import exec_wrs
+        from dsage.misc.misc import exec_wrs
         
         return exec_wrs(script)
 

@@ -1,6 +1,6 @@
 # How many threads should be used when doing parallel testing (and
 # sometime in the future, parallel building)?
-NUM_THREADS=20
+NUM_THREADS=15
 
 all:
 	cd spkg && ./install all 2>&1 | tee -a ../install.log

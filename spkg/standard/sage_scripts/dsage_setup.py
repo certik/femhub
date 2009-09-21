@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ############################################################################
 #                                                                     
 #   DSAGE: Distributed SAGE                     
@@ -24,12 +25,12 @@ import subprocess
 import sys
 import sqlite3
 
-from sage.dsage.database.clientdb import ClientDatabaseSA as ClientDatabase
-from sage.dsage.database.db_config import create_schema
-from sage.dsage.misc.constants import (DELIMITER, DSAGE_DIR, DSAGE_DB_DIR,
+from dsage.database.clientdb import ClientDatabaseSA as ClientDatabase
+from dsage.database.db_config import create_schema
+from dsage.misc.constants import (DELIMITER, DSAGE_DIR, DSAGE_DB_DIR,
                                        DSAGE_DB)
-from sage.dsage.misc.config import check_dsage_dir
-from sage.dsage.__version__ import version
+from dsage.misc.config import check_dsage_dir
+from dsage.__version__ import version
 
 from sage.misc.viewer import cmd_exists
 
@@ -197,7 +198,7 @@ def setup_server(template=None):
     os.chmod(os.path.join(DSAGE_DIR, 'cacert.pem'), 0600)
     
     # create database schemas
-    from sage.dsage.database.db_config import init_db_sa as init_db
+    from dsage.database.db_config import init_db_sa as init_db
     Session = init_db(DSAGE_DB)
     
     # add default user

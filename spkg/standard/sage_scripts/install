@@ -1,8 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 CUR=`pwd`
 cd ..
 SAGE_ROOT=`pwd`
+# Storing the start time of the build process. The time is stored in
+# seconds since 1970-01-01 in a hidden file called
+# "SAGE_ROOT/.BUILDSTART". See ticket #6744.
+echo `date -u "+%s"` > .BUILDSTART
 cd "$CUR"
 SAGE_LOCAL="$SAGE_ROOT/local"
 PATH="$SAGE_ROOT:$SAGE_LOCAL/bin:$PATH"
@@ -59,11 +63,17 @@ export BLAS
 BOEHM_GC=`$newest boehm_gc`
 export BOEHM_GC
 
+BOOST_CROPPED=`$newest boost-cropped`
+export BOOST_CROPPED
+
+CLIQUER=`$newest cliquer`
+export CLIQUER
+
 CDDLIB=`$newest cddlib`
 export CDDLIB
 
-CLISP=`$newest clisp`
-export CLISP
+ECL=`$newest ecl`
+export ECL
 
 CONWAY=`$newest conway_polynomials`
 if [ $? -ne 0 ]; then
@@ -131,7 +141,7 @@ LIBM4RI=`$newest libm4ri`
 export LIBM4RI
 
 DSAGE=`$newest dsage`
-export DSAGE 
+export DSAGE
 
 FORTRAN=`$newest fortran`
 export FORTRAN
@@ -163,8 +173,8 @@ export GIVARO
 GHMM=`$newest ghmm`
 export GHMM
 
-GMP=`$newest gmp`
-export GMP
+MPIR=`$newest mpir`
+export MPIR
 
 GRAPHS=`$newest graphs`
 export GRAPHS
@@ -229,6 +239,9 @@ export MOIN
 MPFR=`$newest mpfr`
 export MPFR
 
+MPMATH=`$newest mpmath`
+export MPMATH
+
 NETWORKX=`$newest networkx`
 export NETWORKX
 
@@ -261,6 +274,9 @@ export PYNAC
 
 CYTHON=`$newest cython`
 export CYTHON
+
+RATPOINTS=`$newest ratpoints`
+export RATPOINTS
 
 SPHINX=`$newest sphinx`
 export SPHINX
@@ -394,14 +410,27 @@ export HERMES2D
 # NOW do the actual build
 
 time make -f standard/deps $1
+
+# added by Burcin Erocal, see trac #6295.
+if [ $? -ne 0 ]; then
+    echo "Error building Sage."
+    exit 1
+fi
+
+# Build the documentation
+# The following three lines have been commented out. They cause the
+# documentation to rebuild when doing "make test". See trac 6645.
+#rm -rf "$SAGE_ROOT"/devel/sage-main/doc/output/doctrees
+#rm -rf "$SAGE_ROOT"/devel/sage-main/doc/en/reference/sage/*
 #"$SAGE_ROOT"/sage -docbuild --jsmath all html
+#"$SAGE_ROOT"/sage -docbuild all html
 
 if [ "$1" = "all" -a $? = 0 ]; then
     echo "To install gap, gp, singular, etc., scripts"
     echo "in a standard bin directory, start sage and"
     echo "type something like"
     echo "   sage: install_scripts('/usr/local/bin')"
-    echo "at the SAGE command prompt."
+    echo "at the Sage command prompt."
     echo ""
-    echo "SAGE build/upgrade complete!"
+    echo "Sage build/upgrade complete!"
 fi
