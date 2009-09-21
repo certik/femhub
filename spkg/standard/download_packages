@@ -24,10 +24,10 @@ $WGET $SPD_STANDARD/pexpect-2.0.p3.spkg
 $WGET $SAGE_STANDARD/twisted-8.2.0.spkg
 $WGET $SAGE_STANDARD/setuptools-0.6c9.p0.spkg
 $WGET $SAGE_STANDARD/jinja-1.2.p0.spkg
-$WGET $SAGE_STANDARD/libgpg_error-1.6.p1.spkg
-$WGET $SAGE_STANDARD/libgcrypt-1.4.3.p1.spkg
-$WGET $SAGE_STANDARD/gnutls-2.2.1.p2.spkg
-$WGET $SAGE_STANDARD/python_gnutls-1.1.4.p5.spkg
+$WGET $FEMHUB_STANDARD/libgpg_error-1.6.p2.spkg
+$WGET $FEMHUB_STANDARD/libgcrypt-1.4.3.p2.spkg
+$WGET $FEMHUB_STANDARD/gnutls-2.2.1.p3.spkg
+$WGET $FEMHUB_STANDARD/python_gnutls-1.1.4.p6.spkg
 $WGET $SAGE_STANDARD/jquery-1.2.6.p0.spkg
 $WGET $SAGE_STANDARD/jqueryui-1.6r807svn.p0.spkg
 $WGET $SAGE_STANDARD/jsmath-3.6b.p1.spkg
