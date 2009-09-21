@@ -50,7 +50,10 @@ QUICK INSTRUCTIONS TO BUILD FROM SOURCE (see below for more detailed instruction
           *must* upgrade XCode (free from Apple), since that
           version of GCC is very broken. 
  
-     Microsoft Windows: Not supported yet. 
+     Microsoft Windows: install cygwin using the setup.exe and in that chose to
+         install the following packages:
+
+         gcc4, gfortran, make, m4, perl
 
      NOTE: On some operating systems it might be necessary to install
      gas/as, gld/ld, gnm/nm, but on most these are automatically
