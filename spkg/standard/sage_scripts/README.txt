@@ -54,7 +54,7 @@ QUICK INSTRUCTIONS TO BUILD FROM SOURCE (see below for more detailed instruction
          install the following packages:
 
          gcc4, gfortran, make, m4, perl, openssl-devel, cmake, libX11-devel,
-         xextproto, libXext-devel
+         xextproto, libXext-devel, libXt-devel, libXt, libXext
 
      NOTE: On some operating systems it might be necessary to install
      gas/as, gld/ld, gnm/nm, but on most these are automatically
