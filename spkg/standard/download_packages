@@ -35,7 +35,7 @@ $WGET $SAGE_STANDARD/tinyMCE-3.2.4.1.spkg
 $WGET $FEMHUB_STANDARD/femhub_notebook-0.9.6.p0.spkg
 
 # numpy, scipy matplotlib and sympy
-$WGET $SAGE_STANDARD/fortran-20071120.p5.spkg
+$WGET $FEMHUB_STANDARD/fortran-20071120.p8.spkg
 $WGET $SAGE_STANDARD/lapack-20071123.p0.spkg
 $WGET $SAGE_STANDARD/blas-20070724.spkg
 #$WGET $SAGE_STANDARD/atlas-3.8.3.p0.spkg
