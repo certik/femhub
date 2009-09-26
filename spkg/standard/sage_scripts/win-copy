@@ -1,0 +1,13 @@
+. local/bin/sage-env
+
+# copy the cygwin dlls:
+cp /usr/bin/*.dll $SAGE_LOCAL/bin/
+
+# copy the basic shell utilities:
+cp /usr/bin/bash $SAGE_LOCAL/bin/
+cp /usr/bin/ls $SAGE_LOCAL/bin/
+cp /usr/bin/uname $SAGE_LOCAL/bin/
+cp /usr/bin/sed $SAGE_LOCAL/bin/
+cp /usr/bin/cat $SAGE_LOCAL/bin/
+cp /usr/bin/readlink $SAGE_LOCAL/bin/
+cp /usr/bin/realpath $SAGE_LOCAL/bin/
