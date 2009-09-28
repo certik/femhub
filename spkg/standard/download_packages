@@ -32,6 +32,9 @@ $WGET $SAGE_STANDARD/jquery-1.2.6.p0.spkg
 $WGET $SAGE_STANDARD/jqueryui-1.6r807svn.p0.spkg
 $WGET $SAGE_STANDARD/jsmath-3.6b.p1.spkg
 $WGET $SAGE_STANDARD/tinyMCE-3.2.4.1.spkg
+$WGET $SAGE_STANDARD/docutils-0.5.p0.spkg
+$WGET $SAGE_STANDARD/pygments-0.11.1.p0.spkg
+$WGET $SAGE_STANDARD/sphinx-0.5.1.p0.spkg
 $WGET $FEMHUB_STANDARD/femhub_notebook-0.9.6.p0.spkg
 
 # numpy, scipy matplotlib and sympy
