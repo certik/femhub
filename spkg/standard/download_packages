@@ -15,7 +15,7 @@ fi
 $WGET $SAGE_STANDARD/termcap-1.3.1.p0.spkg
 $WGET $SAGE_STANDARD/zlib-1.2.3.p4.spkg
 $WGET $FEMHUB_STANDARD/readline-6.0.spkg
-$WGET $SAGE_STANDARD/python-2.6.2.p1.spkg
+$WGET $SAGE_STANDARD/python-2.6.2.p3.spkg
 $WGET $SPD_STANDARD/ipython-bzr1174.spkg
 $WGET $SAGE_STANDARD/cython-0.11.2.1.spkg
 
@@ -28,10 +28,6 @@ $WGET $FEMHUB_STANDARD/libgpg_error-1.6.p2.spkg
 $WGET $FEMHUB_STANDARD/libgcrypt-1.4.3.p2.spkg
 $WGET $FEMHUB_STANDARD/gnutls-2.2.1.p3.spkg
 $WGET $FEMHUB_STANDARD/python_gnutls-1.1.4.p6.spkg
-$WGET $SAGE_STANDARD/jquery-1.2.6.p0.spkg
-$WGET $SAGE_STANDARD/jqueryui-1.6r807svn.p0.spkg
-$WGET $SAGE_STANDARD/jsmath-3.6b.p1.spkg
-$WGET $SAGE_STANDARD/tinyMCE-3.2.4.1.spkg
 $WGET $SAGE_STANDARD/docutils-0.5.p0.spkg
 $WGET $SAGE_STANDARD/pygments-0.11.1.p0.spkg
 $WGET $SAGE_STANDARD/sphinx-0.5.1.p0.spkg
