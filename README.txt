@@ -9,7 +9,7 @@ from the command line and you are good to go.
 
 $ ./femhub
 ----------------------------------------------------------------------
-| Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-18 |
+| Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
 | Type notebook() for the GUI.                                       |
 ----------------------------------------------------------------------
 In [1]: notebook()
@@ -20,6 +20,19 @@ If you download the sources, please read below on how to build Femhub and work a
 
 If you have questions, do not hesitate to email the FEMhub mailing list http://groups.google.com/group/femhub
 
+-----------------------------------------------------------------------------------
+    FEMhub was developed by the hp-FEM group at the Department of Mathematics,
+    University of Nevada, Reno.
+    http://www.femhub.org
+    http://www.hpfem.org
+
+    FEMhub Notebook is based on the Sage Notebook.
+    Sage: Copyright (C) 2006, 2007, 2008, 2009 William Stein
+    Distributed under the terms of the GNU General Public License (GPL)
+    http://www.sagemath.org
+
+    AUTHORS: There are over 125 people who have contributed code to Sage and FEMhub.
+    In many cases documentation for modules and functions list the authors.
 -----------------------------------------------------------------------------------
 
 QUICK INSTRUCTIONS TO BUILD FROM SOURCE (see below for more detailed instructions):
