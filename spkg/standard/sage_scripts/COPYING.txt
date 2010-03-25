@@ -1,9 +1,12 @@
-This file is about the copyright on Sage and all included components. 
+This file is about the copyright on FEMhub and all included components.
  
-Sage is a compilation both of original Python, C, C++, and Cython code,
+FEMhub is a compilation both of original Python, C, C++, and Cython code,
 and of existing free mathematics-related software.  All standard
-components of sage (those included in sage-*.tar) are licensed under a
+components of FEMhub are licensed under a
 free open source license as defined at http://www.opensource.org/.
+
+The build system as well as some packages are taken from the Sage project.
+See each package for its respective license.
 
 Every component of Sage except jsmath is licensed under a GPL v2 (or
 later) compatible license.
