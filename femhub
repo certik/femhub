@@ -22,8 +22,8 @@ if [ "$SAGE_ROOT" = "....." ];  then
 
     if [ ! -f "$SAGE_ROOT/local/bin/sage-sage" ]; then
 	echo "**************************************************************************"
-	echo "You must compile Sage first using 'make' in the Sage root directory." >&2
-	echo "(If you have already compiled Sage, you must set the SAGE_ROOT variable in "
+	echo "You must compile FEMhub first using 'make' in the FEMhub root directory." >&2
+	echo "(If you have already compiled FEMhub, you must set the SAGE_ROOT variable in "
 	echo "the file '$0')".
 	echo "**************************************************************************"
 	exit 1
@@ -41,5 +41,5 @@ export CUR
 # This should kill all children of this process too.
 # Uncomment this if you have trouble with orphans. 
 # Note that you'll get an annoying "Killed" message
-# whenver Sage exists. 
+# whenver FEMhub exists. 
 # kill -9 -$$ 

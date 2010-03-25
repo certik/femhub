@@ -28,7 +28,7 @@ cd $SAGE_ROOT/spkg/
 
 # Something went very wrong.
 if [ $? -ne 0 ]; then
-    echo "Error installing Sage!"
+    echo "Error installing FEMhub!"
     exit 1
 fi
 

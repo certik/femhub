@@ -90,7 +90,7 @@ if [ $PKG_SRC == "noclobber" ]; then
     echo "* WARNING WARNING WARNING WARNING WARNING WARNING WARNING *"
     echo "*                                                         *"
     echo "* noclobber is set in .bashrc and/or .bash_profile - you  *"
-    echo "* should consider disabling it. The Sage install should   *"
+    echo "* should consider disabling it. The FEMhub install should   *"
     echo "* continue to work, so don't worry about it too much.     *"
     echo "*                                                         *"
     echo "* WARNING WARNING WARNING WARNING WARNING WARNING WARNING *"
@@ -270,7 +270,7 @@ if [ $? -eq 0 ]; then
    echo "PACKAGE NAME: $PKG_NAME" > "$PKG_NAME"
    echo "INSTALL DATE: `date`" >> "$PKG_NAME"
    echo "UNAME: `uname -a`" >> "$PKG_NAME"
-   echo "Sage VERSION: `grep Sage $SAGE_LOCAL/bin/sage-banner`" >> "$PKG_NAME"
+   echo "FEMhub VERSION: `grep FEMhub $SAGE_LOCAL/bin/sage-banner`" >> "$PKG_NAME"
    echo "Successfully installed $PKG_NAME"
 
    cd $BASEDIR
@@ -330,7 +330,7 @@ else
 fi
 
 
-echo "Making Sage/Python scripts relocatable..."
+echo "Making FEMhub/Python scripts relocatable..."
 
 cd "$SAGE_LOCAL"/bin
 ./sage-make_relative

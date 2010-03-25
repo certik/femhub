@@ -12,7 +12,7 @@ if [ -d "$TARGET"/.hg ]; then
    hg ci 
    hg pull "$CUR"
    hg merge tip
-   hg ci -m "Check-in during upgrade of Sage."
+   hg ci -m "Check-in during upgrade of FEMhub."
    hg update
 
 else

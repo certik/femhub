@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ####################################################################
-# Run the Sage doctest system on the collection of files and
+# Run the FEMhub doctest system on the collection of files and
 # directories specified on the command line.
 
 ####################################################################

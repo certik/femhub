@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ####################################################################
-# Doctest a single Python or Cython file, using Sage's custom
+# Doctest a single Python or Cython file, using FEMhub's custom
 # doctesting tags and framework built on top of Python's doctest
 # functionality.  In particular, this allows for sage: prompts,
 # preparsing, optional doctests, random behavior, etc. 
@@ -329,7 +329,7 @@ def extract_doc(file_name, library_code=False):
         file_name -- string; name of the file to extract the
                      docstrings from.
         library_code -- bool (default: False); if True, this file is
-                    Sage core library code, so we do not import it,
+                    FEMhub core library code, so we do not import it,
                     and do doctest in a temporary directory.
     """
     a = os.path.abspath(file_name)

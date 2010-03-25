@@ -100,7 +100,7 @@ def get_sage_version():
 
     match = re.search('(\d+\.)*(\d+)',sage_version)
     if match is None:
-        error("Cannot determine Sage version number from"+sage_version)
+        error("Cannot determine FEMhub version number from"+sage_version)
     else:
         version = match.group()
     return version
@@ -236,7 +236,7 @@ def update(update_from_sage_main = False):
     system(hg+" qpop -a")
 
     if update_from_sage_main:
-        info("Pulling the new version of Sage from the local main repository")
+        info("Pulling the new version of FEMhub from the local main repository")
         system(hg+" pull -u ../sage-main")
 
     info("Pulling the new version of the patches from the patch server")
@@ -314,7 +314,7 @@ elif args[0] == "install":
     system(hg+" qpush -a")
     info("Switching to %s branch and rebuilding"%branch)
     system(sage+" -b %s"%branch)
-    info("Finished installation of Sage-combinat patches!")
+    info("Finished installation of FEMhub-combinat patches!")
 
 elif args[0] == "update":
     update()
@@ -324,7 +324,7 @@ elif args[0] == "upgrade":
     check_for_no_diff()
     info("Upgrading sage")
     system(sage+" -upgrade")
-    # Update Sage's version to apply the appropriate patches!
+    # Update FEMhub's version to apply the appropriate patches!
     # (we assume sage's root has not changed)
     sage_version = get_sage_version()
     update(update_from_sage_main = True)

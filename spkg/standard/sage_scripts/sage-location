@@ -9,7 +9,7 @@ flags_file    = '%s/local/lib/sage-flags.txt'%SAGE_ROOT
 
 def install_moved():
     """
-    Check whether or not this install of Sage moved.  If it hasn't
+    Check whether or not this install of FEMhub moved.  If it hasn't
     moved make sure the location and processor flags files are
     written.
     """
@@ -94,8 +94,8 @@ def check_processor_flags():
     if not X.issubset(Y):
         print ""
         print "*"*70
-        print "WARNING!  This Sage install was built on a machine that supports"
-        print "instructions that are not available on this computer.  Sage will"
+        print "WARNING!  This FEMhub install was built on a machine that supports"
+        print "instructions that are not available on this computer.  FEMhub will"
         print "likely fail with ILLEGAL INSTRUCTION errors! The following processor"
         print "flags were on the build machine but are not on this computer:\n"
         for a in X:
@@ -104,7 +104,7 @@ def check_processor_flags():
         print ""
         print ""
         print "Email http://groups.google.com/group/sage-support for help."
-        print "To remove this warning and make Sage start, just delete"
+        print "To remove this warning and make FEMhub start, just delete"
         print "     %s"%flags_file 
         print "*"*70
         sys.exit(1)
@@ -146,7 +146,7 @@ def update_hardcoded_files(path):
         O.write(SAGE_ROOT)
         O.close()        
 
-# Note that due to updating setuptools to 0.6c9 in Sage 3.3 we no longer need to rewrite 
+# Note that due to updating setuptools to 0.6c9 in FEMhub 3.3 we no longer need to rewrite 
 # site-packages in easy-install.pth
 def update_easy_install():
     """
@@ -173,7 +173,7 @@ if __name__ ==  '__main__':
     check_processor_flags()
     t, R = install_moved()
     if t:
-        print "The Sage install tree may have moved."
+        print "The FEMhub install tree may have moved."
         print "Regenerating Python.pyo and .pyc files that hardcode the install PATH"
         print "(please wait at most a few minutes)..."
         print "Do not interrupt this."

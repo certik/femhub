@@ -4,7 +4,7 @@ import os, sys, socket
 
 print open(os.environ['SAGE_ROOT'] + '/local/bin/sage-banner').read()
 
-print "Please wait while the Distributed Sage server starts..."
+print "Please wait while the Distributed FEMhub server starts..."
 
 from sage.dsage.all import dsage
 

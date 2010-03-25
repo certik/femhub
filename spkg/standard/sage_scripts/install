@@ -413,7 +413,7 @@ time make -f standard/deps $1
 
 # added by Burcin Erocal, see trac #6295.
 if [ $? -ne 0 ]; then
-    echo "Error building Sage."
+    echo "Error building FEMhub."
     exit 1
 fi
 
@@ -430,7 +430,7 @@ if [ "$1" = "all" -a $? = 0 ]; then
     echo "in a standard bin directory, start sage and"
     echo "type something like"
     echo "   sage: install_scripts('/usr/local/bin')"
-    echo "at the Sage command prompt."
+    echo "at the FEMhub command prompt."
     echo ""
-    echo "Sage build/upgrade complete!"
+    echo "FEMhub build/upgrade complete!"
 fi

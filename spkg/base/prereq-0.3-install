@@ -16,7 +16,7 @@ echo "Machine: `uname -a`"
 
 if [ "$SAGE_PORT" = "" ]; then
    if [ `uname` = "SunOS" -a "`uname -p`" != "sparc" ]; then
-      echo "Building or using Sage on non-Sparc Solaris is tricky and not supported"
+      echo "Building or using FEMhub on non-Sparc Solaris is tricky and not supported"
       echo "at the moment. It is possible, but you should be well aware that"
       echo "some things do not work. To get past this message export the"
       echo "variable \$SAGE_PORT to something non-empty. Support for Solaris"
@@ -130,10 +130,10 @@ fi
 
 #####################################################################################
 # (OS X only)
-# Sage will probably not build at all if either Fink or MacPorts can be found, and 
+# FEMhub will probably not build at all if either Fink or MacPorts can be found, and 
 # the error messages can be extremely confusing.  Even if it does build, the product
 # will probably be wrong.  This runs a basic check to find them.
-# Once the Sage build process is perfected, this won't be necessary.
+# Once the FEMhub build process is perfected, this won't be necessary.
 # dphilp 15/9/2008
 #####################################################################################
 
@@ -157,7 +157,8 @@ if [ `uname` = "Darwin" ] ; then
     echo ""
     echo "*********************************************************"
     echo ""
-    echo "Found either MacPorts or Fink in your path, which potentially wrecks the Sage build process."
+    echo "Found either MacPorts or Fink in your path, which potentially wrecks
+    the FEMhub build process."
     if [ "$SAGE_COMPILE_DESPITE_PORTS_AND_FINK" ] ; then
       echo "Continuing because SAGE_COMPILE_DESPITE_PORTS_AND_FINK is set."
       echo ""
@@ -167,7 +168,7 @@ if [ `uname` = "Darwin" ] ; then
       echo "You should make sure MacPorts and Fink cannot be found.  Either:"
       echo "(1) rename /opt/local and /sw, or"
       echo "(2) change PATH and DYLD_LIBRARY_PATH"
-      echo "(Once Sage is built, you can restore them.)"
+      echo "(Once FEMhub is built, you can restore them.)"
       echo ""
       echo "*********************************************************"
       echo ""

@@ -9,7 +9,7 @@
 import platform, string, os, re, getopt, sys
 
 def usage() :
-  print '''Script for finding all external libraries used by Sage. (OS X only.)
+  print '''Script for finding all external libraries used by FEMhub. (OS X only.)
 
 Usage options, use one only:
   -o list_name    create a list of linked external libraries

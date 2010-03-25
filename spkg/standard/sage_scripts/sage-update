@@ -26,7 +26,7 @@ SPKG_ROOT="%s/spkg/"%os.environ["SAGE_ROOT"]
 # spkg's.  This defaults to SAGE_SERVER, but can be overriden by the
 # first command line argument.  
 if len(sys.argv) > 1:
-    # Server given on command line, typically a URL to a specific Sage install.
+    # Server given on command line, typically a URL to a specific FEMhub install.
     PKG_SERVER = sys.argv[1]
 else:
     # Default server: specified by environment variable.
@@ -172,7 +172,7 @@ def do_update():
     print '  ' + ' '.join([x.rstrip('.spkg') for x in to_download])
     # Make sure the user really wants to upgrade.  After all upgrading,
     # is not guaranteed to work, yet.  This is for "power users".
-    print "* WARNING: This is a source-based upgrade, which could take hours, fail and render your Sage install useless!!"
+    print "* WARNING: This is a source-based upgrade, which could take hours, fail and render your FEMhub install useless!!"
     for F in os.listdir("."):
         if os.path.isfile(F) and 'Placeholder spkg file' in open(F).readline():
             print "* This is a binary install, so upgrading in place is *not* recommended unless you are an expert."

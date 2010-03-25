@@ -26,11 +26,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # uses system command 'file' to print out
-# types of all files in (Sage) source tar
+# types of all files in (FEMhub) source tar
 #
 # prints "DONE" when finished
 #
-# takes about 15 CPU minutes to go through Sage
+# takes about 15 CPU minutes to go through FEMhub
 #
 # version 20080118
 #

@@ -7,10 +7,10 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-echo "Testing that Sage starts..."
-sage -c "print 'Yes, Sage starts.'"
+echo "Testing that FEMhub starts..."
+sage -c "print 'Yes, FEMhub starts.'"
 
 if [ $? -ne 0 ]; then
-    echo "Sage failed to startup." 
+    echo "FEMhub failed to startup." 
     exit 1
 fi

@@ -22,14 +22,14 @@ if sys.argv[1] == '-r':
 branch = 'sage-%s'%sys.argv[1]
 
 if os.path.isdir(branch):
-    print "Sage library branch %s already exists so I can't clone to it."%branch
+    print "FEMhub library branch %s already exists so I can't clone to it."%branch
     sys.exit(1)
 
 if not os.path.isdir('sage'):
-    print "No Sage branch currently selected.  Use 'sage -b [branch_name]'."
+    print "No FEMhub branch currently selected.  Use 'sage -b [branch_name]'."
     sys.exit(1)
 
-print "Now cloning the current Sage library branch..."
+print "Now cloning the current FEMhub library branch..."
 cmd = 'hg clone %s sage %s '%(' '.join(sys.argv[2:]), branch)
 print cmd
 if os.system(cmd):
@@ -96,12 +96,12 @@ except:
    cmd = 'sage -b %s'%sys.argv[1]
 print cmd
 if os.system(cmd):
-    print "Error building Sage"
+    print "Error building FEMhub"
 
 
 print "*** WARNING ***"
 print "If you are cloning a previous revision or have uncommitted changes to"
 print "cython files do "
 print "    sage -ba"
-print "Otherwise Sage might build using the wrong .c files !!"
+print "Otherwise FEMhub might build using the wrong .c files !!"
 

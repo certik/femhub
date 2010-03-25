@@ -7,11 +7,11 @@ usage() {
     echo " Optional arguments:"
     echo "  -coverage <files>  -- give info about doctest coverage of files"
     echo "  -h            -- print this help message"
-    echo "  -v, -version  -- print the Sage version"
-    echo "  -notebook [options] -- start the Sage notebook (options are"
-    echo "                   the same as to the notebook command in Sage)"
-    echo "  -inotebook [options] -- start the *insecure* Sage notebook "
-    echo "  -i [packages] -- install the given Sage packages"
+    echo "  -v, -version  -- print the FEMhub version"
+    echo "  -notebook [options] -- start the FEMhub notebook (options are"
+    echo "                   the same as to the notebook command in FEMhub)"
+    echo "  -inotebook [options] -- start the *insecure* FEMhub notebook "
+    echo "  -i [packages] -- install the given FEMhub packages"
     echo "  -min ...      -- do not populate global namespace (must be first option)"
     echo "  -optional     -- list all optional packages that can be downloaded"
     echo "  -t <files|dir>-- test examples in .py, .pyx, .sage or .tex files"
@@ -23,7 +23,7 @@ usage() {
     echo "  -advanced     -- list more options"
     echo "  file.[sage|py|spyx] [options] -- run given .sage, .py or .spyx files"
     echo "  -c cmd        -- Evaluates cmd as sage code"
-    echo "  -docbuild [lang/]<document> html|pdf|... -- Builds the Sage documentation"
+    echo "  -docbuild [lang/]<document> html|pdf|... -- Builds the FEMhub documentation"
     exit 1
 }
 
@@ -32,54 +32,54 @@ usage_advanced() {
     cat "$SAGE_LOCAL/bin/sage-banner" | grep -i "version" | sed "s/\| //" | sed "s/ *\|//"
     echo "----------------------------------------------------------------------"
     echo "  no options below    -- start interactive session, passing options to ipython"
-    echo "  filename.sage -- run the given file using Sage"
-    echo "  -b [branch]   -- switch to and build Sage branch in devel/sage-branch"
-    echo "  -br [branch]  -- switch to, build, and run Sage branch in devel/sage-branch"
-    echo "  -ba [branch]  -- switch to, rebuild all Cython code, and run Sage branch in devel/sage-branch"
+    echo "  filename.sage -- run the given file using FEMhub"
+    echo "  -b [branch]   -- switch to and build FEMhub branch in devel/sage-branch"
+    echo "  -br [branch]  -- switch to, build, and run FEMhub branch in devel/sage-branch"
+    echo "  -ba [branch]  -- switch to, rebuild all Cython code, and run FEMhub branch in devel/sage-branch"
     echo "  -ba-force [branch] -- same as -ba, but don't query before rebuilding"
-    echo "  -bdist VER    -- build a binary distribution of Sage"
-    echo "  -branch       -- print the current Sage branch"
-    echo "  -cleaner      -- run the Sage cleaner"
-    echo "  -clone [new branch] -- clone and run a new branch of the Sage library from current branch"
+    echo "  -bdist VER    -- build a binary distribution of FEMhub"
+    echo "  -branch       -- print the current FEMhub branch"
+    echo "  -cleaner      -- run the FEMhub cleaner"
+    echo "  -clone [new branch] -- clone and run a new branch of the FEMhub library from current branch"
     echo "  -coverage <files>  -- give info about doctest coverage of files"
-    echo "  -coverageall  -- give summary info about doctest coverage of all files in the Sage library"
+    echo "  -coverageall  -- give summary info about doctest coverage of all files in the FEMhub library"
     echo "  -crap sage-x.y.z.tar -- detect suspicious garbage in sage source distro"
     echo "  -ecl [...]    -- run Common Lisp"
     echo "  -experimental -- list all experimental packages that can be downloaded"
-    echo "  -gap <..>     -- run Sage's Gap with given arguments"
-    echo "  -gdb          -- run Sage under the control of gdb"
-    echo "  -gdb-ipython  -- run Sage's Ipython under the control of gdb"
-    echo "  -gp <..>      -- run Sage's GP (Pari) with given arguments"
+    echo "  -gap <..>     -- run FEMhub's Gap with given arguments"
+    echo "  -gdb          -- run FEMhub under the control of gdb"
+    echo "  -gdb-ipython  -- run FEMhub's Ipython under the control of gdb"
+    echo "  -gp <..>      -- run FEMhub's GP (Pari) with given arguments"
     echo "  -combinat <...> -- run sage-combinat patch management script"
-    echo "  -f [packages] -- force build of the given Sage package (even if already installed)"
-    echo "  -grep <string>-- grep through all the Sage library code for string"
-    echo "  -grepdoc <string>-- grep through all the Sage documentation for string"
+    echo "  -f [packages] -- force build of the given FEMhub package (even if already installed)"
+    echo "  -grep <string>-- grep through all the FEMhub library code for string"
+    echo "  -grepdoc <string>-- grep through all the FEMhub documentation for string"
     echo "  -h, -?        -- print help message"
-    echo "  -i [packages] -- install the given Sage packages"
+    echo "  -i [packages] -- install the given FEMhub packages"
     echo "                   if no packages given, print a list of all installed"
-    echo "  -i -s [packages] -- install the given Sage packages, not deleting their spkg/build directories."
-    echo "  -ipython <...> -- run Sage's Ipython using the default environment (not Sage), passing additional options to Ipython"
-    echo "  -kash <..>    -- run Sage's Kash with given arguments"
-    #echo "  -ldist VER    -- build a library Sage distribution (for install into existing Python)"
-    echo "  -lisp [...]   -- run Lisp interpreter included with Sage"
+    echo "  -i -s [packages] -- install the given FEMhub packages, not deleting their spkg/build directories."
+    echo "  -ipython <...> -- run FEMhub's Ipython using the default environment (not FEMhub), passing additional options to Ipython"
+    echo "  -kash <..>    -- run FEMhub's Kash with given arguments"
+    #echo "  -ldist VER    -- build a library FEMhub distribution (for install into existing Python)"
+    echo "  -lisp [...]   -- run Lisp interpreter included with FEMhub"
     echo "  -log          -- add entry to <SAGE_ROOT>/changelog.txt"
-    echo "  -maxima <..>  -- run Sage's Maxima with given arguments"
-    echo "  -M2 <..>      -- run Sage's Macaulay2 with given arguments"
-    echo "  -merge        -- run Sage's automatic merge and test script"
+    echo "  -maxima <..>  -- run FEMhub's Maxima with given arguments"
+    echo "  -M2 <..>      -- run FEMhub's Macaulay2 with given arguments"
+    echo "  -merge        -- run FEMhub's automatic merge and test script"
     echo "  -min ...      -- do not populate global namespace (must be first option)"
-    echo "  -mwrank <..>  -- run Sage's mwrank with given arguments"
+    echo "  -mwrank <..>  -- run FEMhub's mwrank with given arguments"
     echo "  -np           -- run with no output prompts (useful for making doctests)"
     echo "  -optional     -- list all optional packages that can be downloaded"
-    echo "  -pkg <dir>    -- create Sage package dir.spkg from a given directory (bzip2 compression)"
-    echo "  -pkg_nc <dir> -- create Sage package dir.spkg from a given directory (no compression)"
+    echo "  -pkg <dir>    -- create FEMhub package dir.spkg from a given directory (bzip2 compression)"
+    echo "  -pkg_nc <dir> -- create FEMhub package dir.spkg from a given directory (no compression)"
     echo "  -preparse <file.sage> -- produce corresponding file.sage.py "
     echo "  -python       -- run the python interpreter"
     echo "  -q            -- quiet; start with no banner"
-    echo "  -root         -- print the Sage root directory"
-    echo "  -scons <..>   -- run Sage's scons"
-    echo "  -sdist VER    -- build a source distribution of Sage"
-    echo "  -sh           -- run \$SHELL ($SHELL) with Sage environment variables set"
-    echo "  -singular <..>-- run Sage's singular with given arguments"
+    echo "  -root         -- print the FEMhub root directory"
+    echo "  -scons <..>   -- run FEMhub's scons"
+    echo "  -sdist VER    -- build a source distribution of FEMhub"
+    echo "  -sh           -- run \$SHELL ($SHELL) with FEMhub environment variables set"
+    echo "  -singular <..>-- run FEMhub's singular with given arguments"
     echo "  -standard     -- list all standard packages that can be downloaded"
     echo "  -startuptime  -- display how long each component of sage takes to startup"
     echo "  -twistd <..>  -- run Twisted server"
@@ -91,27 +91,27 @@ usage_advanced() {
     echo "                      -only-optional -- only run doctests with #optional <nonempty subset of tags>"
     echo "                      -rand[=seed] -- randomize order of tests"
     echo "  -tnew ...     -- like -t above, but only tests files modified since last commit"
-    echo "  -testall      -- test all source, docs, and examples in your Sage distro."
-    #echo "  -update       -- download latest non-optional Sage packages (do not build them)"
-    #echo "  -update-build -- build and install all downloaded non-optional Sage packages"
+    echo "  -testall      -- test all source, docs, and examples in your FEMhub distro."
+    #echo "  -update       -- download latest non-optional FEMhub packages (do not build them)"
+    #echo "  -update-build -- build and install all downloaded non-optional FEMhub packages"
     echo "  -upgrade [url]-- download, build and install standard packages from "
     echo "                   given url (if not given, uses SAGE_SERVER)"
     echo "  -gthread, -qthread, -q4thread, -wthread, -pylab"
     echo "                -- pass the option through to ipython"
     echo "  -valgrind     -- this is an alias for -memcheck"
-    echo "  -memcheck     -- run Sage under the control of valgrind using the memcheck tool."
+    echo "  -memcheck     -- run FEMhub under the control of valgrind using the memcheck tool."
     echo "                   The log files can be found in $HOME/.sage/ Those are named "
     echo "                   sage-memcheck.PID."
-    echo "  -massif       -- run Sage under the control of valgrind using the massif tool."
+    echo "  -massif       -- run FEMhub under the control of valgrind using the massif tool."
     echo "                   The log files can be found in $HOME/.sage/ Those are named "
     echo "                   sage-massif.PID."
-    echo "  -cachegrind   -- run Sage under the control of valgrind using the cachegrind tool."
+    echo "  -cachegrind   -- run FEMhub under the control of valgrind using the cachegrind tool."
     echo "                   The log files can be found in $HOME/.sage/ Those are named "
     echo "                   sage-cachegrind.PID."
-    echo "  -callgrind    -- run Sage under the control of valgrind using the callgrind tool."
+    echo "  -callgrind    -- run FEMhub under the control of valgrind using the callgrind tool."
     echo "                   The log files can be found in $HOME/.sage/ Those are named "
     echo "                   sage-callgrind.PID."
-    echo "  -omega        -- run Sage under the control of valgrind using the omega tool."
+    echo "  -omega        -- run FEMhub under the control of valgrind using the omega tool."
     echo "                   The log files can be found in $HOME/.sage/ Those are named "
     echo "                   sage-omega.PID."
     echo ""
@@ -186,7 +186,7 @@ sage_setup() {
 ########################################################
 # Regarding printing the branch below:
 #   We print a message with the library branch that
-#   Sage is currently being run from. If they are using
+#   FEMhub is currently being run from. If they are using
 #   main branch, we print nothing, otherwise users get
 #   very confused about what branch they are using. 
 ########################################################
@@ -224,7 +224,7 @@ if [ $1 = '-min' -o $1 = '--min' ]; then
 fi
 
 #####################################################################
-# Report information about the Sage environment
+# Report information about the FEMhub environment
 #####################################################################
 
 if [ $1 = '-v' -o $1 = '-version' -o $1 = '--version' ]; then
@@ -243,7 +243,7 @@ if [ $1 = '-branch'  -o $1 = '--branch' ]; then
 fi
 
 #####################################################################
-# Run Sage's versions of the standard Algebra/Geometry etc. software
+# Run FEMhub's versions of the standard Algebra/Geometry etc. software
 #####################################################################
 
 if [ $1 = '-axiom' -o $1 = '--axiom' ]; then
@@ -373,9 +373,9 @@ if [ $1 = '-sh'  -o $1 = '--sh' ]; then
     cd "$CUR"
     shift
     echo ""
-    echo "Starting subshell with Sage environment variables set."
+    echo "Starting subshell with FEMhub environment variables set."
     echo "Be sure to exit when you are done and do not do anything"
-    echo "with other copies of Sage!"
+    echo "with other copies of FEMhub!"
     echo ""
     SHELL_NAME=`basename $SHELL`
     if [ $# -eq 0 ]; then
@@ -409,13 +409,13 @@ if [ $1 = '-sh'  -o $1 = '--sh' ]; then
 		;;
 	    *)
 		echo "Unknown shell: $SHELL!"
-		echo "Exiting Sage."
+		echo "Exiting FEMhub."
 		exit 1
 	esac
     fi
     $SHELL_NAME $SHELL_OPTS "$@"
 	
-    echo Exited Sage subshell.
+    echo Exited FEMhub subshell.
     exit $?
 fi
 
@@ -441,7 +441,7 @@ if [ $1 = '-hg'  -o $1 = '--hg' ]; then
 fi
 
 if [ $1 = '-hgmerge'  -o $1 = '--hgmerge' ]; then
-    ## NEED in Sage Environment under OS X
+    ## NEED in FEMhub Environment under OS X
     unset LIBRARY_PATH
     unset LD_LIBRARY_PATH
     unset DYLD_LIBRARY_PATH
@@ -478,7 +478,7 @@ if [ $1 = "-coverageall" -o $1 = "--coverageall" ]; then
 fi
 
 #####################################################################
-# Run Distributed Sage
+# Run Distributed FEMhub
 #####################################################################
 
 if [ $1 = "-server" -o $1 = "--server" ]; then
@@ -511,7 +511,7 @@ if [ $1 = "-crap" -o $1 = "--crap" ]; then
 fi
 
 #####################################################################
-# Run Sage's versions of the standard Algebra/Geometry etc. software
+# Run FEMhub's versions of the standard Algebra/Geometry etc. software
 #####################################################################
 
 if [ $1 = "-notebook"  -o $1 = '--notebook' ]; then
@@ -613,7 +613,7 @@ fi
 if [ $1 = '-ba' ]; then
    shift
    echo " *** WARNING *** "
-   echo " You are about to rebuild the entire Sage library."
+   echo " You are about to rebuild the entire FEMhub library."
    echo " This will take a significant amount of time."
    echo -n " Do you want to proceed? [y/n] "
    read CHOICE
@@ -774,7 +774,7 @@ if [ "$1" = '-pkg' -o "$1" = '-spkg' -o $1 = "--pkg" -o $1 = "--spkg" ]; then
    shift
    for PKG in "$@"
    do
-      echo "Creating Sage package $PKG"
+      echo "Creating FEMhub package $PKG"
       sage-pkg "$PKG"
       if [ $? -ne 0 ]; then
          exit 1
@@ -788,7 +788,7 @@ if [ $1 = '-pkg_nc' -o $1 = "--pkg_nc" ]; then
    shift
    for PKG in "$@"
    do
-      echo "Creating Sage package $PKG with no compression"
+      echo "Creating FEMhub package $PKG with no compression"
       sage-pkg-nocompress "$PKG"
       if [ $? -ne 0 ]; then
          exit 1
@@ -846,7 +846,7 @@ fi
 #fi
 
 if [ $1 = '-upgrade' -o $1 = "--upgrade" ]; then
-    # People often move the Sage install right before doing the upgrade, so it's
+    # People often move the FEMhub install right before doing the upgrade, so it's
     # important to fix any path hardcoding issues first, or certain library
     # links will fail.
     "$SAGE_ROOT/local/bin/"sage-location
