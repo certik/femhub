@@ -1,5 +1,15 @@
 #! /bin/sh
 
+# Packages are copied from various sources (see the *_STANDARD variables below).
+# You can also check (and update) the versions on the web:
+#
+# Sage: http://www.sagemath.org/packages/standard
+# SPD: http://code.google.com/p/spdproject/downloads/list
+# FEMhub: http://code.google.com/p/femhub/downloads/list
+#
+# The idea is to copy most of the packages verbatim from Sage, only if we need
+# to do some FEMhub modifications, we provide our own packages.
+
 SAGE_STANDARD=http://www.sagemath.org/packages/standard
 SPD_STANDARD=http://spdproject.googlecode.com/files
 FEMHUB_STANDARD=http://femhub.googlecode.com/files
