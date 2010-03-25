@@ -14,11 +14,15 @@ $ ./femhub
 ----------------------------------------------------------------------
 In [1]: notebook()
 
-and a browser will start with the web notebook. Visit "http://code.google.com/p/femhub/" and follow the instructions there to do your first calculation.
+and a browser will start with the web notebook. Visit
+"http://femhub.org/install.html" and follow the instructions there to do your
+first calculation.
 
-If you download the sources, please read below on how to build Femhub and work around common issues. 
+If you download the sources, please read below on how to build Femhub and work
+around common issues.
 
-If you have questions, do not hesitate to email the FEMhub mailing list http://groups.google.com/group/femhub
+If you have questions, do not hesitate to email the FEMhub mailing list
+http://groups.google.com/group/femhub
 
 -----------------------------------------------------------------------------------
     FEMhub was developed by the hp-FEM group at the Department of Mathematics,
@@ -27,7 +31,8 @@ If you have questions, do not hesitate to email the FEMhub mailing list http://g
     http://www.hpfem.org
 
     FEMhub Notebook is based on the Sage Notebook.
-    Sage: Copyright (C) 2006, 2007, 2008, 2009 William Stein
+    FEMhub build system and some packages are taken from Sage.
+    Sage: Copyright (C) 2006, 2007, 2008, 2009, 2010 William Stein
     Distributed under the terms of the GNU General Public License (GPL)
     http://www.sagemath.org
 
