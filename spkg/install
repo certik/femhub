@@ -427,9 +427,9 @@ fi
 
 if [ "$1" = "all" -a $? = 0 ]; then
     echo "To install gap, gp, singular, etc., scripts"
-    echo "in a standard bin directory, start sage and"
+    echo "in a standard bin directory, start FEMhub and"
     echo "type something like"
-    echo "   sage: install_scripts('/usr/local/bin')"
+    echo "   In [1]: install_scripts('/usr/local/bin')"
     echo "at the FEMhub command prompt."
     echo ""
     echo "FEMhub build/upgrade complete!"
