@@ -37,7 +37,7 @@ fi
 
 # From Kate Minola kate01123@gmail.com
 # On my powerpc-Darwin machine with csh as my shell, when I attempt
-# to build SAGE in the background (i.e., "make &") the build
+# to build FEMhub in the background (i.e., "make &") the build
 # stops when executing 'prereq-0.2-install'.  The reason is
 # that the line
 #     which $1 > /dev/null
@@ -52,8 +52,8 @@ check() {
     if [ $? -ne 0 ]; then
         echo ""
         echo "**************************************************"
-        echo "* SAGE BUILD ERROR: Command '$1' not found        "
-        echo "* You *must* install $1 before building SAGE      "
+        echo "* FEMhub BUILD ERROR: Command '$1' not found        "
+        echo "* You *must* install $1 before building FEMhub      "
         echo "*"
         echo "* In Cygwin use the setup program, available from "
         echo "* www.cygwin.com (run their setup.exe).  In Linux "
@@ -87,7 +87,7 @@ cd "$TARGET"
 
 if [ $? -ne 0 ]; then
     echo " ERROR: You do not have all of the prerequisites needed"
-    echo " to build SAGE from source.  See the errors above."
+    echo " to build FEMhub from source.  See the errors above."
     exit 1
 fi
 
@@ -100,7 +100,7 @@ if [ $? -eq 0 ];  then
     echo "*********************************************************"
     echo ""
     echo " ERROR: You do not have all of the prerequisites needed"
-    echo " to build SAGE from source.  See the errors above.  Also"
+    echo " to build FEMhub from source.  See the errors above.  Also"
     echo " The following programs are missing: "
     echo ""
     grep "missing" Makefile
@@ -115,7 +115,7 @@ if [ $? -eq 0 ];  then
     echo ""
     echo "*********************************************************"
     echo ""
-    echo " ERROR: SAGE will (probably) not build correctly if there is a space"
+    echo " ERROR: FEMhub will (probably) not build correctly if there is a space"
     echo " in the path to the current directory."
     echo ""
     echo " Path = `pwd`"
