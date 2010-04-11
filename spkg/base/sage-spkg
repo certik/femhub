@@ -5,9 +5,9 @@
 # (too fast?) machines, especially for mpfr. 
 
 #######################################################
-#  Install a SAGE package.  This script is
+#  Install a FEMhub package.  This script is
 #  typically invoked by giving the command
-#      sage -i <package name>
+#      FEMhub -i <package name>
 #
 #  A package may assume that the following environment 
 #  variables are defined:
@@ -130,7 +130,7 @@ echo "Machine:"
 uname -a
 
 if [ -f "$INSTALLED/$PKG_NAME" -a $FORCE -eq 0 ]; then
-    echo "sage: $1 is already installed"
+    echo "FEMhub: $1 is already installed"
     touch "$INSTALLED/$PKG_NAME"
     exit 0
 fi
@@ -164,7 +164,7 @@ if [ ! -f "$PKG_SRC" ]; then
     cd optional
     sage-download_package "$1"
     if [ ! -f "$PKG_NAME.spkg" ]; then 
-	echo "sage: Failed to download package $PKG_NAME from $SAGE_SERVER"
+	echo "FEMhub: Failed to download package $PKG_NAME from $SAGE_SERVER"
 	exit 1
     fi
     PKG_SRC="`pwd`/$PKG_NAME.spkg"
@@ -190,7 +190,7 @@ fi
 echo "Finished extraction"
 
 if [ ! -d "$PKG_NAME" ]; then
-   echo "sage: After decompressing the directory $PKG_NAME does not exist"
+   echo "FEMhub: After decompressing the directory $PKG_NAME does not exist"
    echo "This means that the corresponding .spkg needs to be downloaded"
    echo "again."
    sage-download_package "$PKG_NAME"
@@ -283,14 +283,13 @@ if [ $? -eq 0 ]; then
            echo "Error testing package ** $PKG_NAME **"
            echo "*************************************"
            rm -f $SAGE_ROOT/spkg/installed/$PKG_NAME
-           echo "sage: An error occurred while testing $PKG_NAME"
-           echo "Please email sage-devel http://groups.google.com/group/sage-devel"
+           echo "FEMhub: An error occurred while testing $PKG_NAME"
+           echo "Please email to FEMhub mailinglist: femhub@googlegroups.com"
            echo "explaining the problem and send the relevant part of"
            echo "of $SAGE_ROOT/install.log.  Describe your computer, operating system, etc."
            echo "If you want to try to fix the problem, yourself *don't* just cd to"
            echo "`pwd` and type 'make check' or whatever is appropriate."
-           echo "Instead type \"$SAGE_ROOT/sage -sh\""
-           echo "in order to set all environment variables correctly, then cd to"
+           echo "Instead set all environment variables correctly, then cd to"
            echo "`pwd`"
            echo "(When you are done debugging, you can type \"exit\" to leave the"
            echo "subshell.)"
@@ -315,14 +314,13 @@ if [ $? -eq 0 ]; then
 
 else
 
-   echo "sage: An error occurred while installing $PKG_NAME"
-   echo "Please email sage-devel http://groups.google.com/group/sage-devel"
+   echo "FEMhub: An error occurred while installing $PKG_NAME"
+   echo "Please email FEMhub mailinlist: femhub@googlegroups.com"
    echo "explaining the problem and send the relevant part of"
    echo "of $SAGE_ROOT/install.log.  Describe your computer, operating system, etc."
    echo "If you want to try to fix the problem, yourself *don't* just cd to"
    echo "`pwd` and type 'make'."
-   echo "Instead type \"$SAGE_ROOT/sage -sh\""
-   echo "in order to set all environment variables correctly, then cd to"
+   echo "Instead to set all environment variables correctly, then cd to"
    echo "`pwd`"
    echo "(When you are done debugging, you can type \"exit\" to leave the"
    echo "subshell.)"
