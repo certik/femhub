@@ -120,7 +120,7 @@ def setup_worker():
 
 def setup_server(template=None):
     check_dsage_dir()
-    print "Choose a domain name for your SAGE notebook server,"
+    print "Choose a domain name for your FEMhub server,"
     print "for example, localhost (personal use) or %s (to allow outside connections)." % socket.getfqdn()
     dn = raw_input("Domain name [localhost]: ").strip()
     if dn == '':

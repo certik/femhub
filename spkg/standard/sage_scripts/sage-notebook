@@ -7,7 +7,7 @@ print open(os.environ['SAGE_ROOT'] + '/local/bin/sage-banner').read()
 print "Please wait while the FEMhub Notebook server starts..."
 
 #from sage.server.notebook.all import notebook
-from sagenb.notebook.notebook_object import notebook
+from sagenb.notebook.notebook_object import lab
 
 print "..."
 
@@ -30,8 +30,8 @@ def wrap(s):
     return "r'''%s'''"%s
 
 if len(sys.argv) > 1:
-    cmd = "notebook(" + ",".join([wrap(v) for v in sys.argv[1:]]) + ")"    
+    cmd = "lab(" + ",".join([wrap(v) for v in sys.argv[1:]]) + ")"    
     print cmd
     exec cmd
 else:
-    notebook(port=8000)
+    lab(port=8000)

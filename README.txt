@@ -9,12 +9,12 @@ from the command line and you are good to go.
 
 $ ./femhub
 ----------------------------------------------------------------------
-| Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
-| Type notebook() for the GUI.                                       |
+| FEMhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
+| Type lab() for the GUI.                                       |
 ----------------------------------------------------------------------
-In [1]: notebook()
+In [1]: lab()
 
-and a browser will start with the web notebook. Visit
+and a browser will start with the FEMhub online lab. Visit
 "http://femhub.org/install.html" and follow the instructions there to do your
 first calculation.
 

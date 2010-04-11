@@ -10,11 +10,11 @@ from the command line and you are good to go.
 $ ./femhub
 ----------------------------------------------------------------------
 | Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
-| Type notebook() for the GUI.                                       |
+| Type lab() for the GUI.                                       |
 ----------------------------------------------------------------------
-In [1]: notebook()
+In [1]: lab()
 
-and a browser will start with the web notebook. Visit
+and a browser will start with the online lab. Visit
 "http://femhub.org/install.html" and follow the instructions there to do your
 first calculation.
 
@@ -65,7 +65,7 @@ QUICK INSTRUCTIONS TO BUILD FROM SOURCE (see below for more detailed instruction
    2. Extract the tarball:
           tar xf femhub-0.9.8-*.tar
 
-   3. cd into the sage directory and type make:
+   3. cd into the  femhub directory and type make:
           cd femhub-0.9.8
           make
      You can take advantage of several cores on your computer by executing
