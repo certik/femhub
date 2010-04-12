@@ -32,7 +32,7 @@ $WGET $SAGE_STANDARD/cython-0.12.1.spkg
 # notebook:
 $WGET $SPD_STANDARD/pexpect-2.0.p3.spkg
 $WGET $SAGE_STANDARD/twisted-9.0.p2.spkg
-$WGET $SAGE_STANDARD/setuptools-0.6c9.p0.spkg
+$WGET $FEMHUB_STANDARD/setuptools-0.6c11.p0.spkg
 $WGET $SAGE_STANDARD/jinja-1.2.p0.spkg
 $WGET $FEMHUB_STANDARD/libgpg_error-1.6.p2.spkg
 $WGET $FEMHUB_STANDARD/libgcrypt-1.4.3.p2.spkg
@@ -67,5 +67,5 @@ $WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
 $WGET $FEMHUB_STANDARD/sfepy-2009.3.spkg
 $WGET $FEMHUB_STANDARD/hermes2d-9bbfd39.p1.spkg
 $WGET $FEMHUB_STANDARD/pysparse-1.1-6301cea.spkg
-$WGET $FEMHUB_STANDARD/fipy-2.1-eb4aacf.spkg
+$WGET $FEMHUB_STANDARD/fipy-2.1-51f1360.spkg
 $WGET $FEMHUB_STANDARD/libfemhub-78c07cb.spkg
