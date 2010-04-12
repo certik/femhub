@@ -10,7 +10,7 @@ from the command line and you are good to go.
 $ ./femhub
 ----------------------------------------------------------------------
 | Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
-| Type lab() for the GUI.                                       |
+| Type lab() for the GUI.                                            |
 ----------------------------------------------------------------------
 In [1]: lab()
 

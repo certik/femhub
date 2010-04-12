@@ -66,3 +66,5 @@ $WGET $FEMHUB_STANDARD/pyparsing-1.5.2.spkg
 $WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
 $WGET $FEMHUB_STANDARD/sfepy-2009.3.spkg
 $WGET $FEMHUB_STANDARD/hermes2d-1fe945d.spkg
+$WGET $FEMHUB_STANDARD/pysparse-1.1-6301cea.spkg
+$WGET $FEMHUB_STANDARD/fipy-2.1-eb4aacf.spkg

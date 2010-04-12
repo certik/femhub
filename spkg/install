@@ -406,6 +406,12 @@ export SFEPY
 HERMES2D=`$newest hermes2d`
 export HERMES2D
 
+FIPY=`$newest fipy`
+export FIPY
+
+PYSPARSE=`$newest pysparse`
+export PYSPARSE
+
 ########
 # NOW do the actual build
 
