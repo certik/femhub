@@ -38,6 +38,9 @@ all: $(INST)/$(SAGE_SCRIPTS) $(INST)/$(SAGE) \
      $(INST)/$(PYPARSING) \
      $(INST)/$(SWIG) \
      $(INST)/$(SFEPY) \
+     $(INST)/$(PYSPARSE) \
+     $(INST)/$(LIBFEMHUB) \
+     $(INST)/$(FIPY) \
      $(INST)/$(HERMES2D)
 
 
@@ -198,6 +201,15 @@ $(INST)/$(TWISTED): $(INST)/$(PYTHON) $(INST)/$(PYTHON_GNUTLS)
 
 $(INST)/$(SPD_NOTEBOOK): $(INST)/$(PYTHON) $(INST)/$(TWISTED)
 	$(SAGE_SPKG) $(SPD_NOTEBOOK) 2>&1
+
+$(INST)/$(FIPY): $(INST)/$(PYTHON)
+	$(SAGE_SPKG) $(FIPY) 2>&1
+
+$(INST)/$(PYSPARSE): $(INST)/$(PYTHON)
+	$(SAGE_SPKG) $(PYSPARSE) 2>&1
+
+$(INST)/$(LIBFEMHUB): $(INST)/$(PYTHON)
+	$(SAGE_SPKG) $(LIBFEMHUB) 2>&1
 
 $(INST)/$(CMAKE):
 	$(SAGE_SPKG) $(CMAKE) 2>&1

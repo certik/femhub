@@ -347,7 +347,7 @@ export SETUPTOOLS
 SINGULAR=`$newest singular`
 export SINGULAR
 
-SPD_NOTEBOOK=`$newest femhub_notebook`
+SPD_NOTEBOOK=`$newest femhub-lab`
 export SPD_NOTEBOOK
 
 SYMPOW=`$newest sympow`
@@ -411,6 +411,9 @@ export FIPY
 
 PYSPARSE=`$newest pysparse`
 export PYSPARSE
+
+LIBFEMHUB=`$newest libfemhub`
+export LIBFEMHUB
 
 ########
 # NOW do the actual build
