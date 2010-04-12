@@ -41,7 +41,7 @@ $WGET $SAGE_STANDARD/python_gnutls-1.1.4.p7.spkg
 $WGET $SAGE_STANDARD/docutils-0.5.p0.spkg
 $WGET $SAGE_STANDARD/pygments-0.11.1.p0.spkg
 $WGET $SAGE_STANDARD/sphinx-0.6.3.p4.spkg
-$WGET $FEMHUB_STANDARD/femhub_notebook-d3ee8f8.spkg
+$WGET $FEMHUB_STANDARD/femhub-lab-ec86f96.spkg
 
 # numpy, scipy matplotlib and sympy
 $WGET $FEMHUB_STANDARD/fortran-20071120.p8.spkg
@@ -65,6 +65,7 @@ $WGET $FEMHUB_STANDARD/mayavi-3.3.1.p2.spkg
 $WGET $FEMHUB_STANDARD/pyparsing-1.5.2.spkg
 $WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
 $WGET $FEMHUB_STANDARD/sfepy-2009.3.spkg
-$WGET $FEMHUB_STANDARD/hermes2d-1fe945d.spkg
+$WGET $FEMHUB_STANDARD/hermes2d-9bbfd39.spkg
 $WGET $FEMHUB_STANDARD/pysparse-1.1-6301cea.spkg
 $WGET $FEMHUB_STANDARD/fipy-2.1-eb4aacf.spkg
+$WGET $FEMHUB_STANDARD/libfemhub-3e8eedf.spkg
