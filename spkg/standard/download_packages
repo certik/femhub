@@ -41,7 +41,7 @@ $WGET $SAGE_STANDARD/python_gnutls-1.1.4.p7.spkg
 $WGET $SAGE_STANDARD/docutils-0.5.p0.spkg
 $WGET $SAGE_STANDARD/pygments-0.11.1.p0.spkg
 $WGET $SAGE_STANDARD/sphinx-0.6.3.p4.spkg
-$WGET $FEMHUB_STANDARD/femhub-lab-4467109.spkg
+$WGET $FEMHUB_STANDARD/femhub-lab-0a6225f.spkg
 
 # numpy, scipy matplotlib and sympy
 $WGET $FEMHUB_STANDARD/fortran-20071120.p8.spkg
