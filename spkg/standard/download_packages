@@ -68,4 +68,4 @@ $WGET $FEMHUB_STANDARD/sfepy-2009.3.spkg
 $WGET $FEMHUB_STANDARD/hermes2d-b1effaa.spkg
 $WGET $FEMHUB_STANDARD/pysparse-1.1-6301cea.spkg
 $WGET $FEMHUB_STANDARD/fipy-2.1-51f1360.spkg
-$WGET $FEMHUB_STANDARD/libfemhub-1488aab.spkg
+$WGET $FEMHUB_STANDARD/libfemhub-fd69aca.spkg
