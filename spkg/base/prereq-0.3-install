@@ -59,8 +59,8 @@ check() {
         echo "* www.cygwin.com (run their setup.exe).  In Linux "
         echo "* use your package manager and in OS X install the"
         echo "* newest version of XCode.  If you still have trouble"
-        echo "* email William Stein (wstein@gmail.com) or       "
-        echo "* sage-support@groups.google.com.                 "
+        echo "* email the FEMhub mailinglist:       "
+        echo "* http://groups.google.com/group/femhub.                 "
         echo "**************************************************"
         echo ""
         exit 1

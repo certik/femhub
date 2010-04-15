@@ -20,9 +20,9 @@ from IPython.CrashHandler import CrashHandler
 
 ipy_sage = IPython.Shell.start()
 
-sageCH = CrashHandler(ipy_sage.IP, 'Sage', 'sage-support',
-                      'sage-support@googlegroups.com',
-                      'http://trac.sagemath.org/sage_trac',
+sageCH = CrashHandler(ipy_sage.IP, 'FEMhub', 'femhub',
+                      'femhub@googlegroups.com',
+                      'http://femhub.org/',
 		      'Sage_crash_report.txt',
                       show_crash_traceback=False)
 

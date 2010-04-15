@@ -103,7 +103,7 @@ def check_processor_flags():
                 print a,
         print ""
         print ""
-        print "Email http://groups.google.com/group/sage-support for help."
+        print "Email http://groups.google.com/group/femhub for help."
         print "To remove this warning and make FEMhub start, just delete"
         print "     %s"%flags_file 
         print "*"*70
