@@ -1,0 +1,1089 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial Part I (Linear Problems) &mdash; Hermes2D Documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Hermes2D Documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-part-i-linear-problems">
+<h1>Tutorial Part I (Linear Problems)<a class="headerlink" href="#tutorial-part-i-linear-problems" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial should give you a good idea of how Hermes2D works. After reading it, you will
+be able to create your own applications and/or adjust existing Hermes2D examples for your
+purposes. At the beginning of every section we give a reference to the corresponding example in the
+Hermes2D git repository &#8211; there you will always find the corresponding main.cpp file, mesh file(s) etc.
+The document is under continuous development - if you find bugs or would like us to
+improve something, let us know through the <a class="reference external" href="http://groups.google.com/group/hermes2d/">mailing list</a>.</p>
+<div class="section" id="finite-element-mesh">
+<h2>Finite Element Mesh<a class="headerlink" href="#finite-element-mesh" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/01-mesh">01-mesh</a>.</p>
+<p>Every finite element computation starts with partitioning the domain
+into a finite element mesh. Hermes uses triangles and quadrilaterals, and
+can combine both element types in one mesh. While complicated meshes need
+to be constructed using specialized mesh generation software, in many cases
+we only need a simple initial mesh that can be created by hand. In Hermes, all you
+need to do is partition the domain very coarsely into several large elements,
+and the adaptivity will take care of the rest.</p>
+<div align="center" class="align-center"><img alt="Sample finite element mesh." class="align-center" src="src/hermes2d/img/simplemesh.png" style="width: 400px; height: 400px;" /></div>
+<p>The domain is defined via four macroelements &#8211; two
+quadrilaterals and two curvilinear triangles. The elements are enumerated from 0 to 3.
+One also needs to enumerate all mesh vertices and assign markers to all boundary edges.
+Boundary markers are used to link boundary conditions with the boundary edges.</p>
+<div class="section" id="mesh-file-format">
+<h3>Mesh File Format<a class="headerlink" href="#mesh-file-format" title="Permalink to this headline">¶</a></h3>
+<p>Hermes can read meshes in its own generic format as well as in the
+<a class="reference external" href="http://sourceforge.net/projects/exodusii/">ExodusII</a> format
+(this is, for example, the output of <a class="reference external" href="http://cubit.sandia.gov/">Cubit</a>).
+First let us discuss the generic Hermes mesh data format. Reading
+of ExodusII mesh files is very simple as we will see in example &#8220;iron-water&#8221;.</p>
+<p>Generic Hermes mesh file consists of variable assignments. Each variable can hold a real number,
+list of real numbers, or list of lists. The following are all valid definitions in
+the Hermes mesh file format:</p>
+<div class="highlight-python"><pre># comments start with a hash
+var = 5.0 + cos(pi)  # number
+list = { 1, 2, 3, 4, var }  # list
+pairs = { {1, 2}, {1, var}, {0, list} }  # list of lists</pre>
+</div>
+<p>Every mesh file must contain at least the variables <tt class="docutils literal"><span class="pre">vertices</span></tt>, <tt class="docutils literal"><span class="pre">elements</span></tt>
+and <tt class="docutils literal"><span class="pre">boundaries</span></tt>. The variable <tt class="docutils literal"><span class="pre">vertices</span></tt> defines the coordinates
+of all mesh vertices (in any order). In our case it looks like this:</p>
+<div class="highlight-python"><pre>a = 1.0  # size of the mesh
+b = sqrt(2)/2
+
+vertices =
+{
+  { 0, -a },    # vertex 0
+  { a, -a },    # vertex 1
+  { -a, 0 },    # vertex 2
+  { 0, 0 },     # vertex 3
+  { a, 0 },     # vertex 4
+  { -a, a },    # vertex 5
+  { 0, a },     # vertex 6
+  { a*b, a*b }  # vertex 7
+}</pre>
+</div>
+<p>The variable <tt class="docutils literal"><span class="pre">elements</span></tt> defines all elements in the mesh via zero-based indices of their vertices in counter-clockwise order, plus an extra number denoting the element (material) marker. Element markers allow you to use different material parameters in areas with different material parameters. Moreover, Hermes allows you to assign different weak formulations to those areas, which can be very useful for some types of multiphysics problems. If the domain is composed of only one material, as in our case, all elements may be assigned a zero marker:</p>
+<div class="highlight-python"><pre>elements =
+{
+  { 0, 1, 4, 3, 0 },  # quad 0
+  { 3, 4, 7, 0 },     # tri 1
+  { 3, 7, 6, 0 },     # tri 2
+  { 2, 3, 6, 5, 0 }   # quad 3
+}</pre>
+</div>
+<p>The last mandatory variable, <tt class="docutils literal"><span class="pre">boundaries</span></tt>, defines boundary markers for all
+boundary edges. By default, all edges have zero markers. Only those with
+positive markers are considered to be part of the domain boundary and can be
+assigned a boundary condition, as we will see later. An edge is identified by
+two vertex indices. In our case, we have</p>
+<div class="highlight-python"><pre>boundaries =
+{
+  { 0, 1, 1 },
+  { 1, 4, 2 },
+  { 3, 0, 4 },
+  { 4, 7, 2 },
+  { 7, 6, 2 },
+  { 2, 3, 4 },
+  { 6, 5, 2 },
+  { 5, 2, 3 }
+}</pre>
+</div>
+<p>Finally, the file can also include the variable <tt class="docutils literal"><span class="pre">curves</span></tt>, which lists all
+curved edges.  Each curved edge is described by one NURBS curve, defined by its
+degree, control points and knot vector. Simplified syntax is available for
+circular arcs.</p>
+</div>
+<div class="section" id="nurbs-curves">
+<h3>NURBS Curves<a class="headerlink" href="#nurbs-curves" title="Permalink to this headline">¶</a></h3>
+<p>Every NURBS curve is defined by its degree, control points with weights and the
+knot vector. The degree <span class="math">d</span> is a positive integer, usually 1, 2, 3 or 5. Lines
+and polylines are of degree 1, circles have degree 2 and free-form curves are
+of degree 3 or 5. The control points <span class="math">p_i</span>, <span class="math">i = 0 \ldots n</span>, are the main tool for changing the
+shape of the curve. A curve of degree <span class="math">d</span> must have at least <span class="math">d+1</span> control
+points. In Hermes, the endpoints of the edge are always assumed to be the
+first and last control points and therefore only the inner control points are
+listed in the mesh file. There is a weight <span class="math">w_i \geq 0</span> for every control point,
+that influences the shape of the curve in its vicinity. If <span class="math">w_i = 0</span> then
+<span class="math">p_i</span> has no effect on the shape.  As <span class="math">w_i</span> increases, the curve is pulled
+towards <span class="math">p_i</span>.</p>
+<p>The knot vector is a sequence of <span class="math">m+1</span> values that determines how much and
+where the control points influence the shape. The relation <span class="math">m = n+d+1</span> must
+hold. The sequence is nondecreasing, <span class="math">t_i \leq t_{i+1}</span>, and divides the whole
+interval <span class="math">[0,1]</span> into smaller intervals which determine the area of influence
+of the control points. Since the curve has to start and end at the edge
+vertices, the knot vector in Hermes always starts with <span class="math">d+1</span> zeros and ends
+with <span class="math">d+1</span> ones. Only the inner knots are listed in the above definition of the
+variable <tt class="docutils literal"><span class="pre">curves</span></tt>, where <span class="math">knots</span> is a simple list of real values. For the
+above example, we have</p>
+<div class="highlight-python"><pre>curves =
+{
+  { 4, 7, 45 },  # +45 degree circular arcs
+  { 7, 6, 45 }
+}
+# EOF</pre>
+</div>
+</div>
+<div class="section" id="loading-mesh">
+<h3>Loading Mesh<a class="headerlink" href="#loading-mesh" title="Permalink to this headline">¶</a></h3>
+<p>As a &#8216;&#8217;Hello world&#8217;&#8217; example, let us load the mesh we have just created, and display it in a window.
+Every main.cpp file in the git repository contains lots of comments and instructions. Skipping those,
+the <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/01-mesh/main.cpp">main.cpp</a>
+file begins with creating an instance of the class Mesh. In order to load
+the mesh file, you have to create a mesh loader class (in our case that is <tt class="docutils literal"><span class="pre">H2DReader</span></tt>) and
+call the method <tt class="docutils literal"><span class="pre">load()</span></tt>:</p>
+<div class="highlight-python"><pre>#include "hermes2d.h"
+
+int main(int argc, char* argv[])
+{
+  // load the mesh file
+  Mesh mesh;
+  H2DReader mloader;
+  mloader.load("domain.mesh", &amp;mesh);</pre>
+</div>
+<p>Note: To load the exodus-II mesh file, one has to use <tt class="docutils literal"><span class="pre">ExodusIIReader</span></tt> class instead.</p>
+<p>The following portion of code illustrates various types of initial mesh refinements.
+It does not matter if the mesh becomes irregular, in fact, arbitrarily irregular
+meshes are at the heart of Hermes:</p>
+<div class="highlight-python"><pre>// perform some sample initial refinements
+mesh.refine_all_elements();          // refines all elements
+mesh.refine_towards_vertex(3, 4);    // refines mesh towards
+                                     // vertex #3 (4x)
+mesh.refine_towards_boundary(2, 4);  // refines all elements
+                                     // along boundary 2 (4x)
+mesh.refine_element(86, 0);          // refines element #86
+                                     // isotropically
+mesh.refine_element(112, 0);         // refines element #112
+                                     // isotropically
+mesh.refine_element(84, 2);          // refines element #84
+                                     // anisotropically
+mesh.refine_element(114, 1);         // refines element #114
+                                     // anisotropically</pre>
+</div>
+<p>Other ways of modifying meshes on the fly include</p>
+<div class="highlight-python"><pre>Mesh::refine_element(int id, int refinement = 0)
+Mesh::refine_by_criterion(int (*criterion)(Element* e), int depth)
+Mesh::refine_towards_vertex(int vertex_id, int depth)
+Mesh::regularize(int n)
+Mesh::unrefine_element(int id)
+Mesh::unrefine_all_elements()</pre>
+</div>
+<p>See the file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/mesh.cpp">src/mesh.cpp</a> for more details.
+The following code illustrates how to visualize the mesh using the class MeshView:</p>
+<div class="highlight-python"><pre>// display the mesh
+// (100, 100) is the upper left corner position
+// 500 x 500 is the window size
+MeshView mview("Hello world!", 100, 100, 500, 500);
+mview.show(&amp;mesh);</pre>
+</div>
+<p>You can initialize it by supplying the title of the window and its initial position and size (all of these
+parameters are optional). The class MeshView provides the method show() that displays a window showing the mesh:</p>
+<div align="center" class="align-center"><img alt="Image of the mesh created via the MeshView class." class="align-center" src="src/hermes2d/img/meshview2.png" style="width: 400px; height: 400px;" /></div>
+<p>Every main.cpp file is finished with</p>
+<div class="highlight-python"><pre>  // wait for keyboard or mouse input
+  View::wait();
+  return 0;
+}</pre>
+</div>
+<p>so that you have a chance to see the graphical output.</p>
+</div>
+</div>
+<div class="section" id="setting-up-finite-element-space">
+<h2>Setting Up Finite Element Space<a class="headerlink" href="#setting-up-finite-element-space" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/02-space">02-space</a>.</p>
+<p>Hermes follows the mathematical concept of FEM closely &#8211; after creating a mesh,
+in the next step one needs to construct a finite element space on it.
+The following predefined spaces are currently available:</p>
+<ul class="simple">
+<li>H1Space - the most common space of continuous, piecewise-polynomial functions belonging to <span class="math">H^1(\Omega) = \{ v \in L^2(\Omega); \nabla u \in [L^2(\Omega)]^2 \}</span>,</li>
+<li>HcurlSpace - the space of vector-valued functions discontinuous along mesh edges, with continuous tangential component on the edges <span class="math">H(\mbox{curl},\Omega) = \{ E \in [L^2(\Omega)]^2; \nabla \times E \in L^2(\Omega)\}</span>,</li>
+<li>HdivSpace - the space of vector-valued functions discontinuous along mesh edges, with continuous normal component on the edges <span class="math">H(\mbox{div},\Omega) = \{ v \in [L^2(\Omega)^2; \nabla \cdot v \in L^2(\Omega)\}</span>,</li>
+<li>L2Space -  the space of functions discontinuous along mesh edges, belonging to the space <span class="math">L^2(\Omega)</span>.</li>
+</ul>
+<p>All these spaces allow for higher-order elements and meshes with arbitrary-level hanging nodes.
+If you are not familiar with higher-order FEM, let us just say that the spaces can contain
+quadratic, cubic, etc., <em>edge functions</em> that generate higher-degree
+polynomials along mesh edges, and <em>bubble functions</em> that complete the higher-order
+approximation in element interiors. Edge functions are associated with mesh edges,
+and bubble functions with element interiors. The next figure shows a patch consisting of two triangular elements. An edge function is shown on the left, and a bubble function on one of the triangles on the right:</p>
+<div align="center" class="align-center"><img alt="Fourth-order edge function  (left) and one of the fifth-order bubble functions (right)." class="align-center" src="src/hermes2d/img/basisfn.jpg" style="width: 600px; height: 200px;" /></div>
+<p>There are many possible ways of defining the
+higher-order basis functions. A particular set of polynomials is called
+<em>shapeset</em>. Using good shapeset is crucial for the
+performance of the <em>hp</em>-FEM. No shapeset can be optimal for all possible operators.
+Therefore, Hermes offers several shapesets from which
+you need to choose one when creating a FE space. The ones which perform best
+in most computations (according to our experience) are simply called
+H1Shapeset, HcurlShapeset, HdivShapeset and L2Shapeset.
+Others can be found in the files <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/src">src/shapeset*</a> in the git repo.
+Any shapeset can be used for more than one space.</p>
+<p>We are now ready for an example. The following code snippets come from
+the <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/02-space/main.cpp">main.cpp</a> file.
+We assume that a mesh has already been loaded. First we create an instance of H1Shapeset and then an
+instance of H1Space, supplying the mesh and shapeset pointers:</p>
+<div class="highlight-python"><pre>// create a shapeset and an H1 space
+H1Shapeset shapeset;
+H1Space space(&amp;mesh, &amp;shapeset);</pre>
+</div>
+<p>When the space is created, we need to initialize the polynomial
+degrees of all elements. (The words <em>degree</em> and <em>order</em> have the same meaning for us.)
+This can be done for individual elements by calling the method
+Space::set_element_order(), or for all elements at once using
+Space::set_uniform_order(). It is important to note that element degrees
+are stored in Space, not in Mesh. The reason is that you can
+have multiple different spaces with different element degrees and even types
+over the same mesh. In Hermes, Mesh only stores geometrical information.</p>
+<div class="highlight-python"><pre>// assign element orders and initialize the space
+space.set_uniform_order(P_INIT);
+// enumerate degrees of freedom
+assign_dofs(&amp;space);</pre>
+</div>
+<p>A space created in this way is ready for use. By default, it is equipped with
+zero Neumann boundary conditions on the entire domain boundary. Later we will see
+how to change that.</p>
+<p>As a debugging/learning feature, Hermes enables visualization of all basis functions
+in a Space. Similarly to MeshView, you can create a BaseView object and use it
+to display the entire basis (VectorBaseView has to be used for vector-valued
+approximations in spaces Hcurl and Hdiv - this will be discussed later).
+You can cycle through all basis functions in the window using the arrow keys.
+If you press the left mouse button at the beginning, you will see the Dirichlet
+lift (a function that represents Dirichlet boundary conditions).</p>
+<div class="highlight-python"><pre>// view the basis functions
+BaseView bview;
+bview.show(&amp;space);</pre>
+</div>
+<p>This is how the last figure above was obtained (press the &#8216;3&#8217; key for 3D mode).
+We suggest that you spend some time experimenting with element refinements and
+hanging nodes to see how basis functions on irregular meshes look like.</p>
+</div>
+<div class="section" id="solving-poisson-equation">
+<h2>Solving Poisson Equation<a class="headerlink" href="#solving-poisson-equation" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/03-poisson">03-poisson</a>.</p>
+<p>Let us solve the Poisson equation</p>
+<div class="math" id="equation-poisson1">
+<p><span class="eqno">(1)</span><span class="math">-\Delta u = CONST_F</span></p>
+</div><p>on the L-shaped domain <span class="math">\Omega</span> from the previous example,
+equipped with a homogeneous (zero) Dirichlet boundary condition</p>
+<div class="math" id="equation-poisson2">
+<p><span class="eqno">(2)</span><span class="math">u = 0\ \ \  \mbox{on}\  \partial \Omega,</span></p>
+</div><p>where <span class="math">CONST_F</span> is a real number. The weak formulation
+is derived in the standard way, first by multiplying equation <a href="#equation-poisson1">(1)</a> with a test
+function <span class="math">v</span>, then integrating over the domain <span class="math">\Omega</span>, and then applying the Green&#8217;s
+theorem (integration by parts) to the second derivatives.
+Because of the homogeneous Dirichlet condition <a href="#equation-poisson2">(2)</a>,
+the proper space for the solution is <span class="math">V = H^1_0(\Omega)</span>. The weak formulation reads:
+Find <span class="math">u \in V</span> such that</p>
+<div class="math" id="equation-poissonweak">
+<p><span class="eqno">(3)</span><span class="math">\int_\Omega \nabla u \cdot \nabla v \;\mbox{d\bfx} = CONST_F \int_\Omega v \;\mbox{d\bfx} \ \ \ \mbox{for all}\ v \in V.</span></p>
+</div><p>Equation <a href="#equation-poissonweak">(3)</a> has the standard form <span class="math">a(u,v) = l(v)</span> and thus in Hermes
+we need a way to specify the bilinear form <span class="math">a(u,v)</span> and the linear form <span class="math">l(v)</span>.
+In the code this is done by implementing the following two functions:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext);
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext);</pre>
+</div>
+<p>These functions will be called for each element during the stiffness matrix
+assembly and must return the values of the bilinear and linear forms for the given arguments.
+RealFunction represents one of the basis functions restricted to the
+current element and RefMap represents the reference mapping of the current element.
+There are methods for extracting the values of the basis functions at integration points,
+which allows you to evaluate the integrals by yourself, but this is normally not needed,
+since many common weak forms have already been implemented.
+In this case, we can simply use the predefined functions
+int_grad_u_grad_v and int_v:</p>
+<div class="highlight-python"><pre>// return the value \int \nabla u . \nabla v dx
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// return the value \int v dx
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return CONST_F * int_v&lt;Real, Scalar&gt;(n, wt, v);
+}</pre>
+</div>
+<p>We can now state our problem in the following way:</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, callback(bilinear_form));
+wf.add_liform(0, callback(linear_form));</pre>
+</div>
+<p>The class WeakForm represents the weak formulation of the PDE and must be
+initialized with the number of equations in the system, in our case one. We then
+supply the class pointers to our bilinear and linear form functions. If the PDE
+was more complicated, we could add multiple bilinear and/or linear forms.</p>
+<p>Given the weak formulation and the discretization determined by the space and its mesh,
+we can proceed to the approximate solution of the problem by the Galerkin method.
+This method is the core of Hermes and provides a way to obtain a sparse linear
+system of equations, represented by the class LinSystem in the code. The solution
+of the linear system then yields an approximate solution of the original problem.</p>
+<p>The class LinSystem needs three things: your weak formulation, your spaces and
+finally an external sparse matrix solver, for example CG or UMFPACK. The following lines
+create the linear solver, initialize the LinSystem class and pass a pointer to
+the H1Space we have created in the previous section.</p>
+<div class="highlight-python"><pre>// initialize the linear system and solver
+UmfpackSolver umfpack;
+LinSystem sys(&amp;wf, &amp;umfpack);
+sys.set_spaces(1, &amp;space);
+sys.set_pss(1, &amp;pss);</pre>
+</div>
+<p>The last line must be included for historical reasons. During matrix assembly,
+Hermes caches the values of all shape function polynomials for better performance.
+The cache is represented by the class PrecalcShapeset and you have to
+include the following line at the beginning of your program:</p>
+<div class="highlight-python"><pre>PrecalcShapeset pss(&amp;shapeset);</pre>
+</div>
+<p>Finally, we tell LinSystem to assemble the stiffness matrix and the right-hand
+side and solve the resulting linear system:</p>
+<div class="highlight-python"><pre>// assemble the stiffness matrix and solve the system
+Solution sln;
+sys.assemble();
+sys.solve(1, &amp;sln);</pre>
+</div>
+<p>For the Poisson problem, we are finished. The last two lines can be repeated many
+times in time-dependent problems. The instance of the class Solution, upon the
+completion of LinSystem::solve(), contains the approximate solution of
+the PDE. You can ask for its values or you can visualize the solution immediately
+using the ScalarView class:</p>
+<div class="highlight-python"><pre>// visualize the solution
+ScalarView view("Solution");
+view.show(&amp;sln);</pre>
+</div>
+<p>The following figure shows the output.</p>
+<div align="center" class="align-center"><img alt="Solution of the Poisson equation." class="align-center" src="src/hermes2d/img/poisson.png" style="width: 400px; height: 350px;" /></div>
+</div>
+<div class="section" id="boundary-conditions">
+<h2>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Permalink to this headline">¶</a></h2>
+<p>Hermes recognizes two basic types of boundary conditions: <em>essential</em> and <em>natural</em>.
+Essential boundary conditions influence the finite element space while natural
+conditions do not (they are incorporated into boundary integrals in the weak formulation).
+In the context of elliptic problems, Dirichlet conditions are essential and Neumann/Newton
+conditions are natural.</p>
+<div class="section" id="dirichlet-bc">
+<h3>Dirichlet BC<a class="headerlink" href="#dirichlet-bc" title="Permalink to this headline">¶</a></h3>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/04-bc-dirichlet">04-bc-dirichlet</a>.</p>
+<p>Since essential conditions restrict degrees of freedom (DOF) in the FE space,
+they need to be incorporated while the space is set up.
+The user has to provide the following two callback functions:</p>
+<div class="highlight-python"><pre>int bc_types(int marker);
+scalar bc_values(int marker, double x, double y);</pre>
+</div>
+<p>The first one, given the boundary marker number, determines the type of BC which the associated
+portion of the domain boundary belongs to, by returning one of the predefined constants
+BC_ESSENTIAL or BC_NATURAL. The second callback needs to return the boundary value for a given marker
+and position on the boundary (only needed for essential boundary condition markers - for natural
+boundary conditions this value is ignored).
+The space initialization can then look as follows:</p>
+<div class="highlight-python"><pre>H1Space space(&amp;mesh, &amp;shapeset);
+space.set_bc_types(bc_types);
+space.set_bc_values(bc_values);</pre>
+</div>
+<p>Suppose we would like to modify the previous Poisson model problem in the following way:</p>
+<div class="math">
+<p><span class="math">-\Delta u = CONST_F,\ u(x,y) = -\frac{CONST_F}{4}(x^2 + y^2)\,\ \mbox{on}\,\ \partial \Omega.</span></p>
+</div><p>Besides changing the linear form, we need to specify that all the boundary markers 1, 2, 3, 4
+denote the essential boundary condition:</p>
+<div class="highlight-python"><pre>int bc_types(int marker)
+{
+  return BC_ESSENTIAL;
+}</pre>
+</div>
+<p>Further, the value callback must return the value of the Dirichlet BC:</p>
+<div class="highlight-python"><pre>scalar bc_values(int marker, double x, double y)
+{
+  return (-CONST_F/4)*(x*x + y*y);
+}</pre>
+</div>
+<p>It is easy to see that the solution to this problem is the function</p>
+<div class="math">
+<p><span class="math">u(x,y) = -\frac{CONST_F}{4}(x^2 + y^2).</span></p>
+</div><p>For the value <span class="math">CONST_F = -4</span>, the output is shown below:</p>
+<div align="center" class="align-center"><img alt="Solution of the Dirichlet problem." class="align-center" src="src/hermes2d/img/dirichlet.png" style="width: 400px; height: 350px;" /></div>
+</div>
+<div class="section" id="neumann-bc">
+<h3>Neumann BC<a class="headerlink" href="#neumann-bc" title="Permalink to this headline">¶</a></h3>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/05-bc-neumann">05-bc-neumann</a>.</p>
+<p>Next, let us consider Neumann boundary conditions. The new model problem
+will have the form</p>
+<div class="math">
+<p><span class="math">\begin{eqnarray*}   -\Delta u = CONST_F,\ \ \ \ \ &amp;&amp;u = 0\,\ \mbox{on}\,\ \Gamma_4,\\                            &amp;&amp;\dd{u}{n} = C_1\,\ \mbox{on}\,\ \Gamma_1,\\                            &amp;&amp;\dd{u}{n} = C_2\,\ \mbox{on}\,\ \Gamma_2,\\                            &amp;&amp;\dd{u}{n} = C_3\,\ \mbox{on}\,\ \Gamma_3. \end{eqnarray*}</span></p>
+</div><p>where <span class="math">\Gamma_1 \dots \Gamma_4</span> correspond to the edges marked <span class="math">1 \dots 4</span>. Now, the weak formulation contains some surface integrals:</p>
+<div class="math">
+<p><span class="math">\int_\Omega \nabla u \cdot \nabla v \;\mbox{d\bfx} =   CONST_F\int_\Omega v \;\mbox{d\bfx}   + C_1\int_{\Gamma_1} \!v \;\mbox{d}l   + C_2\int_{\Gamma_2} \!v \;\mbox{d}l   + C_3\int_{\Gamma_3} \!v \;\mbox{d}l</span></p>
+</div><p>In Hermes, all forms in the standard weak formulation <span class="math">a(u,v) = l(v)</span>
+are in fact defined as a sum of contributions from volume integrals and from
+surface integrals. In the case of the linear form <span class="math">l(v)</span>, this means</p>
+<div class="math">
+<p><span class="math">l(v) = \sum_m l_m^{\,\rm vol}(v) + \sum_n l_n^{\,\rm surf}(v).</span></p>
+</div><p>We have already seen volumetric linear forms in example 03-poisson.
+Surface linear forms are implemented similarly. Our new right-hand side will
+be represented by two functions with the following prototypes:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form_surf(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext);</pre>
+</div>
+<p>and will be added to the WeakForm by the following code:</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, callback(bilinear_form));
+wf.add_liform(0, callback(linear_form));
+wf.add_liform_surf(0, callback(linear_form_surf));</pre>
+</div>
+<p>The surface linear form is defined as follows:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form_surf(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return CONST_GAMMA[e-&gt;marker - 1] * int_v&lt;Real, Scalar&gt;(n, wt, v);
+}</pre>
+</div>
+<p>Here, we have used the predefined surface integral surf_int_v (see the
+file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/integrals_h1.h">src/integrals_h1.h</a>).
+If the boundary conditions were more complicated, we could also
+have used surf_int_F_v, where F stands for an arbitrary user-supplied
+function returning the value <span class="math">\partial u/\partial n</span>.</p>
+<p>Note that the mesh is refined towards the re-entrant corner in order to
+capture the singular gradient.</p>
+<div class="highlight-python"><pre>// load the mesh file
+Mesh mesh;
+H2DReader mloader;
+mloader.load("domain.mesh", &amp;mesh);
+mesh.refine_towards_vertex(3, CORNER_REF_LEVEL);</pre>
+</div>
+<p>The gradient magnitude can be visualized via a MagFilter:</p>
+<div class="highlight-python"><pre>// compute and show gradient magnitude
+// (note that the infinite gradient at the re-entrant
+// corner will be truncated for visualization purposes)
+ScalarView gradview("Gradient", 650, 0, 600, 600);
+MagFilter grad(&amp;sln, &amp;sln, FN_DX, FN_DY);
+gradview.show(&amp;grad);</pre>
+</div>
+<p>The approximate solution for the values <span class="math">C_1 = -1/2</span>, <span class="math">C_2 = 1</span>, <span class="math">C_3 = -1/2</span>,
+along with the singularity of gradient at the re-entrant corner are
+shown in the following figures:</p>
+<img align="left" alt="Solution of the Neumann problem." class="align-left" src="src/hermes2d/img/neumann2.png" style="width: 530px; height: 400px;" />
+<img align="right" alt="Detail of gradient singularity at the re-entrant corner." class="align-right" src="src/hermes2d/img/neumann3.png" style="width: 400px; height: 400px;" />
+<hr style="clear: both; visibility: hidden;"></div>
+<div class="section" id="newton-bc">
+<h3>Newton BC<a class="headerlink" href="#newton-bc" title="Permalink to this headline">¶</a></h3>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/06-bc-newton">06-bc-newton</a>.</p>
+<p>Another common natural boundary condition is the Newton (sometimes called Robin) condition
+of the form</p>
+<div class="math">
+<p><span class="math">\dd{u}{n} + c_1 u = c_2, \ \ \ \ c_1 \ne 0.</span></p>
+</div><p>Analogously to Neumann conditions, also Newton conditions yield surface integrals. However,
+this time they are both in the bilinear form and in the linear form,
+The bilinear form is
+a sum of volume and surface forms that can be added to the weak formulation using the methods
+add_biform() and add_biform_surf().
+The surface bilinear form must have the following prototype:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_surf(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext);</pre>
+</div>
+<p>Inside this function you can use predefined
+forms such as surf_int_u_v, surf_int_F_u_v (see the
+file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/integrals_h1.h">src/integrals_h1.h</a>) or your custom forms.</p>
+<p>The following code snippet contains the linear and bilinear forms:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_surf(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return H * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form_surf(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return T0 * H * int_v&lt;Real, Scalar&gt;(n, wt, v);
+}</pre>
+</div>
+<p>Here, <span class="math">T_0</span> is the exterior temperature, and <span class="math">H</span> is the heat flux.
+The above forms are registered using</p>
+<div class="highlight-python"><pre>WeakForm wf(1);
+wf.add_biform(0, 0, callback(bilinear_form));
+wf.add_biform_surf(0, 0, callback(bilinear_form_surf), 1);
+wf.add_liform_surf(0, callback(linear_form_surf), 1);</pre>
+</div>
+<p>The last parameter in add_biform_surf() and add_liform_surf() is the boundary marker of the
+Newton boundary. The following figures show the solution and singularity of gradient
+at the re-entrant corner:</p>
+<img align="left" alt="Solution of the Newton problem." class="align-left" src="src/hermes2d/img/newton1.png" style="width: 530px; height: 400px;" />
+<img align="right" alt="Detail of gradient singularity at the re-entrant corner." class="align-right" src="src/hermes2d/img/newton2.png" style="width: 400px; height: 400px;" />
+<hr style="clear: both; visibility: hidden;"></div>
+</div>
+<div class="section" id="determination-of-quadrature-orders-in-weak-forms">
+<h2>Determination of Quadrature Orders in Weak Forms<a class="headerlink" href="#determination-of-quadrature-orders-in-weak-forms" title="Permalink to this headline">¶</a></h2>
+<p>You may wonder why templates are used in the definition of weak forms. As a matter of fact,
+they do not have to be, as we will see in a moment. However, if the weak form only contains
+algebraic operations (without if-then statements and such), templates help to determine
+numerical integration orders automatically. In higher-order FEM, basis and test functions may
+have very different polynomial degrees, ranging from one and some maximum polynomial
+degree (currently 10 in Hermes). The basis and test functions can be combined inside the
+weak forms in many different ways. As a result, the minimum quadrature order which is needed
+to evaluate a weak form accurately may vary between zero (product of gradients of
+two linear functions) to infinity (whenever a nonpolynomial expression is present).
+Numerical quadrature is one of the trickiest issues in higher-order FEM.</p>
+<p>A brute-force solution to this problem would be to integrate everything using
+a maximum order, but this would lead to tremendous computing times. Therefore Hermes offers
+two options: the polynomial degree of the integrated expressions can be detected
+automatically (via templates), or the user can define for each weak form the
+quadrature order explicitly. If the weak form only contains polynomial expressions,
+the former approach works very well. If the form is more complicated, it is recommended
+to handle the integration orders explicitly.</p>
+<div class="section" id="automatic-order-determination">
+<h3>Automatic order determination<a class="headerlink" href="#automatic-order-determination" title="Permalink to this headline">¶</a></h3>
+<p>In example 03-poisson, the bilinear and linear forms were defined using templates,</p>
+<div class="highlight-python"><pre>// return the value \int \nabla u . \nabla v dx
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// return the value \int v dx
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return CONST_F * int_v&lt;Real, Scalar&gt;(n, wt, v);
+}</pre>
+</div>
+<p>and registered using the callback() macro,</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, callback(bilinear_form));
+wf.add_liform(0, callback(linear_form));</pre>
+</div>
+<p>The callback() macro, defined in <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/forms.h">src/forms.h</a> by</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#define callback(a)     a&lt;double, scalar&gt;, a&lt;Ord, Ord&gt;</span>
+</pre></div>
+</div>
+<p>expands the above add_biform() and add_liform() functions into</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, bilinear_form&lt;double, scalar&gt;, bilinear_form&lt;Ord, Ord&gt;);
+wf.add_liform(0, linear_form&lt;double, scalar&gt;, linear_form&lt;Ord, Ord&gt;);</pre>
+</div>
+<p>For those who are not familiar with templates, they make it possible to
+call the same function with different parameter types. In particular,
+using bilinear_form&lt;double, scalar&gt; and bilinear_form&lt;Ord, Ord&gt; for
+the bilinear form defined above gives</p>
+<div class="highlight-python"><pre>scalar bilinear_form(int n, double *wt, Func&lt;double&gt; *u, Func&lt;double&gt; *v, Geom&lt;double&gt; *e, ExtData&lt;scalar&gt; *ext)
+{
+  return int_grad_u_grad_v&lt;double, scalar&gt;(n, wt, u, v);
+}
+
+Ord bilinear_form(int n, double *wt, Func&lt;Ord&gt; *u, Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  return int_grad_u_grad_v&lt;Ord, Ord&gt;(n, wt, u, v);
+}</pre>
+</div>
+<p>The &lt;double, scalar&gt; copy is used to obtain the result of the numerical integration,
+the &lt;Ord, Ord&gt; copy for automatic evaluation of the quadrature order.
+The parser (see <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/forms.h">src/forms.h</a>)
+works well for algebraic expressions. If the weak form bilinear_form() is complicated,
+one can create and register a simpler weak form bilinear_form_order() for the parser,
+that provides an arbitrary expression with the same polynomial degree as
+the integrand in bilinear_form(). Then the two functions would be registered as</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wf</span><span class="o">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form</span><span class="p">,</span> <span class="n">bilinear_form_order</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Of course the same holds for linear forms.
+If the bilinear form contains things like the if-then statement, it cannot
+be parsed. Whenever the weak form contains non-polynomial expressions or
+is otherwise very complicated, it is recommended to handle the quadrature
+orders manually.</p>
+</div>
+<div class="section" id="manual-order-determination">
+<h3>Manual order determination<a class="headerlink" href="#manual-order-determination" title="Permalink to this headline">¶</a></h3>
+<p>The polynomial degree of basis and test functions inside a bilinear or linear form
+can be handled manually as follows</p>
+<div class="highlight-python"><pre>Ord bilinear_form_order(int n, double *wt, Func&lt;Ord&gt; *u,
+                      Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  int uo = u-&gt;val[0].get_order();
+  int vo = v-&gt;val[0].get_order();
+  return Ord(uo + vo);            // this would correspond to integral of u times v
+}</pre>
+</div>
+<p>It is also possible to return a constant order (for example 5) by using</p>
+<div class="highlight-python"><pre>Ord bilinear_form_ord(int n, double *wt, Func&lt;Ord&gt; *u,
+                  Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  return Ord(5);
+}</pre>
+</div>
+<p>Currently, one cannot make the integration order dependent on spatial coordinates and such. However,
+one can assign different weak forms to elements with different material markers. This is
+described in examples <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/iron-water">iron-water</a>,
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/saphir/main.cpp">saphir</a> and others.</p>
+<p>The following example handles quadrature orders manually.</p>
+</div>
+</div>
+<div class="section" id="general-2nd-order-linear-equation">
+<h2>General 2nd-Order Linear Equation<a class="headerlink" href="#general-2nd-order-linear-equation" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/07-general">07-general</a>.</p>
+<p>This example deals with a linear second-order equation of the form</p>
+<div class="math">
+<p><span class="math">-\frac{\partial}{\partial x}\left(a_{11}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial x}\left(a_{12}(x,y)\frac{\partial u}{\partial y}\right) - \frac{\partial}{\partial y}\left(a_{21}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial y}\left(a_{22}(x,y)\frac{\partial u}{\partial y}\right) + a_1(x,y)\frac{\partial u}{\partial x} + a_{21}(x,y)\frac{\partial u}{\partial y} + a_0(x,y)u = rhs(x,y),</span></p>
+</div><p>equipped with Dirichlet and/or Neumann boundary conditions. Its goal is to show how to
+use space-dependent coefficients and how to define quadrature orders explicitly.</p>
+<p>First we define the (generally) non-constant equation coefficients:</p>
+<div class="highlight-python"><pre>double a_11(double x, double y) {
+  if (y &gt; 0) return 1 + x*x + y*y;
+  else return 1;
+}</pre>
+</div>
+<p>and so on. Then we define boundary conditions as usual. The weak formulation contains
+both volumetric and surface integrals.</p>
+<p>The Ord class in Hermes (see the file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/forms.h">src/forms.h</a>) provides
+an automatic parser of weak forms that is able to determine the integration orders for
+algebraic expressions. So, in order to define an integration order explicitly, one can
+provide on top the weak form another function that defines a simple algebraic expression
+that leads the parser to the desired polynomial degree. The values defined in this
+additional function are not used for computation.</p>
+<div class="highlight-python"><pre>// (Volumetric) bilinear form
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  Scalar result = 0;
+  for (int i=0; i &lt; n; i++) {
+    double x = e-&gt;x[i];
+    double y = e-&gt;y[i];
+    result += (a_11(x, y)*u-&gt;dx[i]*v-&gt;dx[i] +
+               a_12(x, y)*u-&gt;dy[i]*v-&gt;dx[i] +
+               a_21(x, y)*u-&gt;dx[i]*v-&gt;dy[i] +
+               a_22(x, y)*u-&gt;dy[i]*v-&gt;dy[i] +
+               a_1(x, y)*u-&gt;dx[i]*v-&gt;val[i] +
+               a_2(x, y)*u-&gt;dy[i]*v-&gt;val[i] +
+               a_0(x, y)*u-&gt;val[i]*v-&gt;val[i]) * wt[i];
+  }
+  return result;
+}
+
+// Integration order for the bilinear form
+Ord bilinear_form_ord(int n, double *wt, Func&lt;Ord&gt; *u,
+                  Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  return u-&gt;val[0] * v-&gt;val[0] * e-&gt;x[0] * e-&gt;x[0]; // returning the sum of the degrees of the basis
+                                                    // and test function plus two
+}
+
+// Surface linear form (natural boundary conditions)
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form_surf(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return int_F_v&lt;Real, Scalar&gt;(n, wt, g_N, v, e);
+}
+
+// Integration order for surface linear form
+Ord linear_form_surf_ord(int n, double *wt, Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  return v-&gt;val[0] * e-&gt;x[0] * e-&gt;x[0];  // returning the polynomial degree of the test function plus two
+}
+
+// Volumetric linear form (right-hand side)
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return int_F_v&lt;Real, Scalar&gt;(n, wt, rhs, v, e);
+}
+
+// Integration order for the volumetric linear form
+Ord linear_form_ord(int n, double *wt, Func&lt;Ord&gt; *v, Geom&lt;Ord&gt; *e, ExtData&lt;Ord&gt; *ext)
+{
+  return v-&gt;val[0] * e-&gt;x[0] * e-&gt;x[0];  // returning the polynomial degree of the test function plus two
+}</pre>
+</div>
+<p>Note the sign of the surface linear form - all linear forms have to be on the right-hand side,
+all bilinear forms on the left.</p>
+<p>The output of this example is shown below:</p>
+<div align="center" class="align-center"><img alt="Output of example 07-general." class="align-center" src="src/hermes2d/img/general.png" style="width: 500px; height: 400px;" /></div>
+</div>
+<div class="section" id="systems-of-equations">
+<h2>Systems of Equations<a class="headerlink" href="#systems-of-equations" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/08-system">08-system</a>.</p>
+<p>So far we always have solved a single linear PDE with the weak formulation
+of the form <span class="math">a(u,v) = l(v)</span>, where <span class="math">u, v</span> were continuous approximations in the
+<span class="math">H^1</span> space. Analogously one can handle single equations whose solutions lie in the spaces
+<span class="math">Hcurl</span>, <span class="math">Hdiv</span> or <span class="math">L^2</span>.</p>
+<p>However, Hermes also can handle a system of <span class="math">n</span> linear PDEs, provided that the weak formulation
+can be written as</p>
+<div class="math" id="equation-weaksystem">
+<p><span class="eqno">(4)</span><span class="math">a_{11}(u_1,v_1)\,+ a_{12}(u_2,v_1)\,+ \cdots\,+ a_{1n}(u_n,v_1) = l_1(v_1),
+
+  a_{21}(u_1,v_2)\,+ a_{22}(u_2,v_2)\,+ \cdots\,+ a_{2n}(u_n,v_2) = l_2(v_2),
+
+                                                      \vdots
+
+  a_{n1}(u_1,v_n) + a_{n2}(u_2,v_n) + \cdots + a_{nn}(u_n,v_n) = l_n(v_n).</span></p>
+</div><p>The solution <span class="math">u = (u_1, u_2, \dots, u_n)</span> and test functions <span class="math">v =
+(v_1, v_2, \dots, v_n)</span> belong to the space <span class="math">W = V_1 \times V_2 \times \dots
+\times V_n</span>, where each <span class="math">V_i</span> is one of the available function spaces.</p>
+<p>Let us illustrate this by solving a simple problem of linear elasticity. Consider a
+two-dimensional elastic body shown in the following figure (the bottom edge is
+axis of planar symmetry):</p>
+<div align="center" class="align-center"><img alt="Geometry and boundary conditions." class="align-center" src="src/hermes2d/img/elastsample.png" style="width: 500px; height: 300px;" /></div>
+<p>In the plane-strain model of linear elasticity the goal is to determine the
+deformation of the body subject to the forces <span class="math">f</span>. The deformation is sought
+as a vector function <span class="math">u(x) = (u_1, u_2)^T</span>, describing the displacement of each point
+<span class="math">x \in \Omega</span> after the load <span class="math">f = (f_1, f_2)^T</span> is applied.</p>
+<p>The boundary conditions are</p>
+<div class="math">
+<p><span class="math">\begin{eqnarray*}
+\frac{\partial u_1}{\partial n} &amp;=&amp; f_1 \ \text{on $\Gamma_3$,} \\
+\frac{\partial u_1}{\partial n} &amp;=&amp; 0 \ \text{on $\Gamma_2$, $\Gamma_4$, $\Gamma_5$,} \\
+\frac{\partial u_2}{\partial n} &amp;=&amp; f_2 \ \text{on $\Gamma_3$,} \\
+\frac{\partial u_2}{\partial n} &amp;=&amp; 0 \ \text{on $\Gamma_2$, $\Gamma_4$, $\Gamma_5$,} \\
+u_1 &amp;=&amp; u_2 = 0 \ \mbox{on} \ \Gamma_1.
+\end{eqnarray*}</span></p>
+</div><p>Applying the standard procedure to the elastostatic equilibrium equations, we arrive at the following weak formulation:</p>
+<div class="math">
+<p><span class="math">\begin{eqnarray*}   \int_\Omega     (2\mu\!+\!\lambda)\dd{u_1}{x_1}\dd{v_1}{x_1} + \mu\dd{u_1}{x_2}\dd{v_1}{x_2} +     \mu\dd{u_2}{x_1}\dd{v_1}{x_2} + \lambda\dd{u_2}{x_2}\dd{v_1}{x_1}     \,\mbox{d}\bfx \!\!&amp;=&amp;\!\!\!     \int_{\Gamma_3} \!\!f_1 v_1 \,\mbox{d}S, \\ \smallskip   \int_\Omega     \mu\dd{u_1}{x_2}\dd{v_2}{x_1} + \lambda\dd{u_1}{x_1}\dd{v_2}{x_2} +     (2\mu\!+\!\lambda)\dd{u_2}{x_2}\dd{v_2}{x_2} + \mu\dd{u_2}{x_1}\dd{v_2}{x_1}     \,\mbox{d}\bfx \!\!&amp;=&amp;\!\!\!     \int_{\Gamma_3} \!\!f_2 v_2 \,\mbox{d}S. \end{eqnarray*}</span></p>
+</div><p>We see that the weak formulation can indeed be written in the form <a href="#equation-weaksystem">(4)</a>:</p>
+<div class="math">
+<p><span class="math">\begin{eqnarray*}
+  a_{11}(u_1, v_1) \!&amp;=&amp;\! \int_\Omega (2\mu+\lambda)\dd{u_1}{x_1}\dd{v_1}{x_1} + \mu\dd{u_1}{x_2}\dd{v_1}{x_2} \,\mbox{d}\bfx,  \\
+  a_{12}(u_2, v_1) \!&amp;=&amp;\! \int_\Omega \mu\dd{u_2}{x_1}\dd{v_1}{x_2} + \lambda\dd{u_2}{x_2}\dd{v_1}{x_1} \,\mbox{d}\bfx,\\
+  a_{21}(u_1, v_2) \!&amp;=&amp;\! \int_\Omega \mu\dd{u_1}{x_2}\dd{v_2}{x_1} + \lambda\dd{u_1}{x_1}\dd{v_2}{x_2} \,\mbox{d}\bfx,\\
+  a_{22}(u_2, v_2) \!&amp;=&amp;\! \int_\Omega (2\mu+\lambda)\dd{u_2}{x_2}\dd{v_2}{x_2} + \mu\dd{u_2}{x_1}\dd{v_2}{x_1} \,\mbox{d}\bfx,  \\
+  l_{1}(v_1) \!&amp;=&amp;\!
+  \int_{\Gamma_3} \!\!f_1 v_1 \,\mbox{d}S, \\
+  l_{2}(v_2) \!&amp;=&amp;\!
+  \int_{\Gamma_3} \!\!f_2 v_2 \,\mbox{d}S.
+\end{eqnarray*}</span></p>
+</div><p>Here, <span class="math">\mu</span> and <span class="math">\lambda</span> are material constants (Lame coefficients) defined as</p>
+<div class="math">
+<p><span class="math">\mu = \frac{E}{2(1+\nu)}, \ \ \ \ \  \lambda = \frac{E\nu}{(1+\nu)(1-2\nu)},</span></p>
+</div><p>where <span class="math">E</span> is the Young modulus and <span class="math">\nu</span> the Poisson ratio of the material. For
+steel, we have <span class="math">E = 200</span> GPa and <span class="math">\nu = 0.3</span>. The load is <span class="math">f = (0, 10^4)^T</span> N.</p>
+<p>We begin with defining the function spaces for the two solution
+components, <span class="math">u_1</span> and <span class="math">u_2</span> (the <span class="math">x</span> and <span class="math">y</span> displacement). The boundary
+conditions can be implemented as</p>
+<div class="highlight-python"><pre>// boundary condition types
+int bc_types(int marker)
+  { return (marker == 1) ? BC_ESSENTIAL : BC_NATURAL;; }
+
+// function values for Dirichlet boundary conditions
+double bc_values(int marker, double x, double y)
+  { return 0;}</pre>
+</div>
+<p>Next we create the two displacement spaces, xdisp and ydisp:</p>
+<div class="highlight-python"><pre>// create the x displacement space
+H1Space xdisp(&amp;mesh, &amp;shapeset);
+xdisp.set_bc_types(bc_types);
+xdisp.set_bc_values(bc_values);
+xdisp.set_uniform_order(P\_INIT);
+
+// create the y displacement space
+H1Space ydisp(&amp;mesh, &amp;shapeset);
+ydisp.set_bc_types(bc_types);
+ydisp.set_bc_values(bc_values);
+ydisp.set_uniform_order(P\_INIT);</pre>
+</div>
+<p>Our WeakForm instance will be initialized for two equations in the system.
+After implementing the weak forms using the predefined integrals
+int_a_dudx_dvdx_b_dudy_dvdy and int_a_dudx_dvdy_b_dudy_dvdx,
+we can add them to the weak formulation using add_biform().
+The first two parameters of this method correspond to the position of the form
+in the block weak form <a href="#equation-weaksystem">(4)</a> with zero-based numbering. The
+surface linear form is treated analogously.</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(2);
+wf.add_biform(0, 0, callback(bilinear_form_0_0), SYM);  // Note that only one symmetric part is
+wf.add_biform(0, 1, callback(bilinear_form_0_1), SYM);  // added in the case of symmetric bilinear
+wf.add_biform(1, 1, callback(bilinear_form_1_1), SYM);  // forms.
+wf.add_liform_surf(0, callback(linear_form_surf_0), GAMMA_3_BDY);
+wf.add_liform_surf(1, callback(linear_form_surf_1), GAMMA_3_BDY);</pre>
+</div>
+<p>An explanation of the extra parameter SYM in add_biform() is in order.
+Since the two diagonal forms <span class="math">a_{11}</span> and <span class="math">a_{22}</span> are symmetric, i.e.,
+<span class="math">a_{ii}(u,v) = a_{ii}(v,u)</span>, Hermes can be told to only evaluate them once for the
+two cases <span class="math">a_{ii}(u,v)</span> and <span class="math">a_{ii}(v,u)</span> to speed up assembly. In fact, we should have
+used the SYM flag already in the previous sections, since the form
+<span class="math">a(u,v) = \nabla u \cdot \nabla v</span> is also symmetric. This is however not the case
+for all forms and so the default value of the fourth parameter of add_biform() is UNSYM.</p>
+<p>The off-diagonal forms <span class="math">a_{12}(u_2, v_1)</span> and <span class="math">a_{21}(u_1, v_2)</span> are not
+(and cannot) be symmetric, since their arguments come from different spaces.
+However, we can see that <span class="math">a_{12}(u, v) = a_{21}(v, u)</span>, i.e., the corresponding blocks
+of the local stiffness matrix are transposes of each other. Here, the SYM flag
+has a different effect: it tells Hermes to take the block of the local stiffness
+matrix corresponding to the form <span class="math">a_{12}</span>, transpose it and copy it where a block
+corresponding to <span class="math">a_{21}</span> would belong, without evaluating <span class="math">a_{21}</span> at all (this is why
+we don&#8217;t add bilinear_form_1_0). This again speeds up the matrix assembly.
+You can also use the flag ANTISYM, which moreover inverts the sign of the block.
+This makes sense in the case where <span class="math">a_{ij}(u, v) = -a_{ji}(v, u)</span>.</p>
+<p>It is recommended that you start with the default (and safe) UNSYM flag for all
+forms when developing your project, and only optimize the evaluation of the forms when
+the code works well.</p>
+<p>With the WeakForm and spaces ready, we can initialize the linear system.
+The only difference is that we now have two spaces determining the discretization
+of the problem.</p>
+<div class="highlight-python"><pre>LinSystem sys(&amp;wf, &amp;umfpack);
+sys.set_spaces(2, &amp;xdisp, &amp;ydisp);</pre>
+</div>
+<p>All that is left is to assemble the stiffness matrix and solve the system.
+Since we have two equations and two spaces, we receive two solutions, one for each
+displacement component:</p>
+<div class="highlight-python"><pre>Solution xsln, ysln;
+sys.assemble();
+sys.solve(2, &amp;xsln, &amp;ysln);</pre>
+</div>
+<p>As in the previous sections, it is now possible to visualize the displacement
+solutions, e.g.,</p>
+<div class="highlight-python"><pre>ScalarView view("y displacement [m]");
+view.show(&amp;ysln);</pre>
+</div>
+<p>Usually, however, it is necessary to postprocess the solution in order to obtain more
+informative visualization. In elasticity problems, one is often interested in material
+stress, which is obtained by a formula combining the derivatives of the two displacements.
+Hermes implements postprocessing through <em>filters</em>. A filter is a special class
+which takes up to three Solutions, performs some computation and in the end acts
+as another Solution, which can be visualized, or even fed into another filter.
+Here, we can use the predefined filter VonMisesFilter, which calculates the
+Von Mises stress:</p>
+<div class="highlight-python"><pre>VonMisesFilter stress(&amp;xsln, &amp;ysln, mu, lambda);
+view.show(&amp;stress, EPS_HIGH, 0);</pre>
+</div>
+<p>The second parameter of show() is the visualization accuracy and can be
+EPS_LOW, EPS_NORMAL (default) and EPS_HIGH. The third parameter is
+the component number and is only valid for vector-valued (<span class="math">Hcurl</span>) solutions.</p>
+<p>Finally, in elasticity problems, it may be illustrative to distort the computational
+domain according to the calculated displacement. The function View::show() can be
+passed three more optional parameters, which represent the <span class="math">x</span> and <span class="math">y</span> displacement
+and a multiplier to make the displacements visible.</p>
+<div class="highlight-python"><pre>VonMisesFilter stress(&amp;xsln, &amp;ysln, mu, lambda);
+view.show(&amp;stress, EPS_HIGH, 0, &amp;xsln, &amp;ysln, 1.5e5);</pre>
+</div>
+<div align="center" class="align-center"><img alt="Elastic stress plotted on deformed domain." class="align-center" src="src/hermes2d/img/mises.png" style="width: 550px; height: 300px;" /></div>
+</div>
+<div class="section" id="time-dependent-problems">
+<h2>Time-Dependent Problems<a class="headerlink" href="#time-dependent-problems" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/09-timedep">09-timedep</a>.</p>
+<p>This section describes the implementation of a simple time-dependent
+heat transfer model that describes, in a naive approximation, how the St. Vitus cathedral
+in Prague responds to changes in the surrounding air temperature
+during one 24-hour cycle. The geometry is shown below:</p>
+<div align="center" class="align-center"><img alt="Model geometry and temperature distribution after 24 hours." class="align-center" src="src/hermes2d/img/vitus1.png" style="width: 400px; height: 500px;" /></div>
+<p>We will solve the standard heat transfer equation</p>
+<div class="math" id="equation-eqvit1">
+<p><span class="eqno">(5)</span><span class="math">c \varrho\frac{\partial T}{\partial t} - \lambda \Delta T = 0</span></p>
+</div><p>equipped with a Dirichlet condition</p>
+<div class="math">
+<p><span class="math">T = T_{init}</span></p>
+</div><p>on the bottom edge <span class="math">\Gamma_{ground}</span> and a Newton condition</p>
+<div class="math">
+<p><span class="math">\frac{\partial T}{\partial \nu} = \alpha(T_{ext}(t) - T)</span></p>
+</div><p>on the rest of the boundary <span class="math">\Gamma_{air}</span>. Here, <span class="math">c</span> is the heat capacity of the material,
+<span class="math">\varrho</span> the material density, <span class="math">\lambda</span> the thermal conductivity,
+<span class="math">T_{init}</span> the fixed temperature on the
+ground (same as the initial temperature of the building), and <span class="math">\alpha</span>
+the heat transfer coefficient
+between the building and the surrounding air. The surrounding air temperature
+<span class="math">T_{ext}</span> is time-dependent of the form</p>
+<div class="math">
+<p><span class="math">T_{ext}(t) = T_{init} + 10\sin(2\pi t/T_{final}),</span></p>
+</div><p>where <span class="math">T_{final}</span> is 24 hours (translated into seconds).</p>
+<p>Equation <a href="#equation-eqvit1">(5)</a> is also equipped with an initial condition of the
+form</p>
+<div class="math">
+<p><span class="math">T(x,y,0) = T_{init}(x,y) \ \ \ \mbox{in} \ \Omega.</span></p>
+</div><p>For simplicity we will use the implicit Euler method with a constant
+time step <span class="math">\tau</span>, which transforms equation <a href="#equation-eqvit1">(5)</a> into</p>
+<div class="math">
+<p><span class="math">c \varrho\frac{T^{n+1} - T^n}{\tau} - \lambda \Delta T^{n+1} = 0.</span></p>
+</div><p>The corresponding weak formulation is</p>
+<div class="math">
+<p><span class="math">\int_{\Omega} c \varrho\frac{T^{n+1}}{\tau} + \int_{\Omega} \lambda \nabla T^{n+1}\cdot \nabla v + \int_{\Gamma_{air}} \alpha \lambda T^{n+1}v = \int_{\Omega} c \varrho\frac{T^{n}}{\tau} + \int_{\Gamma_{air}} \alpha \lambda T_{ext}(t^{n+1})v.</span></p>
+</div><p>The implementation starts by defining the
+boundary condition types</p>
+<div class="highlight-python"><pre>int bc_types(int marker)
+{
+  if (marker == marker_ground) return BC_ESSENTIAL;
+  else return BC_NATURAL;
+}</pre>
+</div>
+<p>and values</p>
+<div class="highlight-python"><pre>scalar bc_values(int marker, double x, double y)
+{
+  if (marker == marker_ground) return T_INIT;
+}</pre>
+</div>
+<p>Then the space for the temperature <span class="math">T</span> is set up:</p>
+<div class="highlight-python"><pre>// set up spaces
+H1Space space(&amp;mesh, &amp;shapeset);
+space.set_bc_types(bc_types);
+space.set_bc_values(bc_values);
+space.set_uniform_order(P_INIT);</pre>
+</div>
+<p>The bilinear and linear forms are defined as follows:</p>
+<div class="highlight-python"><pre>template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return HEATCAP * RHO * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v) / TAU +
+         LAMBDA * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return HEATCAP * RHO * int_u_v&lt;Real, Scalar&gt;(n, wt, ext-&gt;fn[0], v) / TAU;
+}
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_surf(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return LAMBDA * ALPHA * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+template&lt;typename Real, typename Scalar&gt;
+Scalar linear_form_surf(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return LAMBDA * ALPHA * temp_ext(TIME) * int_v&lt;Real, Scalar&gt;(n, wt, v);
+}</pre>
+</div>
+<p>These forms are registered as follows:</p>
+<div class="highlight-python"><pre>// weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, bilinear_form&lt;double, double&gt;, bilinear_form&lt;Ord, Ord&gt;);
+wf.add_biform_surf(0, 0, bilinear_form_surf&lt;double, double&gt;, bilinear_form_surf&lt;Ord, Ord&gt;, marker_air);
+wf.add_liform(0, linear_form&lt;double, double&gt;, linear_form&lt;Ord, Ord&gt;, ANY, 1, &amp;tsln);
+wf.add_liform_surf(0, linear_form_surf&lt;double, double&gt;, linear_form_surf&lt;Ord, Ord&gt;, marker_air);</pre>
+</div>
+<p>Before entering the main iteration loop, we need to initialize the previous solution
+tsln with the initial condition <span class="math">T_{init}</span>.
+Besides holding the finite element solution, the Solution class
+can be forced to return zero, to return a constant, or to return an arbitrary function
+using the methods set_zero(), set_const() and set_exact(), respectively.
+Here we simply call set_const() and supply the initial temperature:</p>
+<div class="highlight-python"><pre>// set initial condition
+Solution tsln;
+tsln.set_const(&amp;mesh, T_INIT);</pre>
+</div>
+<p>We are now ready to start the iterative process. Since the stiffness matrix does
+not depend on the solution, it only needs to be assembled once in the first time
+step. For all remaining time steps it will be the same, and we just need to
+re-construct the load vector. This is done via the Boolean variable rhsonly
+which is set to false before the time stepping begins:</p>
+<div class="highlight-python"><pre>// assemble and solve
+ls.assemble(rhsonly);
+rhsonly = true;
+ls.solve(1, &amp;tsln);</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Tutorial Part I (Linear Problems)</a><ul>
+<li><a class="reference external" href="#finite-element-mesh">Finite Element Mesh</a><ul>
+<li><a class="reference external" href="#mesh-file-format">Mesh File Format</a></li>
+<li><a class="reference external" href="#nurbs-curves">NURBS Curves</a></li>
+<li><a class="reference external" href="#loading-mesh">Loading Mesh</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#setting-up-finite-element-space">Setting Up Finite Element Space</a></li>
+<li><a class="reference external" href="#solving-poisson-equation">Solving Poisson Equation</a></li>
+<li><a class="reference external" href="#boundary-conditions">Boundary Conditions</a><ul>
+<li><a class="reference external" href="#dirichlet-bc">Dirichlet BC</a></li>
+<li><a class="reference external" href="#neumann-bc">Neumann BC</a></li>
+<li><a class="reference external" href="#newton-bc">Newton BC</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#determination-of-quadrature-orders-in-weak-forms">Determination of Quadrature Orders in Weak Forms</a><ul>
+<li><a class="reference external" href="#automatic-order-determination">Automatic order determination</a></li>
+<li><a class="reference external" href="#manual-order-determination">Manual order determination</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#general-2nd-order-linear-equation">General 2nd-Order Linear Equation</a></li>
+<li><a class="reference external" href="#systems-of-equations">Systems of Equations</a></li>
+<li><a class="reference external" href="#time-dependent-problems">Time-Dependent Problems</a></li>
+</ul>
+</li>
+</ul>
+
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, hp-FEM group at UNR.
+      Last updated on Apr 22, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>

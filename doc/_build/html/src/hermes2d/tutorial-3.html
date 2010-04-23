@@ -1,0 +1,917 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial Part III (Nonlinear Problems) &mdash; Hermes2D Documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Hermes2D Documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-part-iii-nonlinear-problems">
+<h1>Tutorial Part III (Nonlinear Problems)<a class="headerlink" href="#tutorial-part-iii-nonlinear-problems" title="Permalink to this headline">¶</a></h1>
+<p>The next part of the tutorial assumes that the reader is familiar with basic concepts
+covered in the first part. We will discuss the Newton&#8217;s method for nonlinear PDE and
+PDE systems, for both stationary and time-dependent models. At the end of this chapter,
+the reader will be able to solve time-dependent nonlinear problems adaptively using
+dynamical meshes.</p>
+<div class="section" id="the-newton-s-method">
+<h2>The Newton&#8217;s Method<a class="headerlink" href="#the-newton-s-method" title="Permalink to this headline">¶</a></h2>
+<p>Hermes can solve nonlinear problems via the Newton&#8217;s method, both single nonlinear
+PDE and nonlinear PDE systems. We begin with explaining how the Newton&#8217;s method works, and
+concrete implementation details will be shown after that.
+Consider a simple model problem of the form</p>
+<div class="math" id="equation-newton0">
+<p><span class="eqno">(1)</span><span class="math">-\nabla \cdot (\lambda(u)\nabla u) - f(\bfx) = 0, \ \ \ u = 0 \ \mbox{on}\ \partial \Omega.</span></p>
+</div><p>Note that when using the Newton&#8217;s method, it is customary to have
+everything on the left-hand side. The corresponding discrete problem has the form</p>
+<div class="math">
+<p><span class="math">\int_{\Omega} \lambda(u)\nabla u(\bfx) \cdot \nabla v_i(\bfx)\, \mbox{d}\bfx
+- \int_{\Omega} f(\bfx)v_i(\bfx) \, \mbox{d}\bfx\ \ \ \mbox{for all} \ i = 1, 2, \ldots, N,</span></p>
+</div><p>where <span class="math">v_i</span> are the standard test functions and</p>
+<div class="math">
+<p><span class="math">u(\bfY) = \sum_{j=1}^N y_j v_j.</span></p>
+</div><p>Here <span class="math">\bfY = (y_1, y_2, \ldots, y_N)^T</span> is the vector of unknown coefficients.
+The nonlinear discrete problem can be written in the compact form</p>
+<div class="math">
+<p><span class="math">\bfF(\bfY) = {\bf 0},</span></p>
+</div><p>where <span class="math">\bfF = (F_1, F_2, \ldots, F_N)^T</span> is the residual vector defined by</p>
+<div class="math">
+<p><span class="math">F_i(\bfY) =  \int_{\Omega} \lambda(u)\nabla u \cdot \nabla v_i
+- f v_i \, \mbox{d}\bfx.</span></p>
+</div><p>The Jacobi matrix <span class="math">\bfJ(\bfY) = D\bfF/D\bfY</span> has the same sparsity structure as the
+standard stiffness matrix that we know from linear problems. In fact, when the
+problem is linear then the Jacobi matrix and the stiffness matrix are the same
+thing. Using the chain rule of differentiation, we calculate that on the
+position <span class="math">ij</span>, the Jacobi matrix has the value</p>
+<div class="math">
+<p><span class="math">J_{ij}(\bfY) =  \frac{\partial F_i}{\partial y_j} =
+\int_{\Omega} \left[ \frac{\partial \lambda}{\partial u} \frac{\partial u}{\partial y_j}
+\nabla u + \lambda(u)\frac{\partial \nabla u}{\partial y_j} \right] \cdot \nabla v_i \, \mbox{d}\bfx.</span></p>
+</div><p>To this end, note that</p>
+<div class="math">
+<p><span class="math">\frac{\partial u}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j v_j = v_k</span></p>
+</div><p>and</p>
+<div class="math">
+<p><span class="math">\frac{\partial \nabla u}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j \nabla v_j = \nabla v_k.</span></p>
+</div><p>Using these relations, we obtain</p>
+<div class="math">
+<p><span class="math">J_{ij}(\bfY) =
+\int_{\Omega} \left[ \frac{\partial \lambda}{\partial u}(u) v_j
+\nabla u + \lambda(u)\nabla v_j \right] \cdot \nabla v_i \, \mbox{d}\bfx.</span></p>
+</div><p>Let&#8217;s assume that the Jacobi matrix has been assembled.
+The Newton&#8217;s method is written formally as</p>
+<div class="math">
+<p><span class="math">\bfY_{\!\!n+1} = \bfY_{\!\!n} - \bfJ^{-1}(\bfY_{\!\!n}) \bfF(\bfY_{\!\!n}),</span></p>
+</div><p>but a more practical formula to work with is</p>
+<div class="math">
+<p><span class="math">\bfJ(\bfY_{\!\!n})\delta \bfY_{\!\!n+1} =  - \bfF(\bfY_{\!\!n}).</span></p>
+</div><p>This is a system of linear algebraic equations that needs to be solved in every Newton&#8217;s
+iteration. The Newton&#8217;s method will stop when <span class="math">\bfF(\bfY_{\!\!n+1})</span> is sufficiently close
+to the zero vector.</p>
+<div class="section" id="a-remark-on-the-linear-case">
+<h3>A remark on the linear case<a class="headerlink" href="#a-remark-on-the-linear-case" title="Permalink to this headline">¶</a></h3>
+<p>In the linear case we have</p>
+<div class="math">
+<p><span class="math">\bfF(\bfY) = \bfJ(\bfY)\bfY - \bfb,</span></p>
+</div><p>where <span class="math">\bfS = \bfJ(\bfY)</span> is a constant stiffness matrix and <span class="math">\bfb</span> a load vector.
+The Newton&#8217;s method is now</p>
+<div class="math">
+<p><span class="math">\bfS\bfY_{\!\!n+1} = \bfJ(\bfY_{\!\!n})\bfY_{\!\!n}
+- \bfJ(\bfY_{\!\!n})\bfY_{\!\!n} + \bfb = \bfb.</span></p>
+</div><p>Therefore, the Newton&#8217;s method will converge in one iteration.</p>
+</div>
+</div>
+<div class="section" id="constant-initial-guess">
+<h2>Constant Initial Guess<a class="headerlink" href="#constant-initial-guess" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/13-newton-elliptic-1">13-newton-elliptic-1</a>.</p>
+<p>We will solve the nonlinear model problem defined in the previous section,</p>
+<div class="math">
+<p><span class="math">-\nabla \cdot (\lambda(u)\nabla u) - f(x,y) = 0, \ \ \ u = 0 \ \mbox{on}\ \partial \Omega.</span></p>
+</div><p>One possible interpretation of this equation is stationary heat transfer where the thermal
+conductivity <span class="math">\lambda</span> depends on the temperature <span class="math">u</span>.
+Our domain is a square <span class="math">\Omega = (-10,10)^2</span>, <span class="math">f(x,y) = 1</span>, and the nonlinearity <span class="math">\lambda</span> has the form</p>
+<div class="math">
+<p><span class="math">\lambda(u) = 1 + u^\alpha.</span></p>
+</div><p>Recall that <span class="math">\lambda</span> must be entirely positive or entirely negative for the problem to be solvable, so it is safe
+to restrict <span class="math">\alpha</span> to be an even nonnegative integer. Recall from the previous section that</p>
+<div class="math">
+<p><span class="math">F_i(\bfY) =  \int_{\Omega} \lambda(u)\nabla u \cdot \nabla v_i
+- f v_i \, \mbox{d}x\mbox{d}y.</span></p>
+</div><p>and</p>
+<div class="math">
+<p><span class="math">J_{ij}(\bfY) =
+\int_{\Omega} \left[ \frac{\partial \lambda}{\partial u}(u) v_j
+\nabla u + \lambda(u)\nabla v_j \right] \cdot \nabla v_i \, \mbox{d}x\mbox{d}y.</span></p>
+</div><p>In the code, this becomes</p>
+<div class="highlight-python"><pre>// Heat sources (can be a general function of 'x' and 'y')
+template&lt;typename Real&gt;
+Real heat_src(Real x, Real y)
+{
+  return 1.0;
+}
+
+// Jacobian matrix
+template&lt;typename Real, typename Scalar&gt;
+Scalar jac(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* u_prev = ext-&gt;fn[0];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (dlam_du(u_prev-&gt;val[i]) * u-&gt;val[i] * (u_prev-&gt;dx[i] * v-&gt;dx[i] + u_prev-&gt;dy[i] * v-&gt;dy[i])
+                       + lam(u_prev-&gt;val[i]) * (u-&gt;dx[i] * v-&gt;dx[i] + u-&gt;dy[i] * v-&gt;dy[i]));
+
+  return result;
+}
+
+// Fesidual vector
+template&lt;typename Real, typename Scalar&gt;
+Scalar res(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* u_prev = ext-&gt;fn[0];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (lam(u_prev-&gt;val[i]) * (u_prev-&gt;dx[i] * v-&gt;dx[i] + u_prev-&gt;dy[i] * v-&gt;dy[i])
+                       - heat_src(e-&gt;x[i], e-&gt;y[i]) * v-&gt;val[i]);
+  return result;
+}</pre>
+</div>
+<p>Notice that the basis function <span class="math">v_j</span> and the test function
+<span class="math">v_i</span> are entering the weak forms via the parameters u and v, respectively (same as for linear problems).
+The user does not have to
+take care about their indices <span class="math">i</span> and <span class="math">j</span>, this is handled by Hermes outside the weak forms.</p>
+<p>The code snippet above also shows how values and derivatives of the solution <span class="math">u</span> can be accessed via
+the ExtData structure, and the coordinates of the integration points via the Geom structure.
+The contents of ExtData is user-defined and the Geom structure contains geometrical information
+including the unit normal and tangential vectors to the boundary at the integration points
+(also for curved boundaries). See the file
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/forms.h">src/forms.h</a> for more details.</p>
+<p>The weak forms are registered as usual, except that the previous solution u_prev has to be declared in advance:</p>
+<div class="highlight-python"><pre>// previous solution for the Newton's iteration
+Solution u_prev;
+
+// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, callback(jac), UNSYM, ANY, 1, &amp;u_prev);
+wf.add_liform(0, callback(res), ANY, 1, &amp;u_prev);</pre>
+</div>
+<p>The nonlinear system needs to be initialized:</p>
+<div class="highlight-python"><pre>// initialize the nonlinear system and solver
+UmfpackSolver umfpack;
+NonlinSystem nls(&amp;wf, &amp;umfpack);
+nls.set_spaces(1, &amp;space);
+nls.set_pss(1, &amp;pss);</pre>
+</div>
+<p>In this example, we set the initial guess for the Newton&#8217;s iteration to be
+a constant function:</p>
+<div class="highlight-python"><pre>// use a constant function as the initial guess
+u_prev.set_const(&amp;mesh, 3.0);
+nls.set_ic(&amp;u_prev, &amp;u_prev, PROJ_TYPE);</pre>
+</div>
+<p>The function set_ic() takes an initial guess (the first argument),
+projects it on the finite element mesh, and stores the result in the
+second argument.
+The projection norm PROJ_TYPE needs to be compatible with the Sobolev
+space where the solution is sought (<span class="math">H^1</span> in this example).
+Hermes currently provides <span class="math">H^1</span>-projection (PROJ_TYPE = 1) and
+<span class="math">L^2</span>-projection (PROJ_TYPE = 0). Other projections (H(curl), H(div) etc.)
+will be added later when a need arises.</p>
+<p>A more advanced example showing how to define a general initial guess
+and how to deal with nonzero Dirichlet boundary conditions will follow.
+The Newton&#8217;s loop is very simple,</p>
+<div class="highlight-python"><pre>// Newton's loop
+nls.solve_newton_1(&amp;u_prev, NEWTON_TOL, NEWTON_MAX_ITER);</pre>
+</div>
+<p>Note that up to three Filters can be passed to the function
+as optional parameters at the end. This function can be found in
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/nonlinsystem.h">src/nonlinsystem.h</a>.</p>
+<p>Approximate solution <span class="math">u</span> for <span class="math">\alpha = 2</span>:</p>
+<div align="center" class="align-center"><img alt="result for alpha = 2" class="align-center" src="src/hermes2d/img/example-13/newton-ellipt-1-2.png" style="width: 600px; height: 400px;" /></div>
+<p>Approximate solution <span class="math">u</span> for <span class="math">\alpha = 4</span>:</p>
+<div align="center" class="align-center"><img alt="result for alpha = 4" class="align-center" src="src/hermes2d/img/example-13/newton-ellipt-1-4.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="general-initial-guess">
+<h2>General Initial Guess<a class="headerlink" href="#general-initial-guess" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/14-newton-elliptic-2">14-newton-elliptic-2</a>.</p>
+<p>We will solve the nonlinear model problem from the previous section again,</p>
+<div class="math">
+<p><span class="math">-\nabla \cdot (\lambda(u)\nabla u) - f(x,y) = 0 \ \ \ \mbox{in } \Omega = (-10,10)^2</span></p>
+</div><p>but now with nonhomogeneous Dirichlet boundary conditions</p>
+<div class="math">
+<p><span class="math">u(x, y) = (x+10)(y+10)/100 \ \ \ \mbox{on } \partial \Omega</span></p>
+</div><p>and with a general initial guess init_guess(x,y).</p>
+<p>The treatment of the Dirichlet boundary conditions in the code looks as follows:</p>
+<div class="highlight-python"><pre>// This function is used to define Dirichlet boundary conditions
+double dir_lift(double x, double y, double&amp; dx, double&amp; dy) {
+  dx = (y+10)/10.;
+  dy = (x+10)/10.;
+  return (x+10)*(y+10)/100.;
+}
+
+// Boundary condition type (essential = Dirichlet)
+int bc_types(int marker)
+{
+  return BC_ESSENTIAL;
+}
+
+// Dirichlet boundary condition values
+scalar bc_values(int marker, double x, double y)
+{
+  double dx, dy;
+  return dir_lift(x, y, dx, dy);
+}</pre>
+</div>
+<p>The initial guess for the Newton&#8217;s method will be chosen to be the
+Dirichlet lift function elevated by 2:</p>
+<div class="highlight-python"><pre>// This function will be projected on the initial mesh and
+// used as initial guess for the Newton's method
+scalar init_guess(double x, double y, double&amp; dx, double&amp; dy)
+{
+  // using the Dirichlet lift elevated by two
+  double val = dir_lift(x, y, dx, dy) + 2;
+}</pre>
+</div>
+<p>The initial guess is projected to the initial mesh using the set_ic()
+method of the Nonlinsystem class:</p>
+<div class="highlight-python"><pre>// project the function init_guess() on the mesh
+// to obtain initial guess u_prev for the Newton's method
+nls.set_ic(init_guess, &amp;mesh, &amp;u_prev, PROJ_TYPE);</pre>
+</div>
+<p>This function creates an orthogonal projection of the initial guess
+on the mesh &#8220;mesh&#8221; and stores the result in u_prev.
+The following figure shows the
+<span class="math">H^1</span>-projection of the above-defined initial guess init_guess():</p>
+<div align="center" class="align-center"><img alt="H1 projection" class="align-center" src="src/hermes2d/img/example-14/proj-h1.png" style="width: 600px; height: 350px;" /></div>
+<p>The Newton&#8217;s iteration is performed again using</p>
+<div class="highlight-python"><pre>// Newton's loop
+nls.solve_newton_1(&amp;u_prev, NEWTON_TOL, NEWTON_MAX_ITER);</pre>
+</div>
+<p>The converged solution after 7 steps of the Newton&#8217;s
+method looks as follows:</p>
+<div align="center" class="align-center"><img alt="approximate solution" class="align-center" src="src/hermes2d/img/example-14/solution.png" style="width: 600px; height: 350px;" /></div>
+</div>
+<div class="section" id="newton-s-method-and-adaptivity">
+<h2>Newton&#8217;s Method and Adaptivity<a class="headerlink" href="#newton-s-method-and-adaptivity" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/15-newton-elliptic-adapt">15-newton-elliptic-adapt</a>.</p>
+<p>We will keep the simple model problem</p>
+<div class="math">
+<p><span class="math">-\nabla \cdot (\lambda(u)\nabla u) - f(x,y) = 0 \ \ \ \mbox{in } \Omega = (-10,10)^2,</span></p>
+</div><p>equipped with nonhomogeneous Dirichlet boundary conditions</p>
+<div class="math">
+<p><span class="math">u(x, y) = (x+10)(y+10)/100 \ \ \ \mbox{on } \partial \Omega,</span></p>
+</div><p>but this time it will be solved using automatic adaptivity. As usual in Hermes, adaptivity
+will be guided by the difference between a coarse and fine mesh approximations. At the beginning,
+the initial condition is projected on the coarse mesh:</p>
+<div class="highlight-python"><pre>// project the function init_guess() on the coarse mesh
+// to obtain initial guess u_prev for the Newton's method
+nls.set_ic(init_guess, &amp;mesh, &amp;u_prev, PROJ_TYPE);</pre>
+</div>
+<p>Then we solve the nonlinear problem on the coarse mesh and store
+the coarse mesh solution:</p>
+<div class="highlight-python"><pre>// Newton's loop on the coarse mesh
+info("---- Solving on coarse mesh:\n");
+if (!nls.solve_newton_1(&amp;u_prev, NEWTON_TOL_COARSE, NEWTON_MAX_ITER)) error("Newton's method did not converge.");
+
+// store the result in sln_coarse
+sln_coarse.copy(&amp;u_prev);</pre>
+</div>
+<p>Next the nonlinear problem on the fine mesh is initialized as follows:</p>
+<div class="highlight-python"><pre>// Setting initial guess for the Newton's method on the fine mesh
+RefNonlinSystem rnls(&amp;nls);
+rnls.prepare();
+if (a_step == 1) rnls.set_ic(&amp;sln_coarse, &amp;u_prev, PROJ_TYPE);
+else rnls.set_ic(&amp;sln_fine, &amp;u_prev, PROJ_TYPE);</pre>
+</div>
+<p>Notice that we only use sln_coarse as the initial guess on the fine mesh
+in the first adaptivity step when we do not have any fine mesh solution yet,
+otherwise a projection of the last fine mesh solution is used. Then we perform the
+Newton&#8217;s loop on the fine mesh and store the result in sln_fine:</p>
+<div class="highlight-python"><pre>// Newton's loop on the fine mesh
+if (!rnls.solve_newton_1(&amp;u_prev, NEWTON_TOL_FINE, NEWTON_MAX_ITER)) error("Newton's method did not converge.");
+
+// stote the fine mesh solution in sln_fine
+sln_fine.copy(&amp;u_prev);</pre>
+</div>
+<p>Now we have the desired solution pair, and the error estimate is calculated as usual:</p>
+<div class="highlight-python"><pre>// calculate element errors and total error estimate
+H1OrthoHP hp(1, &amp;space);
+err_est = hp.calc_error(&amp;sln_coarse, &amp;sln_fine) * 100;
+if (verbose) info("Error estimate: %g%%", err_est);</pre>
+</div>
+<p>After adapting the mesh, we must not forget to update the coarse mesh solution.
+This can be done either by just projecting the fine mesh solution onto
+the new coarse mesh, or by solving in addition to that the nonlinear
+problem on the new coarse mesh:</p>
+<div class="highlight-python"><pre>// if err_est too large, adapt the mesh
+if (err_est &lt; ERR_STOP) done = true;
+else {
+  hp.adapt(THRESHOLD, STRATEGY, ADAPT_TYPE, ISO_ONLY, MESH_REGULARITY);
+  int ndof = assign_dofs(&amp;space);
+  if (ndof &gt;= NDOF_STOP) done = true;
+
+  // project the fine mesh solution on the new coarse mesh
+  info("---- Projecting fine mesh solution on new coarse mesh:\n");
+  nls.set_ic(&amp;sln_fine, &amp;u_prev, PROJ_TYPE);
+
+  if (NEWTON_ON_COARSE_MESH) {
+    // Newton's loop on the coarse mesh
+    info("---- Solving on coarse mesh:\n");
+    if (!nls.solve_newton_1(&amp;u_prev, NEWTON_TOL_COARSE, NEWTON_MAX_ITER)) error("Newton's method did not converge.");
+  }
+
+  // store the result in sln_coarse
+  sln_coarse.copy(&amp;u_prev);
+}</pre>
+</div>
+<p>The parameter NEWTON_ON_COARSE_MESH is provided to allow the user to do his
+own experiments, but the default value is NEWTON_ON_COARSE_MESH = false.
+In our experience, the Newton&#8217;s loop on the coarse mesh can be skipped
+in most cases since it does not affect the convergence and one saves some
+CPU time. This is illustrated in the following two convergence comparisons:</p>
+<p>Convergence in the number of DOF (with and without Newton solve on coarse mesh):</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph for tutorial example 15." class="align-center" src="src/hermes2d/img/example-15/conv_dof_compar.png" style="width: 600px; height: 400px;" /></div>
+<p>Convergence in CPU time (with and without Newton solve on coarse mesh):</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph for tutorial example 15." class="align-center" src="src/hermes2d/img/example-15/conv_cpu_compar.png" style="width: 600px; height: 400px;" /></div>
+<p>In the following we show the resulting meshes (corresponding to
+NEWTON_ON_COARSE_MESH = false). The solution itself is not
+shown since the reader knows it from the previous example.</p>
+<p>Resulting coarse mesh.</p>
+<div align="center" class="align-center"><img alt="coarse mesh" class="align-center" src="src/hermes2d/img/example-15/mesh_coarse.png" style="width: 500px; height: 400px;" /></div>
+<p>Resulting fine mesh.</p>
+<div align="center" class="align-center"><img alt="fine mesh" class="align-center" src="src/hermes2d/img/example-15/mesh_fine.png" style="width: 500px; height: 400px;" /></div>
+</div>
+<div class="section" id="nonlinear-parabolic-problem">
+<h2>Nonlinear Parabolic Problem<a class="headerlink" href="#nonlinear-parabolic-problem" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/16-newton-timedep-heat">16-newton-timedep-heat</a>.</p>
+<p>We will employ the Newton&#8217;s method to solve a nonlinear parabolic PDE discretized
+in time by means of the implicit Euler method. To keep things simple, our model problem is
+a time-dependent version of the nonlinear equation used in the previous three sections,</p>
+<div class="math">
+<p><span class="math">\frac{\partial u}{\partial t} -\nabla \cdot (\lambda(u)\nabla u) - f(x,y) = 0.</span></p>
+</div><p>Again we prescribe nonhomogeneous Dirichlet boundary conditions</p>
+<div class="math">
+<p><span class="math">u(x, y) = (x+10)(y+10)/100 \ \ \ \mbox{on } \partial \Omega,</span></p>
+</div><p>and the same function is used to define the initial condition. The
+problem will be solved in the square <span class="math">\Omega = (-10,10)^2</span> and time interval <span class="math">(0, T)</span>.</p>
+<p>The weak formulation of the time-discretized problem reads</p>
+<div class="math">
+<p><span class="math">\int_{\Omega} \frac{u^{n+1} - u^n}{\tau}v + \lambda(u^{n+1})\nabla u^{n+1}\cdot \nabla v - fv\, \mbox{d}x\mbox{d}y = 0,</span></p>
+</div><p>where the indices <span class="math">n</span> and <span class="math">n+1</span> indicate the previous and new time level, respectively. Hence in each
+time step we need to solve a <em>time-independent</em> nonlinear problem, and this is something we learned
+in the previous sections. The weak forms for the Newton&#8217;s method from the previous sections only
+need to be enhanced with a simple term containing the time step <span class="math">\tau</span> (called TAU):</p>
+<div class="highlight-python"><pre>// Jacobian matrix
+template&lt;typename Real, typename Scalar&gt;
+Scalar jac(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* u_prev_newton = ext-&gt;fn[0];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (u-&gt;val[i] * v-&gt;val[i] / TAU + dlam_du(u_prev_newton-&gt;val[i]) * u-&gt;val[i] *
+                       (u_prev_newton-&gt;dx[i] * v-&gt;dx[i] + u_prev_newton-&gt;dy[i] * v-&gt;dy[i])
+                       + lam(u_prev_newton-&gt;val[i]) * (u-&gt;dx[i] * v-&gt;dx[i] + u-&gt;dy[i] * v-&gt;dy[i]));
+  return result;
+}</pre>
+</div>
+<p>Here the function u_prev_newton plays the role of u_prev from the previous sections - this is the
+previous solution inside the Newton&#8217;s iteration. Note that the previous time level solution
+<span class="math">u^n</span> that we call u_prev_time is not used in the Jacobian. It is used in the residual only:</p>
+<div class="highlight-python"><pre>// Fesidual vector
+template&lt;typename Real, typename Scalar&gt;
+Scalar res(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* u_prev_newton = ext-&gt;fn[0];
+  Func&lt;Scalar&gt;* u_prev_time = ext-&gt;fn[1];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * ((u_prev_newton-&gt;val[i] - u_prev_time-&gt;val[i]) * v-&gt;val[i] / TAU +
+                      lam(u_prev_newton-&gt;val[i]) * (u_prev_newton-&gt;dx[i] * v-&gt;dx[i] + u_prev_newton-&gt;dy[i] * v-&gt;dy[i])
+                       - heat_src(e-&gt;x[i], e-&gt;y[i]) * v-&gt;val[i]);
+  return result;
+}</pre>
+</div>
+<p>Notice that the function u_prev_newton evolves during the Newton&#8217;s iteration
+but the previous time level solution u_prev_time only is updated after the time step
+is finished. The weak forms and the previous solutions are registered as usual:</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, callback(jac), UNSYM, ANY, 1, &amp;u_prev_newton);
+wf.add_liform(0, callback(res), ANY, 2, &amp;u_prev_newton, &amp;u_prev_time);</pre>
+</div>
+<p>The entire time-stepping loop looks as follows:</p>
+<div class="highlight-python"><pre>// time stepping loop
+double current_time = 0.0;
+int t_step = 1;
+do {
+  info("\n**** Time step %d, t = %g s:\n", t_step++, current_time);
+
+  // Newton's method
+  nls.solve_newton_1(&amp;u_prev_newton, NEWTON_TOL, NEWTON_MAX_ITER);
+
+  // update previous time level solution
+  u_prev_time.copy(&amp;u_prev_newton);
+
+  // update time
+  current_time += TAU;
+
+} while (current_time &lt; T_FINAL);</pre>
+</div>
+<p>The stationary solution is not shown since we already saw it in the previous sections.</p>
+</div>
+<div class="section" id="flame-propagation-problem">
+<h2>Flame Propagation Problem<a class="headerlink" href="#flame-propagation-problem" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/17-newton-timedep-flame">17-newton-timedep-flame</a>.</p>
+<p>We will employ the Newton&#8217;s method to solve a nonlinear system of two parabolic equations
+describing a very simple flame propagation model (laminar flame, no fluid mechanics involved).
+The computational domain shown below contains in the middle a narrow portion (cooling rods)
+whose purpose is to slow down the chemical reaction:</p>
+<div align="center" class="align-center"><img alt="computational domain" class="align-center" src="src/hermes2d/img/example-17/domain.png" style="width: 760px;" /></div>
+<p>The equations for the temperature <span class="math">T</span> and species concentration <span class="math">Y</span> have the form</p>
+<div class="math">
+<p><span class="math">\frac{\partial T}{\partial t} - \Delta T = \omega(T, Y),\\
+\frac{\partial Y}{\partial t} - \frac{1}{Le}\Delta Y = -\omega(T, Y).</span></p>
+</div><p>Boundary conditions are Dirichlet <span class="math">T = 1</span> and <span class="math">Y = 0</span> on the inlet,
+Newton <span class="math">\partial T/\partial n = - \kappa T</span> on the cooling rods,
+and Neumann <span class="math">\partial T/\partial n = 0</span>, <span class="math">\partial Y/\partial n = 0</span> elsewhere.
+The objective of the computation is to obtain the <em>reaction rate</em> defined
+by the Arrhenius law,</p>
+<div class="math">
+<p><span class="math">\omega(T, Y) = \frac{\beta^2}{2{\rm Le}} Y e^{\frac{\beta(T - 1)}{1 + \alpha(T-1)}}.</span></p>
+</div><p>Here <span class="math">\alpha</span> is the gas expansion coefficient in a flow with nonconstant density,
+<span class="math">\beta</span> the non-dimensional activation energy, and
+<span class="math">\rm Le</span> the Lewis number (ratio of diffusivity of heat and diffusivity
+of mass). Both <span class="math">\theta</span>, <span class="math">0 \le \theta \le 1</span> and
+<span class="math">Y</span>, <span class="math">0 \le Y \le 1</span> are dimensionless and so is the time <span class="math">t</span>.</p>
+<p>Time integration is performed using a second-order implicit BDF formula</p>
+<div class="math">
+<p><span class="math">T^{n+1} = -\frac{1}{2} T_1^{n+1} + \frac{3}{2} T_2^{n+1},\\
+Y^{n+1} = -\frac{1}{2} Y_1^{n+1} + \frac{3}{2} Y_2^{n+1},</span></p>
+</div><p>that is obtained using a combination of the following two first-order methods:</p>
+<div class="math">
+<p><span class="math">\frac{T_1^{n+1} - T^{n}}{\tau} = \Delta T_1^{n+1} + \omega(T_1^{n+1}, Y_1^{n+1}),\\
+\frac{Y_1^{n+1} - Y^{n}}{\tau} = \frac{1}{\rm Le} \ \Delta Y_1^{n+1} - \omega(\theta_1^{n+1}, Y_1^{n+1}),</span></p>
+</div><p>and</p>
+<div class="math">
+<p><span class="math">\frac{T_2^{n+1} - T^{n}}{\tau} = \frac{2}{3}\left(\Delta T_2^{n+1} + \omega(T_2^{n+1}, Y_2^{n+1})\right) +                                            \frac{1}{3}\left(\Delta T_2^{n} + \omega(T_2^{n}, Y_2^{n})\right),\\
+\frac{Y_2^{n+1} - Y^{n}}{\tau} = \frac{2}{3}\left(\frac{1}{\rm Le}\ \Delta Y_2^{n+1} - \omega(T_2^{n+1}, Y_2^{n+1})\right) +
+                                    \frac{1}{3}\left(\frac{1}{\rm Le}\ \Delta Y_2^{n} - \omega(T_2^{n}, Y_2^{n})\right).</span></p>
+</div><p>Problem parameters are chosen as</p>
+<div class="highlight-python"><pre>// Problem constants
+const double Le    = 1.0;
+const double alpha = 0.8;
+const double beta  = 10.0;
+const double kappa = 0.1;
+const double x1 = 9.0;</pre>
+</div>
+<p>It is worth mentioning that the initial conditions for <span class="math">T</span> and <span class="math">Y</span>,</p>
+<div class="highlight-python"><pre>// Initial conditions
+scalar temp_ic(double x, double y, scalar&amp; dx, scalar&amp; dy)
+  { return (x &lt;= x1) ? 1.0 : exp(x1 - x); }
+
+scalar conc_ic(double x, double y, scalar&amp; dx, scalar&amp; dy)
+  { return (x &lt;= x1) ? 0.0 : 1.0 - exp(Le*(x1 - x)); }</pre>
+</div>
+<p>are defined as exact functions</p>
+<div class="highlight-python"><pre>// setting initial conditions
+t_prev_time_1.set_exact(&amp;mesh, temp_ic); y_prev_time_1.set_exact(&amp;mesh, conc_ic);
+t_prev_time_2.set_exact(&amp;mesh, temp_ic); y_prev_time_2.set_exact(&amp;mesh, conc_ic);
+t_prev_newton.set_exact(&amp;mesh, temp_ic);  y_prev_newton.set_exact(&amp;mesh, conc_ic);</pre>
+</div>
+<p>Here the pairs of solutions (t_prev_time_1, y_prev_time_1) and (t_prev_time_2, y_prev_time_2)
+correspond to the two first-order time-stepping methods described above. and
+(t_prev_newton, y_prev_newton) are used to store the previous step approximation
+in the Newton&#8217;s method. The reaction rate <span class="math">\omega</span> and its derivatives are handled
+via filters,</p>
+<div class="highlight-python"><pre>// defining filters for the reaction rate omega
+DXDYFilter omega(omega_fn, &amp;t_prev_newton, &amp;y_prev_newton);
+DXDYFilter omega_dt(omega_dt_fn, &amp;t_prev_newton, &amp;y_prev_newton);
+DXDYFilter omega_dy(omega_dy_fn, &amp;t_prev_newton, &amp;y_prev_newton);</pre>
+</div>
+<p>Details on the functions omega_fn, omega_dt_fn, omega_dy_fn and the weak
+forms can be found in the file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/17-newton-timedep-flame/forms.cpp">forms.cpp</a>
+Here is how we register the weak forms,</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(2);
+wf.add_biform(0, 0, callback(newton_bilinear_form_0_0), UNSYM, ANY, 1, &amp;omega_dt);
+wf.add_biform_surf(0, 0, callback(newton_bilinear_form_0_0_surf), 3);
+wf.add_biform(0, 1, callback(newton_bilinear_form_0_1), UNSYM, ANY, 1, &amp;omega_dy);
+wf.add_biform(1, 0, callback(newton_bilinear_form_1_0), UNSYM, ANY, 1, &amp;omega_dt);
+wf.add_biform(1, 1, callback(newton_bilinear_form_1_1), UNSYM, ANY, 1, &amp;omega_dy);
+wf.add_liform(0, callback(newton_linear_form_0), ANY, 4, &amp;t_prev_newton, &amp;t_prev_time_1, &amp;t_prev_time_2, &amp;omega);
+wf.add_liform_surf(0, callback(newton_linear_form_0_surf), 3, 1, &amp;t_prev_newton);
+wf.add_liform(1, callback(newton_linear_form_1), ANY, 4, &amp;y_prev_newton, &amp;y_prev_time_1, &amp;y_prev_time_2, &amp;omega);</pre>
+</div>
+<p>and how we initialize the nonlinear system and solver:</p>
+<div class="highlight-python"><pre>// initialize the nonlinear system and solver
+UmfpackSolver umfpack;
+NonlinSystem nls(&amp;wf, &amp;umfpack);
+nls.set_spaces(2, &amp;tspace, &amp;cspace);
+nls.set_pss(1, &amp;pss);
+nls.set_ic(&amp;t_prev_time_1, &amp;y_prev_time_1, &amp;t_prev_newton, &amp;y_prev_newton, PROJ_TYPE);</pre>
+</div>
+<p>The time stepping loop looks as follows, notice the visualization of <span class="math">\omega</span>
+through a DXDYFilter:</p>
+<div class="highlight-python"><pre>// time stepping loop
+double current_time = 0.0;
+int t_step = 0;
+do {
+  info("\n**** Time step %d, t = %g s:\n", ++t_step, current_time);
+
+  // Newton's method
+  nls.solve_newton_2(&amp;t_prev_newton, &amp;y_prev_newton, NEWTON_TOL, NEWTON_MAX_ITER,
+                     &amp;omega, &amp;omega_dt, &amp;omega_dy);
+
+  // visualization
+  DXDYFilter omega_view(omega_fn, &amp;t_prev_newton, &amp;y_prev_newton);
+  rview.set_min_max_range(0.0,2.0);
+  char title[100];
+  sprintf(title, "Reaction rate, t = %g", current_time);
+  rview.set_title(title);
+  rview.show(&amp;omega_view);
+
+  // update current time
+  current_time += TAU;
+
+  // store two previous time solutions
+  t_prev_time_2.copy(&amp;t_prev_time_1);
+  y_prev_time_2.copy(&amp;y_prev_time_1);
+  t_prev_time_1.copy(&amp;t_prev_newton);
+  y_prev_time_1.copy(&amp;y_prev_newton);
+} while (current_time &lt;= T_FINAL);</pre>
+</div>
+<p>A few snapshots of the reaction rate <span class="math">\omega</span> are shown below:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-17/sol1.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-17/sol2.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-17/sol3.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-17/sol4.png" style="width: 800px;" /></div>
+</div>
+<div class="section" id="navier-stokes-equations">
+<h2>Navier-Stokes Equations<a class="headerlink" href="#navier-stokes-equations" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/18-newton-timedep-ns">18-newton-timedep-ns</a>.</p>
+<p>In this example, the time-dependent laminar incompressible Navier-Stokes equations are
+discretized in time via the implicit Euler method. If NEWTON == true,
+the Newton&#8217;s method is used to solve the nonlinear problem at each time
+step. If NEWTON == false, the convective term only is linearized using the
+velocities from the previous time step. Obviously the latter approach is wrong,
+but people do this frequently because it is faster and simpler to implement.
+Therefore we include this case for comparison purposes. We also show how
+to use discontinuous (<span class="math">L^2</span>) elements for pressure and thus make the
+velocity discreetely divergence free. Comparison to approximating the
+pressure with the standard (continuous) Taylor-Hood elements is shown.</p>
+<p>The computational domain is a rectangular channel containing a
+circular obstacle:</p>
+<div align="center" class="align-center"><img alt="computational domain" class="align-center" src="src/hermes2d/img/example-18/domain.png" style="width: 760px;" /></div>
+<p>The circle is defined via NURBS. Its radius and position, as well as some additional
+geometry parameters can be changed in the mesh file &#8220;domain.mesh&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">L</span> <span class="o">=</span> <span class="mi">15</span>            <span class="c"># domain length (should be a multiple of 3)</span>
+<span class="n">H</span> <span class="o">=</span> <span class="mi">5</span>             <span class="c"># domain height</span>
+<span class="n">S1</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span>          <span class="c"># x-center of circle</span>
+<span class="n">S2</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span>          <span class="c"># y-center of circle</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mi">1</span>             <span class="c"># circle radius</span>
+<span class="n">A</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c"># helper length</span>
+<span class="n">EPS</span> <span class="o">=</span> <span class="mf">0.10</span>        <span class="c"># vertical shift of the circle</span>
+</pre></div>
+</div>
+<p>The Navier-Stokes equations are assumed in the standard form</p>
+<div class="math">
+<p><span class="math">\frac{\partial \bfv}{\partial t} - \frac{1}{Re}\Delta \bfv + (\bfv \cdot \nabla) \bfv + \nabla p = 0,\\
+\mbox{div} \bfv = 0,</span></p>
+</div><p>where <span class="math">\bfv = (u, v)</span> is the velocity vector, <span class="math">Re</span> the Reynolds number, <span class="math">p</span> the pressure,
+and <span class="math">(\bfv \cdot \nabla) \bfv</span> the nonlinear convective term. We prescribe a parabolic
+velocity profile at inlet (the left-most edge). The inlet velocity is time-dependent, it
+increases linearly in time from zero to a user-defined value during an initial time period,
+and then it stays constant. Standard no-slip velocity boundary conditions are prescribed
+on the rest of the boundary with the exception of the outlet (right-most edge) where the
+standard &#8220;do nothing&#8221; boundary conditions are prescribed. No boundary conditions are
+prescribed for pressure - being an <span class="math">L^2</span>-function, the pressure does not
+admit any boundary conditions.</p>
+<p>The role of the pressure in the Navier-Stokes equations
+is interesting and worth a brief discussion. Since the equations only contain its gradient,
+it is determined up to a constant. This does not mean that the problem is ill-conditioned
+though, since the pressure only plays the role of a Lagrange multiplier that keeps
+the velocity divergence-free. More precisely, the better the pressure is resolved,
+the closer the approximate velocity to being divergence free. The best one can do
+is to approximate the pressure in <span class="math">L^2</span> (using discontinuous elements). Not only because
+it is more meaningful from the point of view of the weak formulation, but also because
+the approximate velocity automatically becomes discreetely divergence-free (integral
+of its divergence over every element in the mesh is zero). The standard Taylor-Hood
+elements approximating both the velocity and pressure with <span class="math">H^1</span>-conforming (continuous)
+elements do not have this property and thus are less accurate. We will compare these
+two approaches below. Last, the pressure needs to be approximated by elements of
+a lower polynomial degree than the velocity in order to satisfy the inf-sup condition.</p>
+<p>The time derivative is approximated using the implicit Euler method:</p>
+<div class="math">
+<p><span class="math">\frac{\bfv^{n+1}}{\tau} - \frac{\bfv^n}{\tau} - \frac{1}{Re}\Delta \bfv^{n+1} + (\bfv^{n+1} \cdot \nabla) \bfv^{n+1} + \nabla p^{n+1} = 0,\\
+\mbox{div} \bfv^{n+1} = 0,</span></p>
+</div><p>where <span class="math">\tau</span> is the time step. This is a nonlinear problem that involves three equations (two for velocity components and
+the continuity equation). Accordingly, we define three spaces:</p>
+<div class="highlight-python"><pre>  // spaces for velocities and pressure
+  H1Space xvel_space(&amp;mesh, &amp;h1_shapeset);
+  H1Space yvel_space(&amp;mesh, &amp;h1_shapeset);
+#ifdef PRESSURE_IN_L2
+  L2Space p_space(&amp;mesh, &amp;l2_shapeset);
+#else
+  H1Space p_space(&amp;mesh, &amp;h1_shapeset);
+#endif</pre>
+</div>
+<p>Next we define a nonlinear or linear problem to be solved in each time step,
+depending on whether we want to employ the Newton&#8217;s method or not:</p>
+<div class="highlight-python"><pre>  if (NEWTON) {
+    // set up the nonlinear system
+    nls.set_spaces(3, &amp;xvel_space, &amp;yvel_space, &amp;p_space);
+#ifdef PRESSURE_IN_L2
+    nls.set_pss(3, &amp;h1_pss, &amp;h1_pss, &amp;l2_pss);
+#else
+    nls.set_pss(1, &amp;h1_pss);
+#endif
+  }
+  else {
+    // set up the linear system
+    ls.set_spaces(3, &amp;xvel_space, &amp;yvel_space, &amp;p_space);
+#ifdef PRESSURE_IN_L2
+    ls.set_pss(3, &amp;h1_pss, &amp;h1_pss, &amp;l2_pss);
+#else
+    ls.set_pss(1, &amp;h1_pss);
+#endif
+  }</pre>
+</div>
+<p>The time stepping loop looks as follows:</p>
+<div class="highlight-python"><pre>// time-stepping loop
+char title[100];
+int num_time_steps = T_FINAL / TAU;
+for (int i = 1; i &lt;= num_time_steps; i++)
+{
+  TIME += TAU;
+
+  info("\n---- Time step %d, time = %g:\n", i, TIME);
+
+  // this is needed to update the time-dependent boundary conditions
+  ndof = assign_dofs(3, &amp;xvel_space, &amp;yvel_space, &amp;p_space);
+
+  if (NEWTON) {
+    // Newton's method
+    nls.solve_newton_3(&amp;xvel_prev_newton, &amp;yvel_prev_newton, &amp;p_prev, NEWTON_TOL, NEWTON_MAX_ITER);
+
+    // copy the result of the Newton's iteration into the
+    // previous time level solutions
+    xvel_prev_time.copy(&amp;xvel_prev_newton);
+    yvel_prev_time.copy(&amp;yvel_prev_newton);
+  }
+  else {
+    // assemble and solve
+    Solution xvel_sln, yvel_sln, p_sln;
+    ls.assemble();
+    ls.solve(3, &amp;xvel_sln, &amp;yvel_sln, &amp;p_sln);
+
+    // this copy destroys xvel_sln and yvel_sln
+    // which are no longer needed
+    xvel_prev_time = xvel_sln;
+    yvel_prev_time = yvel_sln;
+  }
+}</pre>
+</div>
+<p>The following comparisons demonstrate the effect of using the Newton&#8217;s method, and continuous vs. discontinuous
+elements for the pressure. There are three triplets of velocity snapshots. In each one, the images
+were obtained with (1) NEWTON == false &amp;&amp; PRESSURE_IN_L2 undefined, (2) NEWTON == true &amp;&amp; PRESSURE_IN_L2
+undefined, and (3) NEWTON == true &amp;&amp; PRESSURE_IN_L2 defined. It follows from these comparisons that one
+should definitely use the option (3).</p>
+<p>Time t = 10 s:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_no_newton_10.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_newton_10.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_l2_newton_10.png" style="width: 840px;" /></div>
+<p>Time t = 15 s:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_no_newton_15.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_newton_15.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_l2_newton_15.png" style="width: 840px;" /></div>
+<p>Time t = 20 s:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_no_newton_20.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_newton_20.png" style="width: 840px;" /></div>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/sol_l2_newton_20.png" style="width: 840px;" /></div>
+<p>Snapshot of a continuous pressure approximation (t = 20 s):</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/p_no_newton_20.png" style="width: 840px;" /></div>
+<p>Snapshot of a discontinuous pressure approximation (t = 20 s):</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-18/p_l2_newton_20.png" style="width: 840px;" /></div>
+</div>
+<div class="section" id="gross-pitaevski-equation">
+<h2>Gross-Pitaevski Equation<a class="headerlink" href="#gross-pitaevski-equation" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/19-newton-timedep-gp">19-newton-timedep-gp</a>.</p>
+<p>In this example we use the Newton&#8217;s method to solve the nonlinear complex-valued
+time-dependent Gross-Pitaevski equation. This equation describes the ground state of
+a quantum system of identical bosons using the Hartree–Fock approximation and the
+pseudopotential interaction model. For time-discretization one can use either
+the first-order implicit Euler method or the second-order Crank-Nicolson
+method.</p>
+<p>The computational domain is the square <span class="math">(-1,1)^2</span> and boundary conditions are zero Dirichlet. The equation has the form</p>
+<div class="math">
+<p><span class="math">i\hbar \frac{\partial \psi}{\partial t} = -\frac{\hbar^2}{2m} \Delta \psi + g \psi |\psi|^2 + \frac{m}{2} \omega^2 (x^2 + y^2) \psi</span></p>
+</div><p>where <span class="math">\psi(x,y)</span> is the unknown solution (wave function), <span class="math">i</span> the complex unit,
+<span class="math">\hbar</span> the Planck constant, <span class="math">m</span> the mass of the boson,
+<span class="math">g</span> the coupling constant (proportional to the scattering length of two interacting bosons) and
+<span class="math">\omega</span> the frequency.</p>
+<p>From the implementation point of view, the only detail worth mentioning is the
+use of the complex version of Hermes in the <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/19-newton-timedep-gp/CMakeLists.txt">CMakeLists.txt</a> file:</p>
+<div class="highlight-python"><pre># use the complex version of the library:
+set(HERMES ${HERMES_CPLX_BIN})</pre>
+</div>
+<p>The weak forms can be found in the file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/19-newton-timedep-gp/forms.cpp">forms.cpp</a>:</p>
+<div class="highlight-python"><pre>// Residuum for the implicit Euler time discretization
+template&lt;typename Real, typename Scalar&gt;
+Scalar F_euler(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  scalar ii = cplx(0.0, 1.0);  // imaginary unit, ii^2 = -1
+
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* psi_prev_newton = ext-&gt;fn[0];
+  Func&lt;Scalar&gt;* psi_prev_time = ext-&gt;fn[1];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (ii * H * (psi_prev_newton-&gt;val[i] - psi_prev_time-&gt;val[i]) * v-&gt;val[i] / TAU
+            - H*H/(2*M) * (psi_prev_newton-&gt;dx[i] * v-&gt;dx[i] + psi_prev_newton-&gt;dy[i] * v-&gt;dy[i])
+            - G * psi_prev_newton-&gt;val[i] *  psi_prev_newton-&gt;val[i] * conj(psi_prev_newton-&gt;val[i]) * v-&gt;val[i]
+            - .5*M*OMEGA*OMEGA * (e-&gt;x[i] * e-&gt;x[i] + e-&gt;y[i] * e-&gt;y[i]) * psi_prev_newton-&gt;val[i] * v-&gt;val[i]);
+
+  return result;
+}
+
+// Jacobian for the implicit Euler time discretization
+template&lt;typename Real, typename Scalar&gt;
+Scalar J_euler(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  scalar ii = cplx(0.0, 1.0);  // imaginary unit, ii^2 = -1
+
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* psi_prev_newton = ext-&gt;fn[0];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (ii * H * u-&gt;val[i] * v-&gt;val[i] / TAU
+                     - H*H/(2*M) * (u-&gt;dx[i] * v-&gt;dx[i] + u-&gt;dy[i] * v-&gt;dy[i])
+                     - 2* G * u-&gt;val[i] *  psi_prev_newton-&gt;val[i] * conj(psi_prev_newton-&gt;val[i]) * v-&gt;val[i]
+                     - G * psi_prev_newton-&gt;val[i] * psi_prev_newton-&gt;val[i] * u-&gt;val[i] * v-&gt;val[i]
+                     - .5*M*OMEGA*OMEGA * (e-&gt;x[i] * e-&gt;x[i] + e-&gt;y[i] * e-&gt;y[i]) * u-&gt;val[i] * v-&gt;val[i]);
+  return result;
+}
+
+// Residuum for the Crank-Nicolson method
+template&lt;typename Real, typename Scalar&gt;
+Scalar F_cranic(int n, double *wt, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  scalar ii = cplx(0.0, 1.0);  // imaginary unit, ii^2 = -1
+
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* psi_prev_newton = ext-&gt;fn[0];
+  Func&lt;Scalar&gt;* psi_prev_time = ext-&gt;fn[1];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (ii * H * (psi_prev_newton-&gt;val[i] - psi_prev_time-&gt;val[i]) * v-&gt;val[i] / TAU
+            - 0.5*H*H/(2*M) * (psi_prev_newton-&gt;dx[i] * v-&gt;dx[i] + psi_prev_newton-&gt;dy[i] * v-&gt;dy[i])
+            - 0.5*H*H/(2*M) * (psi_prev_time-&gt;dx[i] * v-&gt;dx[i] + psi_prev_time-&gt;dy[i] * v-&gt;dy[i])
+            - 0.5*G * psi_prev_newton-&gt;val[i] *  psi_prev_newton-&gt;val[i] * conj(psi_prev_newton-&gt;val[i]) * v-&gt;val[i]
+            - 0.5*G * psi_prev_time-&gt;val[i] *  psi_prev_time-&gt;val[i] * conj(psi_prev_time-&gt;val[i]) * v-&gt;val[i]
+            - 0.5*0.5*M*OMEGA*OMEGA * (e-&gt;x[i] * e-&gt;x[i] + e-&gt;y[i] * e-&gt;y[i]) * (psi_prev_newton-&gt;val[i] + psi_prev_time-&gt;val[i]) * v-&gt;val[i]);
+
+  return result;
+}
+
+// Jacobian for the Crank-Nicolson method
+template&lt;typename Real, typename Scalar&gt;
+Scalar J_cranic(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  scalar ii = cplx(0.0, 1.0);  // imaginary unit, ii^2 = -1
+
+  Scalar result = 0;
+  Func&lt;Scalar&gt;* psi_prev_newton = ext-&gt;fn[0];
+  for (int i = 0; i &lt; n; i++)
+    result += wt[i] * (ii * H * u-&gt;val[i] * v-&gt;val[i] / TAU
+                     - 0.5*H*H/(2*M) * (u-&gt;dx[i] * v-&gt;dx[i] + u-&gt;dy[i] * v-&gt;dy[i])
+                     - 0.5*2* G * u-&gt;val[i] *  psi_prev_newton-&gt;val[i] * conj(psi_prev_newton-&gt;val[i]) * v-&gt;val[i]
+                     - 0.5*G * psi_prev_newton-&gt;val[i] *  psi_prev_newton-&gt;val[i] * u-&gt;val[i] * v-&gt;val[i]
+                     - 0.5*.5*M*OMEGA*OMEGA * (e-&gt;x[i] * e-&gt;x[i] + e-&gt;y[i] * e-&gt;y[i]) * u-&gt;val[i] * v-&gt;val[i]);
+  return result;
+}</pre>
+</div>
+<p>The way the weak forms are registered is standard:</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+if(TIME_DISCR == 1) {
+  wf.add_biform(0, 0, callback(jacobian_euler), UNSYM, ANY, 1, &amp;Psi_prev_newton);
+  wf.add_liform(0, callback(residuum_euler), ANY, 2, &amp;Psi_prev_newton, &amp;Psi_prev_time);
+}
+else {
+  wf.add_biform(0, 0, callback(jacobian_cranic), UNSYM, ANY, 1, &amp;Psi_prev_newton);
+  wf.add_liform(0, callback(residuum_cranic), ANY, 2, &amp;Psi_prev_newton, &amp;Psi_prev_time);
+}</pre>
+</div>
+<p>Also the time stepping loop and the call to the Newton&#8217;s method
+will not surprize a reader who made it this far in the tutorial:</p>
+<div class="highlight-python"><pre>// time stepping loop
+int nstep = (int)(T_FINAL/TAU + 0.5);
+for(int n = 1; n &lt;= nstep; n++)
+{
+  info("\n---- Time step %d:\n", n);
+
+  // Newton's method
+  nls.solve_newton_1(&amp;Psi_prev_newton, NEWTON_TOL, NEWTON_MAX_ITER);
+
+  // copy result of the Newton's iteration into Psi_prev_time
+  Psi_prev_time.copy(&amp;Psi_prev_newton);
+}</pre>
+</div>
+<p>Sample solution snapshots are shown below:</p>
+<p>Snapshot 1:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-19/sol_1.png" style="width: 600px;" /></div>
+<p>Snapshot 2:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-19/sol_2.png" style="width: 600px;" /></div>
+<p>Snapshot 3:</p>
+<div align="center" class="align-center"><img alt="solution" class="align-center" src="src/hermes2d/img/example-19/sol_3.png" style="width: 600px;" /></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Tutorial Part III (Nonlinear Problems)</a><ul>
+<li><a class="reference external" href="#the-newton-s-method">The Newton&#8217;s Method</a><ul>
+<li><a class="reference external" href="#a-remark-on-the-linear-case">A remark on the linear case</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#constant-initial-guess">Constant Initial Guess</a></li>
+<li><a class="reference external" href="#general-initial-guess">General Initial Guess</a></li>
+<li><a class="reference external" href="#newton-s-method-and-adaptivity">Newton&#8217;s Method and Adaptivity</a></li>
+<li><a class="reference external" href="#nonlinear-parabolic-problem">Nonlinear Parabolic Problem</a></li>
+<li><a class="reference external" href="#flame-propagation-problem">Flame Propagation Problem</a></li>
+<li><a class="reference external" href="#navier-stokes-equations">Navier-Stokes Equations</a></li>
+<li><a class="reference external" href="#gross-pitaevski-equation">Gross-Pitaevski Equation</a></li>
+</ul>
+</li>
+</ul>
+
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, hp-FEM group at UNR.
+      Last updated on Apr 22, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>

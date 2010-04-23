@@ -1,0 +1,26 @@
+============
+Introduction
+============
+
+`FEMhub <http://femhub.org>` is an open source distribution of finite element codes with a unified
+Python interface. It is available for download as desktop application, but all codes
+are also automatically available in the `Online Numerical Methods Laboratory <http://nb.femhub.org>`
+which is powered by high performance computers of the `hp-FEM group <http://hpfem.org>` at the
+`University of Nevada, Reno <http://unr.edu>`. Using FEMhub you can compute with Hermes and other packages via any web
+browser. ).
+
+FEMhub is available under the GPL license (Version 2, 1991).
+
+Prior to reading this document, we recommend that you install FEMhub using instructions on
+its `home page <http://femhub.org/>`_, and subscribe to the `mailing list
+<http://groups.google.com/group/femhub/>`_. Our mailing list is a very active place where
+you should get all answers quickly.
+
+The best way of reading this tutorial is to run the code at the same time.
+After making your way through the tutorial, you may want to view the public
+worksheets on the `online lab <http://nb.femhub.org/pub>`
+that contains a variety of examples that may help you to get started. If you
+create an interesting model using FEMhub packages, let us know and we
+will be happy to add it to the existing examples.
+
+The source code can be viewed in the `git repository <http://hpfem.org/git/gitweb.cgi/femhub.git/tree>`.

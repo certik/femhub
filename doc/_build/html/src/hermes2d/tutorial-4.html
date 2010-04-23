@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial Part IV (Adaptivity for Time-Dependent Problems) &mdash; Hermes2D Documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Hermes2D Documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-part-iv-adaptivity-for-time-dependent-problems">
+<h1>Tutorial Part IV (Adaptivity for Time-Dependent Problems)<a class="headerlink" href="#tutorial-part-iv-adaptivity-for-time-dependent-problems" title="Permalink to this headline">¶</a></h1>
+<p>(Space-time) adaptive FEM and <em>hp</em>-FEM for time-dependent PDE and PDE systems is one of
+the most advanced techniques Hermes can do. Although we have published it
+in several <a class="reference external" href="http://hpfem.math.unr.edu/people/pavel/public/papers.html">scientific articles</a>,
+there is still a lot of space for improvement. Let us know through the
+<a class="reference external" href="http://groups.google.com/group/hermes2d/">Hermes2D mailing list</a> if
+you are interested in getting involved. In this part of the tutorial
+we explain the basic idea of the method and show several examples.</p>
+<div class="section" id="adaptive-hp-fem-with-dynamical-meshes">
+<h2>Adaptive hp-FEM with Dynamical Meshes<a class="headerlink" href="#adaptive-hp-fem-with-dynamical-meshes" title="Permalink to this headline">¶</a></h2>
+<p>The adaptivity with dynamical meshes in Hermes is based on the combination
+of the multimesh <em>hp</em>-FEM with the classical Rothe&#8217;s method.</p>
+<p>The Rothe&#8217;s method is a natural counterpart of the widely used Method of Lines (MOL).
+Recall that the MOL performs discretization in space while
+keeping the time variable continuous, which leads to a system of ODEs in time. The Rothe&#8217;s
+method, on the contrary, preserves the continuity of the spatial variable while discretizing time.
+In every time step, an evolutionary PDE is approximated by means of one or more time-independent ones.
+The number of the time-independent equations per time step is proportional to the order of accuracy of the
+time discretization method. For example, when employing the implicit Euler method, one
+has to solve one time-independent PDE per time step. The Rothe&#8217;s method is fully equivalent to the
+MOL if no adaptivity in space or time takes place, but it provides a better setting
+for the application of spatially adaptive algorithms. The spatial discretization error
+can be controlled by solving the time-independent equations adaptively, and the size of
+the time step can be adjusted using standard ODE techniques.</p>
+<p>For the sake of clarity, let us consider a simple linear parabolic problem</p>
+<div class="math">
+<p><span class="math">\frac{\partial u}{\partial t} - \Delta u = f</span></p>
+</div><p>and discretize the time variable using the implicit Euler method. We obtain</p>
+<div class="math">
+<p><span class="math">\frac{u^{n+1} - u^n}{\tau} - \Delta u^{n+1} = f^{n+1},</span></p>
+</div><p>where</p>
+<div class="math">
+<p><span class="math">u^{n+1}(x,y) \approx u(x, y, t^{n+1})\ \mbox{and} \  f^{n+1}(x, y) \approx f(x, y, t^{n+1}).</span></p>
+</div><p>The equation for <span class="math">u^{n+1}</span> does no longer depend on time and we can solve it adaptively
+as any other time-independent equation (or equation system). The only thing worth
+mentioning is that the previous time step approximation <span class="math">u^n</span> is now defined on
+a locally refined mesh that was obtained during the previous time step. This
+situation, however, can be handled routinely via the multimesh discretization
+method. In fact, the user does not have to worry about anything. The methodology is
+illustrated below.</p>
+</div>
+<div class="section" id="nonlinear-parabolic-problem">
+<h2>Nonlinear Parabolic Problem<a class="headerlink" href="#nonlinear-parabolic-problem" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/20-newton-timedep-heat-adapt">20-newton-timedep-heat-adapt</a>.</p>
+<p>Description coming soon.</p>
+</div>
+<div class="section" id="flame-propagation-problem">
+<h2>Flame Propagation Problem<a class="headerlink" href="#flame-propagation-problem" title="Permalink to this headline">¶</a></h2>
+<p>Coming soon.</p>
+</div>
+<div class="section" id="navier-stokes-equations">
+<h2>Navier-Stokes Equations<a class="headerlink" href="#navier-stokes-equations" title="Permalink to this headline">¶</a></h2>
+<p>Coming soon.</p>
+</div>
+<div class="section" id="gross-pitaevski-equation">
+<h2>Gross-Pitaevski Equation<a class="headerlink" href="#gross-pitaevski-equation" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Tutorial example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/23-newton-timedep-gp-adapt">23-newton-timedep-gp-adapt</a>.</p>
+<p>Description coming soon.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Tutorial Part IV (Adaptivity for Time-Dependent Problems)</a><ul>
+<li><a class="reference external" href="#adaptive-hp-fem-with-dynamical-meshes">Adaptive hp-FEM with Dynamical Meshes</a></li>
+<li><a class="reference external" href="#nonlinear-parabolic-problem">Nonlinear Parabolic Problem</a></li>
+<li><a class="reference external" href="#flame-propagation-problem">Flame Propagation Problem</a></li>
+<li><a class="reference external" href="#navier-stokes-equations">Navier-Stokes Equations</a></li>
+<li><a class="reference external" href="#gross-pitaevski-equation">Gross-Pitaevski Equation</a></li>
+</ul>
+</li>
+</ul>
+
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, hp-FEM group at UNR.
+      Last updated on Apr 22, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples &mdash; Hermes2D Documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Hermes2D Documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>This section contains the description of selected <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples">examples</a>.
+Its purpose is to complement rather than duplicate the information
+in the source code.</p>
+<div class="section" id="saphir">
+<h2>Saphir<a class="headerlink" href="#saphir" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/saphir">saphir</a>.</p>
+<p>This is a standard nuclear engineering benchmark (IAEA number EIR-2) describing
+an external-force-driven configuration without fissile materials present, using one-group
+neutron diffusion approximation</p>
+<div class="math" id="equation-saphir">
+<p><span class="eqno">(1)</span><span class="math">-\nabla \cdot (D(x,y) \nabla \Phi) + \Sigma_a(x,y) \Phi = Q_{ext}(x,y).</span></p>
+</div><p>The domain of interest is a 96 x 86 cm rectangle consisting of five regions:</p>
+<div align="center" class="align-center"><img alt="Schematic picture for the saphir example." class="align-center" src="src/hermes2d/img/saphir/saphir.png" style="width: 400px; height: 400px;" /></div>
+<p>The unknown is the neutron flux <span class="math">\Phi(x, y)</span>. The values of the diffusion coefficient
+<span class="math">D(x, y)</span>, absorption cross-section <span class="math">\Sigma_a(x, y)</span> and the source term <span class="math">Q_{ext}(x,y)</span>
+are constant in the subdomains. The source <span class="math">Q_{ext} = 1</span> in areas 1 and 3 and zero
+elsewhere. Boundary conditions for the flux <span class="math">\Phi</span> are zero everywhere.</p>
+<p>It is worth noticing that different material parameters can be handled using a separate weak form
+for each material:</p>
+<div class="highlight-python"><pre>// Bilinear form (material 1)
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_1(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return D_1 * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v)
+         + SIGMA_A_1 * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// Bilinear form (material 2)
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_2(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return D_2 * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v)
+         + SIGMA_A_2 * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// Bilinear form (material 3)
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_3(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return D_3 * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v)
+         + SIGMA_A_3 * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// Bilinear form (material 4)
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_4(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return D_4 * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v)
+         + SIGMA_A_4 * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}
+
+// Bilinear form (material 5)
+template&lt;typename Real, typename Scalar&gt;
+Scalar bilinear_form_5(int n, double *wt, Func&lt;Real&gt; *u, Func&lt;Real&gt; *v, Geom&lt;Real&gt; *e, ExtData&lt;Scalar&gt; *ext)
+{
+  return D_5 * int_grad_u_grad_v&lt;Real, Scalar&gt;(n, wt, u, v)
+         + SIGMA_A_5 * int_u_v&lt;Real, Scalar&gt;(n, wt, u, v);
+}</pre>
+</div>
+<p>Recall that this is not the only way to handle spatially-dependent material parameters. Alternatively, one can define
+a global function returning material parameters as a function of spatial coordinates. This was done, e.g.,
+in the tutorial examples <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/07-general">07</a>
+and <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/tutorial/12-adapt-general">12</a>.</p>
+<p>The weak forms are associated with element material flags (coming from the mesh file) as follows:</p>
+<div class="highlight-python"><pre>// initialize the weak formulation
+WeakForm wf(1);
+wf.add_biform(0, 0, bilinear_form_1, bilinear_form_ord, SYM, 1);
+wf.add_biform(0, 0, bilinear_form_2, bilinear_form_ord, SYM, 2);
+wf.add_biform(0, 0, bilinear_form_3, bilinear_form_ord, SYM, 3);
+wf.add_biform(0, 0, bilinear_form_4, bilinear_form_ord, SYM, 4);
+wf.add_biform(0, 0, bilinear_form_5, bilinear_form_ord, SYM, 5);
+wf.add_liform(0, linear_form_1, linear_form_ord, 1);
+wf.add_liform(0, linear_form_3, linear_form_ord, 3);</pre>
+</div>
+<p>Sample results of this computation are shown below.</p>
+<p>Solution:</p>
+<div align="center" class="align-center"><img alt="Solution to the saphir example." class="align-center" src="src/hermes2d/img/saphir/saphir-sol.png" style="width: 600px; height: 400px;" /></div>
+<p>Final mesh (h-FEM with linear elements):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the saphir example (h-FEM with linear elements)." class="align-center" src="src/hermes2d/img/saphir/saphir-mesh-h1.png" style="width: 440px; height: 400px;" /></div>
+<p>Final mesh (h-FEM with quadratic elements):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the saphir example (h-FEM with quadratic elements)." class="align-center" src="src/hermes2d/img/saphir/saphir-mesh-h2.png" style="width: 440px; height: 400px;" /></div>
+<p>Final mesh (hp-FEM):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the saphir example (hp-FEM)." class="align-center" src="src/hermes2d/img/saphir/saphir-mesh-hp.png" style="width: 440px; height: 400px;" /></div>
+<p>DOF convergence graphs:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph for example saphir." class="align-center" src="src/hermes2d/img/saphir/conv_dof.png" style="width: 600px; height: 400px;" /></div>
+<p>CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph for example saphir." class="align-center" src="src/hermes2d/img/saphir/conv_cpu.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="iron-water">
+<h2>Iron-Water<a class="headerlink" href="#iron-water" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/iron-water">iron-water</a>.</p>
+<p>This example is very similar to the example &#8220;saphir&#8221;, the main difference being that
+it reads a mesh file in the exodusii format (created by Cubit). This example only builds
+if you have the <a class="reference external" href="http://sourceforge.net/projects/exodusii/">ExodusII</a> and
+<a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> libraries installed on your system and
+the variables WITH_EXODUSII, EXODUSII_ROOT and NETCDF_ROOT defined properly.
+The latter can be done, for example, in the CMake.vars file as follows:</p>
+<div class="highlight-python"><pre>SET(WITH_EXODUSII YES)
+SET(EXODUSII_ROOT /opt/packages/exodusii)
+SET(NETCDF_ROOT   /opt/packages/netcdf)</pre>
+</div>
+<p>The mesh is now loaded using the ExodusIIReader (see
+the <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/src/mesh_loader.h">mesh_loader.h</a> file):</p>
+<div class="highlight-python"><pre>// Load the mesh
+Mesh mesh;
+ExodusIIReader mloader;
+if (!mloader.load("iron-water.e", &amp;mesh)) error("ExodusII mesh load failed.");</pre>
+</div>
+<p>The model describes an external-force-driven configuration without fissile materials present.
+We will solve the one-group neutron diffusion equation</p>
+<div class="math" id="equation-iron-water">
+<p><span class="eqno">(2)</span><span class="math">-\nabla \cdot (D(x,y) \nabla \Phi) + \Sigma_a(x,y) \Phi = Q_{ext}(x,y).</span></p>
+</div><p>The domain of interest is a 30 x 30 cm square consisting of four regions.
+A uniform volumetric source is placed in water in the lower-left corner
+of the domain, surrounded with a layer of water, a layer of iron, and finally
+another layer of water:</p>
+<div align="center" class="align-center"><img alt="Schematic picture for the iron-water example." class="align-center" src="src/hermes2d/img/iron-water/iron-water.png" style="width: 400px; height: 400px;" /></div>
+<p>The unknown is the neutron flux <span class="math">\Phi(x, y)</span>. The values of the diffusion coefficient
+<span class="math">D(x, y)</span>, absorption cross-section <span class="math">\Sigma_a(x, y)</span> and the source term <span class="math">Q_{ext}(x,y)</span>
+are constant in the subdomains. The source <span class="math">Q_{ext} = 1</span> in area 1 and zero
+elsewhere. The boundary conditions for this problem are zero Dirichlet (right and top edges)
+and zero Neumann (bottom and left edges). Sample results of this computation are shown below.</p>
+<p>Solution:</p>
+<div align="center" class="align-center"><img alt="Solution to the iron-water example." class="align-center" src="src/hermes2d/img/iron-water/iron-water-sol.png" style="width: 600px; height: 400px;" /></div>
+<p>Final mesh (h-FEM with linear elements):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the iron-water example (h-FEM with linear elements)." class="align-center" src="src/hermes2d/img/iron-water/iron-water-mesh-h1.png" style="width: 440px; height: 400px;" /></div>
+<p>Final mesh (h-FEM with quadratic elements):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the iron-water example (h-FEM with quadratic elements)." class="align-center" src="src/hermes2d/img/iron-water/iron-water-mesh-h2.png" style="width: 440px; height: 400px;" /></div>
+<p>Final mesh (hp-FEM):</p>
+<div align="center" class="align-center"><img alt="Final finite element mesh for the iron-water example (hp-FEM)." class="align-center" src="src/hermes2d/img/iron-water/iron-water-mesh-hp.png" style="width: 440px; height: 400px;" /></div>
+<p>DOF convergence graphs:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph for example iron-water." class="align-center" src="src/hermes2d/img/iron-water/conv_dof.png" style="width: 600px; height: 400px;" /></div>
+<p>CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph for example iron-water." class="align-center" src="src/hermes2d/img/iron-water/conv_cpu.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="nernst-planck">
+<h2>Nernst-Planck<a class="headerlink" href="#nernst-planck" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/newton-np-timedep-adapt-system">newton-np-timedep-adapt-system</a>.</p>
+<p><strong>Equation reference:</strong> The first version of the following derivation was published in:
+<em>IPMC: recent progress in modeling, manufacturing, and new applications
+D. Pugal, S. J. Kim, K. J. Kim, and K. K. Leang
+Proc. SPIE 7642, (2010)</em>.
+The following Bibtex entry can be used for the reference:</p>
+<div class="highlight-python"><pre>@conference{pugal:76420U,
+        author = {D. Pugal and S. J. Kim and K. J. Kim and K. K. Leang},
+        editor = {Yoseph Bar-Cohen},
+        title = {IPMC: recent progress in modeling, manufacturing, and new applications},
+        publisher = {SPIE},
+        year = {2010},
+        journal = {Electroactive Polymer Actuators and Devices (EAPAD) 2010},
+        volume = {7642},
+        number = {1},
+        numpages = {10},
+        pages = {76420U},
+        location = {San Diego, CA, USA},
+        url = {http://link.aip.org/link/?PSI/7642/76420U/1},
+        doi = {10.1117/12.848281}
+}</pre>
+</div>
+<p>The example is concerned with the finite element solution
+of the Poisson and Nernst-Planck equation system. The Nernst-Planck
+equation is often used to describe the diffusion, convection,
+and migration of charged particles:</p>
+<div class="math" id="equation-nernstplanck">
+<p><span class="eqno">(3)</span><span class="math">\frac {\partial C} {\partial t} + \nabla \cdot
+        (-D\nabla C - z \mu F C \nabla \phi) =
+        - \vec {u} \cdot \nabla C.</span></p>
+</div><p>The second term on the left side is diffusion and the third term is
+the migration that is directly related to the the local voltage
+(often externally applied) <span class="math">\phi</span>. The term on the right side is
+convection. This is not considered in the current example. The variable
+<span class="math">C</span> is the concentration of the particles at any point of a domain
+and this is the unknown of the equation.</p>
+<p>One application for the equation is to calculate charge configuration
+in ionic polymer transducers. Ionic polymer-metal composite is
+for instance an electromechanical actuator which is basically a thin
+polymer sheet that is coated with precious metal electrodes on both
+sides. The polymer contains fixed anions and mobile cations such
+as <span class="math">H^{+}</span>, <span class="math">Na^{+}</span> along with some kind of solvent, most often water.</p>
+<p>When an voltage <span class="math">V</span> is applied to the electrodes, the mobile cations
+start to migrate whereas immobile anions remain attached to the polymer
+backbone. This creates spatial charges, especially near the electrodes.
+One way to describe this system is to solve Nernst-Planck equation
+for mobile cations and use Poisson equation to describe the electric
+field formation inside the polymer. The poisson equation is</p>
+<div class="math" id="equation-poisson">
+<p><span class="eqno">(4)</span><span class="math">\nabla \cdot \vec{E} = \frac{F \cdot \rho}{\varepsilon},</span></p>
+</div><p>where <span class="math">E</span> could be written as <span class="math">\nabla \phi = - \vec{E}</span> and <span class="math">\rho</span> is
+charge density, <span class="math">F</span> is the Faraday constant and <span class="math">\varepsilon</span> is dielectric
+permittivity. The term <span class="math">\rho</span> could be written as:</p>
+<div class="math" id="equation-rho">
+<p><span class="eqno">(5)</span><span class="math">\rho = C - C_{anion},</span></p>
+</div><p>where <span class="math">C_{anion}</span> is a constant and equals anion concentration. Apparently
+for IPMC, the initial spatial concentration of anions and cations are equal.
+The inital configuration is shown:</p>
+<div align="center" class="align-center"><img alt="Initial configuration of IPMC." class="align-center" src="src/hermes2d/img/IPMC.png" style="width: 377px; height: 173px;" /></div>
+<p>The purploe dots are mobile cations. When a voltage is applied, the anions
+drift:</p>
+<div align="center" class="align-center"><img alt="Bent IPMC" class="align-center" src="src/hermes2d/img/IPMC_bent.png" style="width: 385px; height: 290px;" /></div>
+<p>Images reference:
+<em>IPMC: recent progress in modeling, manufacturing, and new applications
+D. Pugal, S. J. Kim, K. J. Kim, and K. K. Leang
+Proc. SPIE 7642, (2010)</em>
+This eventually results in actuation (mostly bending) of the material (not considered in this section).</p>
+<p>To solve equations <a href="#equation-nernstplanck">(3)</a> and <a href="#equation-poisson">(4)</a> boundary conditions must be specified as well.
+When solving in 2D, just a cross section is considered. The boundaries are
+shown in:</p>
+<div align="center" class="align-center"><img alt="IPMC boundaries" class="align-center" src="src/hermes2d/img/IPMC_schematic.png" style="width: 409px; height: 140px;" /></div>
+<p>For Nernst-Planck equation <a href="#equation-nernstplanck">(3)</a>, all the boundaries have the same, insulation
+boundary conditions:</p>
+<div class="math" id="equation-nernstboundary">
+<p><span class="eqno">(6)</span><span class="math">-D \frac{\partial C}{\partial n} - z \mu F C \frac{\partial \phi} {\partial n} = 0</span></p>
+</div><p>For Poisson equation:</p>
+<blockquote>
+<ol class="arabic simple">
+<li>(positive voltage): Dirichlet boundary <span class="math">\phi = 1V</span>. For some cases it might be necessary to use electric field strength as the boundary condtition. Then the Neumann boundary <span class="math">\frac{\partial \phi}{\partial n} = E_{field}</span> can be used.</li>
+<li>(ground): Dirichlet boundary <span class="math">\phi = 0</span>.</li>
+<li>(insulation): Neumann boundary <span class="math">\frac{\partial \phi}{\partial n} = 0</span>.</li>
+</ol>
+</blockquote>
+<div class="section" id="weak-form-of-the-equations">
+<h3>Weak Form of the Equations<a class="headerlink" href="#weak-form-of-the-equations" title="Permalink to this headline">¶</a></h3>
+<p>To implement the <a href="#equation-nernstplanck">(3)</a> and <a href="#equation-poisson">(4)</a> in Hermes2D, the weak form must be derived. First of all let&#8217;s denote:</p>
+<ul class="simple">
+<li><span class="math">K=z \mu F</span></li>
+<li><span class="math">L=\frac{F}{\varepsilon}</span></li>
+</ul>
+<p>So equations <a href="#equation-nernstplanck">(3)</a> and <a href="#equation-poisson">(4)</a> can be written:</p>
+<div class="math" id="equation-nernstplancksimple">
+<p><span class="eqno">(7)</span><span class="math">\frac{\partial C}{\partial t}-D\Delta C-K\nabla\cdot \left(C\nabla\phi\right)=0,</span></p>
+</div><div class="math" id="equation-poissonsimple">
+<p><span class="eqno">(8)</span><span class="math">-\Delta\phi=L\left(C-C_{0}\right),</span></p>
+</div><p>Then the boundary condition <a href="#equation-nernstboundary">(6)</a> becomes</p>
+<div class="math" id="equation-nernstboundarysimple">
+<p><span class="eqno">(9)</span><span class="math">-D\frac{\partial C}{\partial n}-KC\frac{\partial\phi}{\partial n}=0.</span></p>
+</div><p>Weak form of equation <a href="#equation-nernstplancksimple">(7)</a> is:</p>
+<div class="math" id="equation-nernstweak1">
+<p><span class="eqno">(10)</span><span class="math">\int_{\Omega}\frac{\partial C}{\partial t}v d\mathbf{x}
+        -\int_{\Omega}D\Delta Cv d\mathbf{x}-\int_{\Omega}K\nabla C\cdot
+        \nabla\phi v d\mathbf{x} - \int_{\Omega}KC\Delta \phi v d\mathbf{x}=0,</span></p>
+</div><p>where <span class="math">v</span> is a test function  <span class="math">\Omega\subset\mathbf{R}^{3}</span>. When applying
+Green&#8217;s first identity to expand the terms that contain Laplacian
+and adding the boundary condition <a href="#equation-nernstboundarysimple">(9)</a>, the <a href="#equation-nernstweak1">(10)</a>
+becomes:</p>
+<div class="math" id="equation-nernstweak2">
+<p><span class="eqno">(11)</span><span class="math">\int_{\Omega}\frac{\partial C}{\partial t}v d\mathbf{x}+
+        D\int_{\Omega}\nabla C\cdot\nabla v d\mathbf{x}-
+        K\int_{\Omega}\nabla C \cdot \nabla \phi v d\mathbf{x}+
+        K\int_{\Omega}\nabla\left(Cv\right)\cdot \nabla \phi d\mathbf{x}-
+        D\int_{\Gamma}\frac{\partial C}{\partial n}v d\mathbf{S}-
+        \int_{\Gamma}K\frac{\partial\phi}{\partial n}Cv d\mathbf{S}=0,</span></p>
+</div><p>where the terms 5 and 6 equal <span class="math">0</span> due to the boundary condition.
+By expanding the nonlinear 4th term, the weak form becomes:</p>
+<div class="math" id="equation-nernstweak3">
+<p><span class="eqno">(12)</span><span class="math">\int_{\Omega}\frac{\partial C}{\partial t}v d\mathbf{x}+
+        D\int_{\Omega}\nabla C \cdot \nabla v d\mathbf{x}-
+        K\int_{\Omega}\nabla C \cdot \nabla \phi v d\mathbf{x}+
+        K\int_{\Omega}\nabla \phi \cdot \nabla C v d\mathbf{x}+
+        K\int_{\Omega} C \left(\nabla\phi\cdot\nabla v\right) d\mathbf{x}=0</span></p>
+</div><p>As the terms 3 and 4 are equal and cancel out, the final weak form of equation
+<a href="#equation-nernstplancksimple">(7)</a> is</p>
+<div class="math" id="equation-nernstweak4">
+<p><span class="eqno">(13)</span><span class="math">\int_{\Omega}\frac{\partial C}{\partial t}v d\mathbf{x}+
+        D\int_{\Omega}\nabla C \cdot \nabla v d\mathbf{x}+
+        K\int_{\Omega} C \left(\nabla\phi\cdot\nabla v\right) d\mathbf{x}=0</span></p>
+</div><p>The weak form of equation <a href="#equation-poissonsimple">(8)</a> with test function <span class="math">u</span> is:</p>
+<div class="math" id="equation-poissonweak1">
+<p><span class="eqno">(14)</span><span class="math">-\int_{\Omega}\Delta\phi u d\mathbf{x}-\int_{\Omega}LCu d\mathbf{x}+
+        \int_{\Omega}LC_{0}u d\mathbf{x}=0.</span></p>
+</div><p>After expanding the Laplace&#8217; terms, the equation becomes:</p>
+<div class="math" id="equation-poissonweak2">
+<p><span class="eqno">(15)</span><span class="math">\int_{\Omega}\nabla\phi\cdot\nabla u d\mathbf{x}-\int_{\Omega}LCu d\mathbf{x}+
+        \int_{\Omega}LC_{0}u d\mathbf{x}=0.</span></p>
+</div><p>Notice, when electric field strength is used as a boundary condition, then the contribution of
+the corresponding surface integral must be added:</p>
+<div class="math" id="equation-poissonweak3">
+<p><span class="eqno">(16)</span><span class="math">\int_{\Omega}\nabla\phi\cdot\nabla u d\mathbf{x}-\int_{\Omega}LCu d\mathbf{x}+
+        \int_{\Omega}LC_{0}u d\mathbf{x}+\int_{\Gamma}\frac{\partial \phi}{\partial n}u d\mathbf{S}=0.</span></p>
+</div><p>However, for the most cases we use only Poisson boundary conditions to set the voltage. Therefore the last
+term of <a href="#equation-poissonweak3">(16)</a> is omitted and <a href="#equation-poissonweak2">(15)</a> is used instead in the following sections.</p>
+</div>
+<div class="section" id="jacobian-matrix">
+<h3>Jacobian matrix<a class="headerlink" href="#jacobian-matrix" title="Permalink to this headline">¶</a></h3>
+<p>Equation <a href="#equation-nernstweak3">(12)</a> is time dependent, thus some time stepping
+method must be chosen. For simplicity we start with first order Euler implicit method</p>
+<div class="math" id="equation-euler">
+<p><span class="eqno">(17)</span><span class="math">\frac{\partial C}{\partial t} \approx \frac{C^{n+1} - C^n}{\tau}</span></p>
+</div><p>where <span class="math">\tau</span> is the time step. We will use the following notation:</p>
+<div class="math" id="equation-cplus">
+<p><span class="eqno">(18)</span><span class="math">C^{n+1} = \sum_{k=1}^{N^C} y_k^{C} v_k^{C}, \ \ \
+          \phi^{n+1} = \sum_{k=1}^{N^{\phi}} y_k^{\phi} v_k^{\phi}.</span></p>
+</div><p>In the new notation, time-discretized equation <a href="#equation-nernstweak4">(13)</a> becomes:</p>
+<div class="math" id="equation-Fic">
+<p><span class="eqno">(19)</span><span class="math">F_i^C(Y) = \int_{\Omega} \frac{C^{n+1}}{\tau}v_i^C d\mathbf{x} -
+        \int_{\Omega} \frac{C^{n}}{\tau}v_i^C d\mathbf{x}
+        + D\int_{\Omega} \nabla C^{n+1} \cdot \nabla v_i^C d\mathbf{x}
+        + K \int_{\Omega}C^{n+1} (\nabla \phi^{n+1} \cdot \nabla v_i^C) d\mathbf{x},</span></p>
+</div><p>and equation <a href="#equation-poissonweak2">(15)</a> becomes:</p>
+<div class="math" id="equation-Fiphi">
+<p><span class="eqno">(20)</span><span class="math">F_i^{\phi}(Y) = \int_{\Omega} \nabla \phi^{n+1} \cdot \nabla v_i^{\phi} d\mathbf{x}
+        - \int_{\Omega} LC^{n+1}v_i^{\phi} d\mathbf{x} + \int_{\Omega} LC_0 v_i^{\phi} d\mathbf{x}.</span></p>
+</div><p>The Jacobian matrix <span class="math">DF/DY</span> has <span class="math">2\times 2</span> block structure, with blocks
+corresponding to</p>
+<div class="math" id="equation-jacobianelements">
+<p><span class="eqno">(21)</span><span class="math">\frac{\partial F_i^C}{\partial y_j^C}, \ \ \ \frac{\partial F_i^C}{\partial y_j^{\phi}}, \ \ \
+        \frac{\partial F_i^{\phi}}{\partial y_j^C}, \ \ \ \frac{\partial F_i^{\phi}}{\partial y_j^{\phi}}.</span></p>
+</div><p>Taking the derivatives of <span class="math">F^C_i</span> with respect to <span class="math">y_j^C</span> and <span class="math">y_j^{\phi}</span>, we get</p>
+<div class="math" id="equation-bilin1">
+<p><span class="eqno">(22)</span><span class="math">\frac{\partial F_i^C}{\partial y_j^C} =
+        \int_{\Omega} \frac{1}{\tau} v_j^C v_i^C d\mathbf{x} +
+        D\int_{\Omega} \nabla v_j^C \cdot \nabla v_i^C d\mathbf{x}
+        + K\int_{\Omega} v_j^C (\nabla \phi^{n+1} \cdot \nabla v_i^C) d\mathbf{x},</span></p>
+</div><div class="math" id="equation-bilin2">
+<p><span class="eqno">(23)</span><span class="math">\frac{\partial F_i^C}{\partial y_j^{\phi}} =
+        K \int_{\Omega} C^{n+1} (\nabla v_j^{\phi} \cdot \nabla v_i^C) d\mathbf{x}.</span></p>
+</div><p>Taking the derivatives of <span class="math">F^{\phi}_i</span> with respect to <span class="math">y_j^C</span> and <span class="math">y_j^{\phi}</span>, we get</p>
+<div class="math" id="equation-bilin3">
+<p><span class="eqno">(24)</span><span class="math">\frac{\partial F_i^{\phi}}{\partial y_j^C} =
+        - \int_{\Omega} L v_j^C v_i^{\phi} d\mathbf{x},</span></p>
+</div><div class="math" id="equation-bilin4">
+<p><span class="eqno">(25)</span><span class="math">\frac{\partial F_i^{\phi}}{\partial y_j^{\phi}} =
+        \int_{\Omega} \nabla v_j^{\phi} \cdot \nabla v_i^{\phi} d\mathbf{x}.</span></p>
+</div><p>In Hermes, equations <a href="#equation-Fic">(19)</a> and <a href="#equation-Fiphi">(20)</a> are used to define the residuum <span class="math">F</span>, and
+equations <a href="#equation-bilin1">(22)</a> - <a href="#equation-bilin4">(25)</a> to define the Jacobian matrix <span class="math">J</span>.
+It must be noted that in addition to the implicit Euler iteration Crank-Nicolson iteration is implemented
+in the code (see the next section for the references of the source files).</p>
+</div>
+<div class="section" id="simulation">
+<h3>Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h3>
+<p>To begin with simulations in Hermes2D, the equations <a href="#equation-Fic">(19)</a> - <a href="#equation-bilin4">(25)</a> were be implemented.
+It was done by implementing the callback functions found in  <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/newton-np-timedep-adapt-system/forms.cpp">newton-np-timedep-adapt-system/forms.cpp</a>.</p>
+<p>The functions along with the boundary conditions:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// Poisson takes Dirichlet and Neumann boundaries</span>
+<span class="kt">int</span> <span class="nf">phi_bc_types</span><span class="p">(</span><span class="kt">int</span> <span class="n">marker</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="p">(</span><span class="n">marker</span> <span class="o">==</span> <span class="n">SIDE_MARKER</span> <span class="o">||</span> <span class="p">(</span><span class="n">marker</span> <span class="o">==</span> <span class="n">TOP_MARKER</span> <span class="o">&amp;&amp;</span> <span class="n">VOLT_BOUNDARY</span> <span class="o">==</span> <span class="mi">2</span><span class="p">))</span>
+              <span class="o">?</span> <span class="n">BC_NATURAL</span> <span class="o">:</span> <span class="n">BC_ESSENTIAL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Nernst-Planck takes Neumann boundaries</span>
+<span class="kt">int</span> <span class="nf">C_bc_types</span><span class="p">(</span><span class="kt">int</span> <span class="n">marker</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="n">BC_NATURAL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Diricleht Boundary conditions for Poisson equation.</span>
+<span class="n">scalar</span> <span class="nf">phi_bc_values</span><span class="p">(</span><span class="kt">int</span> <span class="n">marker</span><span class="p">,</span> <span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="n">marker</span> <span class="o">==</span> <span class="n">TOP_MARKER</span> <span class="o">?</span> <span class="n">VOLTAGE</span> <span class="o">:</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>are assembled as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">WeakForm</span> <span class="n">wf</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">Solution</span> <span class="n">C_prev_time</span><span class="p">,</span> <span class="n">C_prev_newton</span><span class="p">,</span> <span class="n">phi_prev_time</span><span class="p">,</span> <span class="n">phi_prev_newton</span><span class="p">;</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">Fc_euler</span><span class="p">),</span> <span class="n">ANY</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="o">&amp;</span><span class="n">C_prev_time</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">C_prev_newton</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">phi_prev_newton</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">Fphi_euler</span><span class="p">),</span> <span class="n">ANY</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">C_prev_newton</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">phi_prev_newton</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">J_euler_DFcDYc</span><span class="p">),</span> <span class="n">UNSYM</span><span class="p">,</span> <span class="n">ANY</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">phi_prev_newton</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">J_euler_DFcDYphi</span><span class="p">),</span> <span class="n">UNSYM</span><span class="p">,</span> <span class="n">ANY</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">C_prev_newton</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">J_euler_DFphiDYc</span><span class="p">),</span> <span class="n">UNSYM</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">J_euler_DFphiDYphi</span><span class="p">),</span> <span class="n">UNSYM</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>where the variables <tt class="docutils literal"><span class="pre">C_prev_time</span></tt>, <tt class="docutils literal"><span class="pre">C_prev_newton</span></tt>,
+<tt class="docutils literal"><span class="pre">phi_prev_time</span></tt>, and <tt class="docutils literal"><span class="pre">phi_prev_newton</span></tt> are solutions of concentration
+<span class="math">C</span> and voltage <span class="math">\phi</span>. The suffixes <em>newton</em> and <em>time</em> are current iteration and previous
+time step, respectively.</p>
+<p>When it comes to meshing, it should be considered that the gradient of <span class="math">C</span> near the boundaries will
+be higher than gradients of <span class="math">\phi</span>. This allows us to create different meshes for those variables. In
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/newton-np-timedep-adapt-system/main.cpp">main.cpp</a>.
+the following code in the <em>main()</em> function enables multimeshing</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">H1Space</span> <span class="n">C</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Cmesh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">shapeset</span><span class="p">);</span>
+<span class="n">H1Space</span> <span class="n">phi</span><span class="p">(</span><span class="n">MULTIMESH</span> <span class="o">?</span> <span class="o">&amp;</span><span class="n">phimesh</span> <span class="o">:</span> <span class="o">&amp;</span><span class="n">Cmesh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">shapeset</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>When <tt class="docutils literal"><span class="pre">MULTIMESH</span></tt> is defined in <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/newton-np-timedep-adapt-system/main.cpp">main.cpp</a>.
+then different H1Spaces for <tt class="docutils literal"><span class="pre">phi</span></tt> and <tt class="docutils literal"><span class="pre">C</span></tt> are created. It must be noted that when adaptivity
+is not used, the multimeshing in this example does not have any advantage, however, when
+adaptivity is turned on, then mesh for H1Space <tt class="docutils literal"><span class="pre">C</span></tt> is refined much more than for <tt class="docutils literal"><span class="pre">phi</span></tt>.</p>
+</div>
+<div class="section" id="non-adaptive-solution">
+<h3>Non adaptive solution<a class="headerlink" href="#non-adaptive-solution" title="Permalink to this headline">¶</a></h3>
+<p>The following figure shows the calculated concentration <span class="math">C</span> inside the IPMC.</p>
+<div align="center" class="align-center"><img alt="Calculated concentration" class="align-center" src="src/hermes2d/img/nonadapt_conc.png" /></div>
+<p>As it can be seen, the concentration is rather uniform in the middle of domain. In fact, most of the
+concentration gradient is near the electrodes, within 5...10% of the total thickness. That is why the refinement</p>
+<p>The voltage inside the IPMC forms as follows:</p>
+<div align="center" class="align-center"><img alt="Calculated voltage inside the IPMC" class="align-center" src="src/hermes2d/img/nonadapt_phi.png" /></div>
+<p>Here we see that the voltage gradient is smaller and more uniform near the boundaries than it is for <span class="math">C</span>.
+That is where <strong>the adaptive multimeshing</strong> can become useful.</p>
+</div>
+<div class="section" id="adaptive-solution">
+<h3>Adaptive solution<a class="headerlink" href="#adaptive-solution" title="Permalink to this headline">¶</a></h3>
+<p>To be added soon.</p>
+</div>
+</div>
+<div class="section" id="crack">
+<h2>Crack<a class="headerlink" href="#crack" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/crack">crack</a>.</p>
+<p>The example employs the adaptive multimesh hp-FEM to solve the
+equations of linear elasticity. The domain contains two horizontal
+cracks causing strong singularities at their corners. Each
+displacement component is approximated on an individual mesh.</p>
+<p>The computational domain is a <span class="math">1.5 \times 0.3</span> m rectangle containing two horizontal
+cracks, as shown in the following figure:</p>
+<div align="center" class="align-center"><img alt="Domain." class="align-center" src="src/hermes2d/img/crack/domain.png" style="width: 780px;" /></div>
+<p>The cracks have a flat diamond-like shape and their width along with some other parameters
+can be changed in the mesh file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/crack/crack.mesh">crack.mesh</a>:</p>
+<div class="highlight-c"><pre>a = 0.25   # horizontal size of an eleemnt
+b = 0.1    # vertical size of an element
+w = 0.001  # width of the cracks</pre>
+</div>
+<p>Solved are equations of linear elasticity with the following boundary conditions:
+<span class="math">u_1 = u_2 = 0</span> on the left edge, external force <span class="math">f</span> on the upper edge, and zero Neumann
+conditions for <span class="math">u_1</span> and <span class="math">u_2</span> on the right and bottom edges as well as on the crack
+boundaries. Translated into the weak forms, this becomes:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// linear and bilinear forms</span>
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_0_0</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="n">lambda</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">int_dudx_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+                      <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudy_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_0_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">lambda</span> <span class="o">*</span> <span class="n">int_dudy_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+             <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudx_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_1_0</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span>     <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudy_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+         <span class="n">lambda</span> <span class="o">*</span> <span class="n">int_dudx_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_1_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span>              <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudx_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+         <span class="p">(</span><span class="n">lambda</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">int_dudy_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">linear_form_surf_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="o">-</span><span class="n">f</span> <span class="o">*</span> <span class="n">int_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The multimesh discretization is activated by creating a common master mesh
+for both displacement components:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// load the mesh</span>
+<span class="n">Mesh</span> <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span class="p">;</span>
+<span class="n">H2DReader</span> <span class="n">mloader</span><span class="p">;</span>
+<span class="n">mloader</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;crack.mesh&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xmesh</span><span class="p">);</span>
+<span class="n">ymesh</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">xmesh</span><span class="p">);</span>          <span class="c1">// this defines the common master mesh for</span>
+                             <span class="c1">// both displacement fields</span>
+</pre></div>
+</div>
+<p>Then we define separate spaces for <span class="math">u_1</span> and <span class="math">u_2</span>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// create the x displacement space</span>
+<span class="n">H1Space</span> <span class="n">xdisp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">xmesh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">shapeset</span><span class="p">);</span>
+<span class="n">xdisp</span><span class="p">.</span><span class="n">set_bc_types</span><span class="p">(</span><span class="n">bc_types_xy</span><span class="p">);</span>
+<span class="n">xdisp</span><span class="p">.</span><span class="n">set_uniform_order</span><span class="p">(</span><span class="n">P_INIT</span><span class="p">);</span>
+
+<span class="c1">// create the y displacement space</span>
+<span class="n">H1Space</span> <span class="n">ydisp</span><span class="p">(</span><span class="n">MULTI</span> <span class="o">?</span> <span class="o">&amp;</span><span class="n">ymesh</span> <span class="o">:</span> <span class="o">&amp;</span><span class="n">xmesh</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">shapeset</span><span class="p">);</span>
+<span class="n">ydisp</span><span class="p">.</span><span class="n">set_bc_types</span><span class="p">(</span><span class="n">bc_types_xy</span><span class="p">);</span>
+<span class="n">ydisp</span><span class="p">.</span><span class="n">set_uniform_order</span><span class="p">(</span><span class="n">P_INIT</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The weak forms are registered as usual:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// initialize the weak formulation</span>
+<span class="n">WeakForm</span> <span class="n">wf</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_0_0</span><span class="p">),</span> <span class="n">SYM</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_0_1</span><span class="p">),</span> <span class="n">SYM</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_1_1</span><span class="p">),</span> <span class="n">SYM</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform_surf</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">linear_form_surf_1</span><span class="p">),</span> <span class="n">marker_top</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Next we set bilinear forms for the calculation of the global energy norm,
+and calculate the error:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// calculate error estimate wrt. fine mesh solution in energy norm</span>
+<span class="n">H1OrthoHP</span> <span class="n">hp</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xdisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ydisp</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">err_est</span> <span class="o">=</span> <span class="n">hp</span><span class="p">.</span><span class="n">calc_error_2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sln_x_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sln_y_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sln_x_fine</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sln_y_fine</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+<span class="n">info</span><span class="p">(</span><span class="s">&quot;Error estimate: %g %%&quot;</span><span class="p">,</span> <span class="n">err_est</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The rest is straightforward and details can be found in the
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/crack/main.cpp">main.cpp</a> file.</p>
+<p>Detail of singularity in Von Mises stress at the left end of the left crack:</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/sol.png" style="width: 700px;" /></div>
+<p>Final meshes for <span class="math">u_1</span> and <span class="math">u_2</span> (h-FEM with linear elements):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-x-h1.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-y-h1.png" style="width: 800px;" /></div>
+<p>Final meshes for <span class="math">u_1</span> and <span class="math">u_2</span> (h-FEM with quadratic elements):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-x-h2.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-x-h2.png" style="width: 800px;" /></div>
+<p>Final meshes for <span class="math">u_1</span> and <span class="math">u_2</span> (hp-FEM):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-x-hp.png" style="width: 800px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/crack/mesh-y-hp.png" style="width: 800px;" /></div>
+<p>DOF convergence graphs:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/crack/conv_dof.png" style="width: 600px; height: 400px;" /></div>
+<p>CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph." class="align-center" src="src/hermes2d/img/crack/conv_cpu.png" style="width: 600px; height: 400px;" /></div>
+<p>Next let us compare the multimesh hp-FEM with the standard (single-mesh) hp-FEM:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/crack/conv_dof_compar.png" style="width: 600px; height: 400px;" /></div>
+<p>The same comparison in terms of CPU time:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph." class="align-center" src="src/hermes2d/img/crack/conv_cpu_compar.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="thermoelasticity">
+<h2>Thermoelasticity<a class="headerlink" href="#thermoelasticity" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/thermoelasticity">thermoelasticity</a>.</p>
+<p>The example deals with a massive hollow conductor is heated by induction and
+cooled by water running inside. We will model this problem using linear thermoelasticity
+equations, where the x-displacement, y-displacement, and the temperature will be approximated
+on individual meshes equipped with mutually independent adaptivity mechanisms.</p>
+<p>The computational domain is shown in the following figure and the details of the geometry can be found
+in the corresponding
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/thermoelasticity/domain.mesh">mesh file</a>.
+It is worth mentioning how the circular arcs are defined via NURBS:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">curves</span> <span class="o">=</span>
+<span class="p">{</span>
+  <span class="p">{</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">90</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">90</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">90</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">90</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The triplet on each line consists of two boundary vertex indices and
+the angle of the circular arc.</p>
+<div align="center" class="align-center"><img alt="Domain." class="align-center" src="src/hermes2d/img/thermoelasticity/domain.png" style="width: 700px;" /></div>
+<p>For the equations of linear thermoelasticity and the boundary conditions we refer to the
+paper <em>P. Solin, J. Cerveny, L. Dubcova, D. Andrs: Monolithic Discretization
+of Linear Thermoelasticity Problems via Adaptive Multimesh hp-FEM</em>,
+<a class="reference external" href="http://dx.doi.org/10.1016/j.cam.2009.08.092">doi.org/10.1016/j.cam.2009.08.092</a>.
+The corresponding weak forms are:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_0_0</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">l2m</span> <span class="o">*</span> <span class="n">int_dudx_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+          <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudy_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_0_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">lambda</span> <span class="o">*</span> <span class="n">int_dudy_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+             <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudx_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_0_2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="o">-</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">lambda</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">int_dudx_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_1_0</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span>     <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudy_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+         <span class="n">lambda</span> <span class="o">*</span> <span class="n">int_dudx_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_1_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span>  <span class="n">mu</span> <span class="o">*</span> <span class="n">int_dudx_dvdx</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span>
+         <span class="n">l2m</span> <span class="o">*</span> <span class="n">int_dudy_dvdy</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_1_2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="o">-</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">lambda</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">int_dudy_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_2_2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">int_grad_u_grad_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">linear_form_1</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="o">-</span><span class="n">g</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">int_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">linear_form_2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">HEAT_SRC</span> <span class="o">*</span> <span class="n">int_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">linear_form_surf_2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">HEAT_FLUX_OUTER</span> <span class="o">*</span> <span class="n">int_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The multimesh discretization is initialized by creating the master mesh
+via copying the xmesh into ymesh and tmesh:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// Load the mesh</span>
+<span class="n">Mesh</span> <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span class="p">,</span> <span class="n">tmesh</span><span class="p">;</span>
+<span class="n">H2DReader</span> <span class="n">mloader</span><span class="p">;</span>
+<span class="n">mloader</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;domain.mesh&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xmesh</span><span class="p">);</span> <span class="c1">// master mesh</span>
+<span class="n">ymesh</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">xmesh</span><span class="p">);</span>                <span class="c1">// ydisp will share master mesh with xdisp</span>
+<span class="n">tmesh</span><span class="p">.</span><span class="n">copy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">xmesh</span><span class="p">);</span>                <span class="c1">// temp will share master mesh with xdisp</span>
+</pre></div>
+</div>
+<p>The weak formulation is initialized as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// Initialize the weak formulation</span>
+<span class="n">WeakForm</span> <span class="n">wf</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_0_0</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_0_1</span><span class="p">),</span> <span class="n">SYM</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_0_2</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_1_1</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_1_2</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_2_2</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">linear_form_1</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">linear_form_2</span><span class="p">));</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform_surf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">linear_form_surf_2</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The coarse mesh problem is solved using</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// solve the coarse mesh problem</span>
+<span class="n">LinSystem</span> <span class="n">ls</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wf</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">solver</span><span class="p">);</span>
+<span class="n">ls</span><span class="p">.</span><span class="n">set_spaces</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xdisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ydisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">temp</span><span class="p">);</span>
+<span class="n">ls</span><span class="p">.</span><span class="n">set_pss</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xpss</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ypss</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tpss</span><span class="p">);</span>
+<span class="n">ls</span><span class="p">.</span><span class="n">assemble</span><span class="p">();</span>
+<span class="n">ls</span><span class="p">.</span><span class="n">solve</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">x_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">t_sln_coarse</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The following code defines the global norm for error measurement, and
+calculates element errors. In particular, notice the function
+hp.calc_error_n()</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// calculate element errors and total error estimate</span>
+<span class="n">H1OrthoHP</span> <span class="n">hp</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xdisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ydisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">temp</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">bilinear_form_0_2</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_2</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">bilinear_form_1_2</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_2</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">bilinear_form_2_2</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_2_2</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">err_est</span> <span class="o">=</span> <span class="n">hp</span><span class="p">.</span><span class="n">calc_error_n</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">x_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">t_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">x_sln_fine</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y_sln_fine</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">t_sln_fine</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Sample snapshot of solutions, meshes and convergence graphs are below.</p>
+<p>Solution (Von Mises stress):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/mises.png" style="width: 790px;" /></div>
+<p>Solution (temperature):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/temp.png" style="width: 780px;" /></div>
+<p>Final meshes for <span class="math">u_1</span>, <span class="math">u_2</span> and <span class="math">T</span> (h-FEM with linear elements):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/x-mesh-h1.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/y-mesh-h1.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/t-mesh-h1.png" style="width: 760px;" /></div>
+<p>Final meshes for <span class="math">u_1</span>, <span class="math">u_2</span> and <span class="math">T</span> (h-FEM with quadratic elements):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/x-mesh-h2.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/y-mesh-h2.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/t-mesh-h2.png" style="width: 760px;" /></div>
+<p>Final meshes for <span class="math">u_1</span>, <span class="math">u_2</span> and <span class="math">T</span> (h-FEM with quadratic elements):</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/x-mesh-hp.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/y-mesh-hp.png" style="width: 760px;" /></div>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/thermoelasticity/t-mesh-hp.png" style="width: 760px;" /></div>
+<p>DOF convergence graphs:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/thermoelasticity/conv_dof.png" style="width: 600px; height: 400px;" /></div>
+<p>CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph." class="align-center" src="src/hermes2d/img/thermoelasticity/conv_cpu.png" style="width: 600px; height: 400px;" /></div>
+<p>Next let us compare, for example, multimesh h-FEM with linear elements with the standard (single-mesh)
+h-FEM:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/thermoelasticity/conv_compar_dof.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="singular-perturbation">
+<h2>Singular Perturbation<a class="headerlink" href="#singular-perturbation" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/singular-perturbation">singular-perturbation</a>.</p>
+<p>We solve a singularly perturbed elliptic problem that exhibits a thin anisotropic boundary layer that is
+difficult to resolve.</p>
+<p>The computational domain is the unit square, and the equation solved has the form</p>
+<div class="math">
+<p><span class="math">-\Delta u + K^2 u = K^2.</span></p>
+</div><p>The boundary conditions are homogeneous Dirichlet. The right-hand side is chosen in this way
+in order to keep the solution <span class="math">u(x,y) \approx 1</span> inside the domain. For this presentation
+we choose <span class="math">K^2 = 10^4</span> but everything works for larger values of <span class="math">K</span> as well. We find quite
+important to perform initial refinements towards the boundary, thus providing a better
+initial mesh for adaptivity. One does not have to do this, but then the convergence is slower.
+The solution is shown in the following figure:</p>
+<div align="center" class="align-center"><img alt="Domain." class="align-center" src="src/hermes2d/img/singular-perturbation/sol_3d_view.png" style="width: 500px;" /></div>
+<p>Below we show meshes obtained using various types of adaptivity. The meshes do not correspond to
+the same level of accuracy since the low-order methods could not achieve the same error
+as hp-FEM. Therefore, compare not only the number of DOF but also the error level.
+Convergence graphs for all cases are shown at the end of this section.</p>
+<p>Final mesh (h-FEM, p=1, anisotropic refinements): 34833 DOF, error 0.3495973568992 %</p>
+<div align="center" class="align-center"><img alt="Final mesh" class="align-center" src="src/hermes2d/img/singular-perturbation/mesh-h1-aniso.png" style="width: 500px; height: 400px;" /></div>
+<p>Final mesh (h-FEM, p=2, anisotropic refinements): 37097 DOF, error 0.014234904418008 %</p>
+<div align="center" class="align-center"><img alt="Final mesh" class="align-center" src="src/hermes2d/img/singular-perturbation/mesh-h2-aniso.png" style="width: 500px; height: 400px;" /></div>
+<p>Final mesh (hp-FEM, anisotropic refinements): 6821 DOF, error 7.322784149253e-05 %</p>
+<div align="center" class="align-center"><img alt="Final mesh" class="align-center" src="src/hermes2d/img/singular-perturbation/mesh-hp-aniso.png" style="width: 500px; height: 400px;" /></div>
+<p>DOF convergence graphs for h-FEM with linear and quadratic elements and the hp-FEM (anisotropic
+refinements enabled):</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/singular-perturbation/conv_dof_compar.png" style="width: 600px; height: 400px;" /></div>
+<p>Corresponding CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph." class="align-center" src="src/hermes2d/img/singular-perturbation/conv_cpu_compar.png" style="width: 600px; height: 400px;" /></div>
+<p>And at the end let us compare hp-FEM with isotropic and anisotropic refinements:</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/singular-perturbation/conv_dof_hp.png" style="width: 600px; height: 400px;" /></div>
+<p>Corresponding CPU time convergence graphs:</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph." class="align-center" src="src/hermes2d/img/singular-perturbation/conv_cpu_hp.png" style="width: 600px; height: 400px;" /></div>
+<p>When using h-FEM, this difference becomes much larger. This is left for the reader
+to try.</p>
+</div>
+<div class="section" id="bracket">
+<h2>Bracket<a class="headerlink" href="#bracket" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/bracket">bracket</a>.</p>
+<p>We will use the equations of linear elasticity from example
+<a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/tutorial/08-system">08-system</a>, but
+now we will view them as a coupled PDE system.
+Our domain is a bracket loaded on its top edge and fixed to the wall:</p>
+<div class="math">
+<p><span class="math">\begin{eqnarray*}   \bfu \!&amp;=&amp;\! 0 \ \ \ \ \ \rm{on}\ \Gamma_1  \\   \dd{u_2}{n} \!&amp;=&amp;\! f \ \ \ \ \ \rm{on}\ \Gamma_2 \\   \dd{u_1}{n} = \dd{u_2}{n} \!&amp;=&amp;\! 0 \ \ \ \ \ \rm{elsewhere.} \end{eqnarray*}</span></p>
+</div><p>The dimensions are L = 0.7 m, T = 0.1 m and the force <span class="math">f = 10^3</span> N.</p>
+<div align="center" class="align-center"><img alt="Computational domain for the elastic bracket problem." class="align-center" src="src/hermes2d/img/bracket.png" style="width: 400px; height: 400px;" /></div>
+<p>As usual, adaptivity is based on the difference between the coarse and fine mesh solutions.
+This time we have two equations in the system, two meshes, two spaces, etc.
+Instead of calc_error() we use the method calc_energy_error(), also a member of the
+class H1OrthoHP:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">H1OrthoHP</span> <span class="n">hp</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">xdisp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ydisp</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_0_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_0</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="n">hp</span><span class="p">.</span><span class="n">set_biform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">scalar</span><span class="p">,</span> <span class="n">scalar</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bilinear_form_1_1</span><span class="o">&lt;</span><span class="n">Ord</span><span class="p">,</span> <span class="n">Ord</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="kt">double</span> <span class="n">err_est</span> <span class="o">=</span> <span class="n">hp</span><span class="p">.</span><span class="n">calc_error_2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y_sln_coarse</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">x_sln_fine</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y_sln_fine</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The following figures show the two meshes and their polynomial
+degrees after several adaptive steps:</p>
+<img align="left" alt=":math:`x` displacement -- mesh and polynomial degrees." class="align-left" src="src/hermes2d/img/sys-xorders.png" style="width: 300px; height: 300px;" />
+<img align="right" alt=":math:`y` displacement -- mesh and polynomial degrees." class="align-right" src="src/hermes2d/img/sys-yorders.png" style="width: 300px; height: 300px;" />
+<hr style="clear: both; visibility: hidden;"><p>Note that the meshes are slightly different, not only in
+polynomial degrees, but also in element refinements. This is possible in Hermes thanks to
+a technique called multi-mesh assembling which allows
+all components of the solution to adapt independently. In problems whose components exhibit
+substantially different behavior, one may even obtain completely different meshes.</p>
+<p>Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
+and hp-FEM are shown below.</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph for tutorial example 11-adapt-system." class="align-center" src="src/hermes2d/img/bracket/conv_dof.png" style="width: 600px; height: 400px;" /></div>
+<p>The following graph shows convergence in terms of CPU time.</p>
+<div align="center" class="align-center"><img alt="CPU convergence graph for tutorial example 11-adapt-system." class="align-center" src="src/hermes2d/img/bracket/conv_cpu.png" style="width: 600px; height: 400px;" /></div>
+<p>Comparison of the multimesh and single-mesh hp-FEM:</p>
+<div align="center" class="align-center"><img alt="comparison of multimesh and single mesh hp-FEM" class="align-center" src="src/hermes2d/img/bracket/conv_compar_dof.png" style="width: 600px; height: 400px;" /></div>
+<div align="center" class="align-center"><img alt="comparison of multimesh and single mesh hp-FEM" class="align-center" src="src/hermes2d/img/bracket/conv_compar_cpu.png" style="width: 600px; height: 400px;" /></div>
+<p>In this example the difference between the multimesh <em>hp</em>-FEM and the single-mesh
+version was not extremely large since the two elasticity equations are very
+strongly coupled and have singularities at the same points.
+For other applications of the multimesh hp-FEM see a <a class="reference external" href="http://hpfem.org/hermes2d/doc/src/examples.html#crack">linear elasticity model with cracks</a>,
+a <a class="reference external" href="http://hpfem.org/hermes2d/doc/src/examples.html#thermoelasticity">thermoelasticity example</a>,
+and especially the tutorial
+example <a class="reference external" href="http://hpfem.org/hermes2d/doc/src/tutorial.html#adaptivity-for-systems-and-the-multimesh-hp-fem">11-adapt-system</a>.</p>
+</div>
+<div class="section" id="linear-advection-diffusion">
+<h2>Linear Advection-Diffusion<a class="headerlink" href="#linear-advection-diffusion" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/linear-advection-diffusion">linear-advection-diffusion</a>.</p>
+<p>This example solves the equation</p>
+<div class="math">
+<p><span class="math">\nabla \cdot (-\epsilon \nabla u + \bfb u) = 0</span></p>
+</div><p>in the domain <span class="math">\Omega = (0,1)^2</span> where <span class="math">\epsilon &gt; 0</span> is the diffusivity and <span class="math">\bfb = (b_1, b_2)^T</span>
+a constant advection velocity. We assume that <span class="math">b_1 &gt; 0</span> and <span class="math">b_2 &gt; 0</span>. The boundary
+conditions are Dirichlet, defined as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// Dirichlet boundary condition values</span>
+<span class="n">scalar</span> <span class="nf">bc_values</span><span class="p">(</span><span class="kt">int</span> <span class="n">marker</span><span class="p">,</span> <span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">y</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">return</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-</span> <span class="n">pow</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here the boundary marker 1 corresponds to the bottom and left edges. With a small <span class="math">\epsilon</span>, this is a singularly
+perturbed problem whose solution is close to 1 in most of the domain and forms a thin boundary layer along the top
+and right edges of <span class="math">\Omega</span>.</p>
+<p>Solution for <span class="math">\epsilon = 0.01</span>. Note - view selected to show the boundary layer:</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/solution.png" style="height: 400px;" /></div>
+<p>Bilinear weak form corresponding to the left-hand side of the equation:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// bilinear form</span>
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">Scalar</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="c1">// epsilon times int_grad_u_grad_v:</span>
+  <span class="n">result</span> <span class="o">+=</span> <span class="n">EPSILON</span> <span class="o">*</span> <span class="n">int_grad_u_grad_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// VERSION A (convective term integrated by parts):</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="o">-</span> <span class="n">wt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">B1</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B2</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="c1">// VERSION B (convective term not integrated by parts):</span>
+    <span class="c1">//result += wt[i] * (B1 * u-&gt;dx[i] * v-&gt;val[i] + B2 * u-&gt;dy[i] * v-&gt;val[i]);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Initial mesh for automatic adaptivity:</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/mesh_init.png" style="height: 400px;" /></div>
+<p>This mesh is not fine enough in the boundary layer region to
+prevent the solution from oscillating:</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/sol_init.png" style="height: 400px;" /></div>
+<p>Here we use the same view as for the solution above.
+As you can see, this approximation is not very close to the final solution. The oscillations
+can be suppressed by applying a suitable stabilization, but automatic adaptivity can sometimes
+take care of them as well, as we will see below. Standard stabilization techniques
+include SUPG, GLS and others. For this example, we implemented the so-called <em>variational
+multiscale stabilization</em> that can be used on an optional basis:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// bilinear form for the variational multiscale stabilization</span>
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_stabilization</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span>
+        <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">assert</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">element</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">h_e</span> <span class="o">=</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">get_diameter</span><span class="p">();</span>
+  <span class="n">Scalar</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">double</span> <span class="n">b_norm</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">B1</span><span class="o">*</span><span class="n">B1</span> <span class="o">+</span> <span class="n">B2</span><span class="o">*</span><span class="n">B2</span><span class="p">);</span>
+    <span class="kt">double</span> <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">9</span><span class="o">*</span><span class="n">pow</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">EPSILON</span><span class="o">/</span><span class="n">pow</span><span class="p">(</span><span class="n">h_e</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">b_norm</span><span class="o">/</span><span class="n">h_e</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="o">-</span><span class="n">wt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">B1</span> <span class="o">*</span> <span class="n">v</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">B2</span> <span class="o">*</span> <span class="n">v</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">EPSILON</span> <span class="o">*</span> <span class="n">v</span><span class="o">-&gt;</span><span class="n">laplace</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span>
+                     <span class="p">(</span><span class="n">B1</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B2</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">EPSILON</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">laplace</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We have also implemented a shock-capturing term for the reader to experiment with:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_shock_capturing</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span>
+        <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">double</span> <span class="n">h_e</span> <span class="o">=</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">get_diameter</span><span class="p">();</span>
+  <span class="kt">double</span> <span class="n">s_c</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">;</span>
+  <span class="n">Scalar</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// This R makes it nonlinear! So we need to use the Newton method:</span>
+    <span class="kt">double</span> <span class="n">R</span> <span class="o">=</span> <span class="n">fabs</span><span class="p">(</span><span class="n">B1</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">B2</span> <span class="o">*</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="n">wt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">s_c</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">h_e</span> <span class="o">*</span> <span class="n">R</span> <span class="o">*</span>
+              <span class="p">(</span><span class="n">u</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span>
+              <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pow</span><span class="p">(</span><span class="n">u</span><span class="o">-&gt;</span><span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">pow</span><span class="p">(</span><span class="n">u</span><span class="o">-&gt;</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1.e-8</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The weak forms are registered as follows, note that the stabilization and shock capturing
+are <strong>turned off for this computation</strong>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// initialize the weak formulation</span>
+<span class="n">WeakForm</span> <span class="n">wf</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form</span><span class="p">));</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">STABILIZATION_ON</span> <span class="o">==</span> <span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_stabilization</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">SHOCK_CAPTURING_ON</span> <span class="o">==</span> <span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bilinear_form_shock_capturing</span><span class="p">,</span> <span class="n">bilinear_form_shock_capturing_order</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Let us compare adaptive <span class="math">h</span>-FEM with linear and quadratic elements and the <span class="math">hp</span>-FEM.</p>
+<p>Final mesh for <span class="math">h</span>-FEM with linear elements: 57495 DOF, error = 0.66 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/mesh-h1.png" style="height: 400px;" /></div>
+<p>Final mesh for <span class="math">h</span>-FEM with quadratic elements: 4083 DOF, error = 0.37 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/mesh-h2.png" style="height: 400px;" /></div>
+<p>Final mesh for <span class="math">hp</span>-FEM: 1854 DOF, error = 0.28 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/mesh-hp.png" style="height: 400px;" /></div>
+<p>Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
+and hp-FEM are shown below.</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/linear-advection-diffusion/conv_compar_dof.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="wire">
+<h2>Wire<a class="headerlink" href="#wire" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/wire">wire</a>.</p>
+<p>This example solves a complex-valued vector potential problem</p>
+<div class="math">
+<p><span class="math">-\Delta A + j \omega \gamma \mu A = \mu J_{ext}</span></p>
+</div><p>in a two-dimensional cross-section containing a conductor and an iron object as
+shown in the following schematic picture:</p>
+<div align="center" class="align-center"><img alt="Domain." class="align-center" src="src/hermes2d/img/wire/domain.png" style="height: 500px;" /></div>
+<p>The computational domain is a rectangle of height 0.003 and width 0.004.
+Different material markers are used for the wire, air, and iron
+(see mesh file <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/blob/HEAD:/examples/wire/domain2.mesh">domain2.mesh</a>).</p>
+<p>Boundary conditions are zero Dirichlet on the top and right edges, and zero Neumann
+elsewhere.</p>
+<p>Solution:</p>
+<div align="center" class="align-center"><img alt="Solution." class="align-center" src="src/hermes2d/img/wire/solution.png" style="height: 400px;" /></div>
+<p>Complex-valued weak forms:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_iron</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">scalar</span> <span class="n">ii</span> <span class="o">=</span> <span class="n">cplx</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="n">mu_iron</span> <span class="o">*</span> <span class="n">int_grad_u_grad_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">ii</span><span class="o">*</span><span class="n">omega</span><span class="o">*</span><span class="n">gamma_iron</span><span class="o">*</span><span class="n">int_u_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_wire</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="n">mu_0</span> <span class="o">*</span> <span class="n">int_grad_u_grad_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">bilinear_form_air</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">u</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="mf">1.</span><span class="o">/</span><span class="n">mu_0</span> <span class="o">*</span> <span class="n">int_grad_u_grad_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// conductivity gamma is zero</span>
+<span class="p">}</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="kr">typename</span> <span class="n">Real</span><span class="p">,</span> <span class="kr">typename</span> <span class="n">Scalar</span><span class="o">&gt;</span>
+<span class="n">Scalar</span> <span class="n">linear_form_wire</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">wt</span><span class="p">,</span> <span class="n">Func</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">Geom</span><span class="o">&lt;</span><span class="n">Real</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="n">ExtData</span><span class="o">&lt;</span><span class="n">Scalar</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">ext</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">J_wire</span> <span class="o">*</span> <span class="n">int_v</span><span class="o">&lt;</span><span class="n">Real</span><span class="p">,</span> <span class="n">Scalar</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The weak forms are registered as follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="c1">// initialize the weak formulation</span>
+<span class="n">WeakForm</span> <span class="n">wf</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_iron</span><span class="p">),</span> <span class="n">SYM</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_wire</span><span class="p">),</span> <span class="n">SYM</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_biform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">bilinear_form_air</span><span class="p">),</span> <span class="n">SYM</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">wf</span><span class="p">.</span><span class="n">add_liform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">callback</span><span class="p">(</span><span class="n">linear_form_wire</span><span class="p">),</span> <span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Let us compare adaptive <span class="math">h</span>-FEM with linear and quadratic elements and the <span class="math">hp</span>-FEM.</p>
+<p>Final mesh for <span class="math">h</span>-FEM with linear elements: 18694 DOF, error = 1.02 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/wire/mesh-h1.png" style="height: 400px;" /></div>
+<p>Final mesh for <span class="math">h</span>-FEM with quadratic elements: 46038 DOF, error = 0.018 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/wire/mesh-h2.png" style="height: 400px;" /></div>
+<p>Final mesh for <span class="math">hp</span>-FEM: 4787 DOF, error = 0.00918 %</p>
+<div align="center" class="align-center"><img alt="Mesh." class="align-center" src="src/hermes2d/img/wire/mesh-hp.png" style="height: 400px;" /></div>
+<p>Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
+and hp-FEM are shown below.</p>
+<div align="center" class="align-center"><img alt="DOF convergence graph." class="align-center" src="src/hermes2d/img/wire/conv_compar_dof.png" style="width: 600px; height: 400px;" /></div>
+</div>
+<div class="section" id="waveguide">
+<h2>Waveguide<a class="headerlink" href="#waveguide" title="Permalink to this headline">¶</a></h2>
+<p><strong>Git reference:</strong> Example <a class="reference external" href="http://hpfem.org/git/gitweb.cgi/hermes2d.git/tree/HEAD:/examples/waveguide">waveguide</a>.</p>
+<p>Description coming soon.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Examples</a><ul>
+<li><a class="reference external" href="#saphir">Saphir</a></li>
+<li><a class="reference external" href="#iron-water">Iron-Water</a></li>
+<li><a class="reference external" href="#nernst-planck">Nernst-Planck</a><ul>
+<li><a class="reference external" href="#weak-form-of-the-equations">Weak Form of the Equations</a></li>
+<li><a class="reference external" href="#jacobian-matrix">Jacobian matrix</a></li>
+<li><a class="reference external" href="#simulation">Simulation</a></li>
+<li><a class="reference external" href="#non-adaptive-solution">Non adaptive solution</a></li>
+<li><a class="reference external" href="#adaptive-solution">Adaptive solution</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#crack">Crack</a></li>
+<li><a class="reference external" href="#thermoelasticity">Thermoelasticity</a></li>
+<li><a class="reference external" href="#singular-perturbation">Singular Perturbation</a></li>
+<li><a class="reference external" href="#bracket">Bracket</a></li>
+<li><a class="reference external" href="#linear-advection-diffusion">Linear Advection-Diffusion</a></li>
+<li><a class="reference external" href="#wire">Wire</a></li>
+<li><a class="reference external" href="#waveguide">Waveguide</a></li>
+</ul>
+</li>
+</ul>
+
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Content</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, hp-FEM group at UNR.
+      Last updated on Apr 22, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>
