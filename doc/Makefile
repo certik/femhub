@@ -64,17 +64,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/Hermes2D.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/FEMhub.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/Hermes2D.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/FEMhub.qhc"
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) _build/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/Hermes2D"
-	@echo "# ln -s _build/devhelp $$HOME/.local/share/devhelp/Hermes2D"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/FEMhub"
+	@echo "# ln -s _build/devhelp $$HOME/.local/share/devhelp/FEMhub"
 	@echo "# devhelp"
 
 latex:

@@ -1,5 +1,5 @@
 .. FEMhub document:ation master file, created by
-   sphinx-quickstart on Fri Oct 30 19:23:04 2009.
+   sphinx-quickstart on Fri Apr 23 19:23:04 2009.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -12,7 +12,7 @@ FEMhub Documentation
     src/introduction
     src/femhub_lab
     src/install_run
-    src/hermes2d
+    src/hermes2d/tutorial-1
     src/fipy
     src/sfepy
 

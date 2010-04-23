@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Hermes2D documentation build configuration file, created by
+# FEMhub documentation build configuration file, created by
 # sphinx-quickstart on Fri Oct 30 19:23:04 2009.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -182,7 +182,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Hermes2D'
+project = u'FEMhub'
 copyright = u'2009, hp-FEM group at UNR'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -269,7 +269,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'Hermes2D Documentation'
+html_title = 'FEMhub Documentation'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = 'Content'
@@ -330,7 +330,7 @@ html_show_sourcelink = False
 #html_file_suffix = '.html'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Hermes2Ddoc'
+htmlhelp_basename = 'FEMhubdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -344,7 +344,7 @@ htmlhelp_basename = 'Hermes2Ddoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Hermes2D.tex', u'Hermes2D Documentation',
+  ('index', 'FEMhub.tex', u'FEMhub Documentation',
    u'hp-FEM group at UNR', 'manual'),
 ]
 
