@@ -54,45 +54,62 @@ start automatically, just type this in your browser: http://localhost:8000/
 
 Click "New Worksheet" to open a new worksheet, and in the text input window of the worksheet copy-paste the following:
 ::
-    # Hermes2D: Example 01 (mesh)
-    # This example shows how to create a mesh.
+  # This example shows how to load the mesh,
+  # perform local and global refinements, and 
+  # how to convert quads to triangles and vice 
+  # versa. 
 
-    from hermes2d import Mesh, MeshView
+  from hermes2d import Mesh, MeshView
 
-    mesh = Mesh()
+  mesh = Mesh()
 
-    # Creates a mesh from a list of nodes, elements, boundary and nurbs.
-    mesh.create([
-            [0, -1],
-            [1, -1],
-            [-1, 0],
-            [0, 0],
-            [1, 0],
-            [-1, 1],
-            [0, 1],
-            [0.707106781, 0.707106781]
-        ], [
-            [0, 1, 4, 3, 0],
-            [3, 4, 7, 0],
-            [3, 7, 6, 0],
-            [2, 3, 6, 5, 0]
-        ], [
-            [0, 1, 1],
-            [1, 4, 2],
-            [3, 0, 4],
-            [4, 7, 2],
-            [7, 6, 2],
-            [2, 3, 4],
-            [6, 5, 2],
-            [5, 2, 3]
-        ], [
-            [4, 7, 45],
-            [7, 6, 45]
-        ])
+  # Creates a mesh from a list of nodes, elements, boundary and nurbs.
+  mesh.create([
+          [0, -1],
+          [1, -1],
+          [-1, 0],
+          [0, 0],
+          [1, 0],
+          [-1, 1],
+          [0, 1],
+          [0.707106781, 0.707106781]
+      ], [
+          [0, 1, 4, 3, 0],
+          [3, 4, 7, 0],   
+          [3, 7, 6, 0],
+          [2, 3, 6, 5, 0]
+      ], [
+          [0, 1, 1],
+          [1, 4, 2],
+          [3, 0, 4],
+          [4, 7, 2],
+          [7, 6, 2],
+          [2, 3, 4],
+          [6, 5, 2],
+          [5, 2, 6]
+      ], [
+          [4, 7, 45],
+          [7, 6, 45],
+      ])
 
-    # Display the Mesh
-    mview = MeshView()
-    mview.show(mesh, lib="mpl", method="orders", notebook=True)
+
+  # Perform sample initial refinements:
+  mesh.refine_all_elements();          # Refines all elements.
+  mesh.refine_towards_vertex(3, 4);    # Refines mesh towards vertex #3 (4x).
+  mesh.refine_towards_boundary(2, 4);  # Refines all elements along boundary 2 (4x).
+  #mesh.refine_element(86, 0);          # Refines element #86 isotropically.
+  #mesh.refine_element(112, 0);         # Refines element #112 isotropically.
+  #mesh.refine_element(84, 2);          # Refines element #84 anisotropically.
+  #mesh.refine_element(114, 1);         # Refines element #114 anisotropically.
+
+  # This is how one can convert triangles to quads 
+  # and vice versa (see hermes2d/src/mesh.cpp for 
+  # additional mesh refinement options):
+  #mesh.convert_triangles_to_quads()
+  #mesh.convert_quads_to_triangles()
+
+  # Visualize the mesh
+  mesh.plot(filename="a.png")
 
 Click "Evaluate" button and you should see the following output:
 

@@ -1,22 +1,24 @@
-=====================================
-FEMhub: Tutorial Examples on Hermes2D
-=====================================
+=========================
+FEMhub: Tutorial Examples 
+=========================
 
-This tutorial should give you a good idea of how to use Hermes2D in FEMhub.
+This tutorial should give you a good idea of how to use different FEM codes in FEMhub.
 The document is under continuous development - if you find bugs or would like us to 
 improve something, let us know through the `mailing list <http://groups.google.com/group/femhub/>`_.
-For details on how to use Hermes2D itself please refer to `Hermes2D
-documentation <http://hpfem.org/hermes2d/doc/index.html>`_.
+
+
+Hermes2D Examples
+-----------------
 
 What is Hermes2D
-----------------
+~~~~~~~~~~~~~~~~
 `Hermes2D <http://hpfem.org/hermes2d>`_ is a C++ library for rapid prototyping
 of space and space-time adaptive hp-FEM solvers, and it is one of the FEM engines
 included in FEMhub. Although Hermes2D is written in C++ you do not need to know anything about C++ besides
-basic python when you use Hermes2D within FEMhub.
+basic python when you use Hermes2D within FEMhub. For details on how to use Hermes2D itself please refer to `Hermes2D documentation <http://hpfem.org/hermes2d/doc/index.html>`_.
 
 Finite Element Mesh
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Every finite element computation starts with partitioning the domain
 into a finite element mesh. Hermes uses triangles and quadrilaterals, and 
@@ -39,7 +41,7 @@ Boundary markers are used to link boundary conditions with the boundary edges.
 The following example Mesh will make clear about how to create mesh in FEMhub.
 
 Example: Mesh
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 First import the required modules::
 
@@ -103,14 +105,21 @@ meshes are at the heart of Hermes:
       mesh.refine_all_elements()          # refines all elements
       mesh.refine_towards_vertex(3, 4)    # refines mesh towards vertex #3 (4x)
       mesh.refine_towards_boundary(2, 4)  # refines all elements along boundary 2 (4x)
+      #mesh.refine_element(86, 0);        # Refines element #86 isotropically.
+      #mesh.refine_element(112, 0);       # Refines element #112 isotropically.
+      #mesh.refine_element(84, 2);        # Refines element #84 anisotropically.
+      #mesh.refine_element(114, 1);       # Refines element #114 anisotropically.
+
+You can also convert triangles to quads and vice versa
+::
+  mesh.convert_triangles_to_quads()
+  mesh.convert_quads_to_triangles()
 
 The following code illustrates how to visualize the mesh using the class MeshView:
 ::
 
     # Display the Mesh
-    mview = MeshView()
-    mview.show(mesh, lib="mpl", notebook=True)
-    mview.wait()
+    mesh.plot(filename="a.png")
 
 and you will see the following output
 
@@ -270,8 +279,7 @@ using the ScalarView class:
 You can visualize the mesh using the MeshView class:
 ::
     # Display the Mesh
-    mview = MeshView()
-    mview.show(mesh, lib="mpl", filename="b.png", notebook=True)
+    mesh.plot(filename="b.png")
  
 Furthermore, you can position the images by using the following html codes:
 ::

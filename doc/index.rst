@@ -12,10 +12,13 @@ FEMhub Documentation
     src/introduction
     src/femhub_lab
     src/install_run
+    src/intromesh
     src/hermes2d/tutorial-1
     src/fipy
     src/sfepy
-
+    src/howto
+    src/libfemhub
+    src/vbox
 .. #####
 
     src/wrappers
