@@ -5,14 +5,14 @@
 #
 # Sage: http://www.sagemath.org/packages/standard
 # SPD: http://code.google.com/p/spdproject/downloads/list
-# FEMhub: http://code.google.com/p/femhub/downloads/list
+# FEMhub: http://femhub.org/stpack
 #
 # The idea is to copy most of the packages verbatim from Sage, only if we need
 # to do some FEMhub modifications, we provide our own packages.
 
 SAGE_STANDARD=http://www.sagemath.org/packages/standard
 SPD_STANDARD=http://spdproject.googlecode.com/files
-FEMHUB_STANDARD=http://femhub.googlecode.com/files
+FEMHUB_STANDARD=http://femhub.org/stpack
 
 if [ `uname` = 'Darwin' ]; then
     WGET="curl -O"
@@ -65,7 +65,7 @@ $WGET $FEMHUB_STANDARD/mayavi-3.3.1.p2.spkg
 $WGET $FEMHUB_STANDARD/pyparsing-1.5.2.spkg
 $WGET $FEMHUB_STANDARD/swig-1.3.36.spkg
 $WGET $FEMHUB_STANDARD/sfepy-2010.1.spkg
-$WGET $FEMHUB_STANDARD/hermes2d-b1effaa.spkg
+$WGET $FEMHUB_STANDARD/hermes2d-53f5645.spkg
 $WGET $FEMHUB_STANDARD/pysparse-1.1-6301cea.spkg
 $WGET $FEMHUB_STANDARD/fipy-2.1-51f1360.spkg
 $WGET $FEMHUB_STANDARD/libfemhub-fd69aca.spkg
