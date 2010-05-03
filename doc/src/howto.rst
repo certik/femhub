@@ -109,10 +109,12 @@ After you extract you will see a script file named ``spkg-install`` which contai
 The script ``spkg-install`` is run during installation of the FEMhub package. You can modify spkg-install according to your need.
 
 You may follow the following steps to create a new FEMhub spkg package:
+
 1. First create a directory like this:
 ::
   \$ mkdir mypackage-version # first the name of your package and then version
 Then inside that directory put the script ``spkg-install``, and also create a directory ``src/``. Then put all your source codes within that ``src`` directory. Please see a sample of ``spkg-install`` script below.
+
 2. Then you can create the package by typing:
 ::
   \$ cd ../    # go out of the mypackage-version directory you just created
@@ -156,34 +158,21 @@ A sample ``spkg-install`` script
      exit 1
   fi
 
-Update Hermes2D package in FEMhub
----------------------------------
-To update hermes2d package in FEMhub, you can follow the following steps:
+Installing SPKG Package
+-----------------------
+You can install any spkg package in femhub directly by typing
 ::
-  \$ tar xf femhub-0.9.8.tar                # unpack the latest femhub tarball
-  \$ cd femhub-0.9.8                        # cd to FEMhub directory
-  \$ cd spkg/standard                       # cd to spkg/standard directory where all standard packages are
-  \$ tar xjf hermes2d-d74kfk7.spkg          # unpack the old Hermes2D spkg
-  \$ cd hermes2d-d74kfk7                    # cd to that unpacked Hermes2D directory
-  \$ vim create_src                         # open the script create_src in a text editor and make changes to path
-  \$ ./create_src                           # run the script 
-  \$ cd ..                                  # go up
-  \$ mv hermes2d-d74kfk7 hermes2d-ef9ju6a   # rename Hermes2D directory
- 
-Then you can create spkg tar by doing:
+  \$ ./femhub -i path/to/spkg-package 
+
+You can install the package directly from the internet too. For example, to install FiPy package you can type
 ::
-  \$ tar cjf hermes2d-ef9ju6a.spkg hermes2d-ef9ju6a
+  \$ ./femhub -i http://femhub.org/stpack/http:/fipy-2.1-51f1360.spkg
 
-And, to install this new hermes2d package do
-::
-  \$ cd ../..
-  \$ ./femhub -i spkg/standard/hermes2d-ef9ju6a.spkg
+Then you can test whether your package worked correctly in FEMhub. You can test your patches without creating spkg tar by following the instructions below.
 
-Then you are ready to test this new package. You can test your patches without creating spkg tar by following the instructions below.
-
-Testing Patches of Your FEMhub Package
+Testing Your Patches of FEMhub Package
 --------------------------------------
-You can test your patches of FEMhub modules or packages without creating spkg package by following these steps:
+You can test your patches of FEMhub packages without creating spkg tarball by following these steps:
 ::
  \$ cd mypackage-version
  \$ path_to_femhub/femhub -sh # this launches FEMhub shell
