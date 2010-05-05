@@ -23,8 +23,6 @@ if [ "$SAGE_ROOT" = "....." ];  then
     if [ ! -f "$SAGE_ROOT/local/bin/sage-sage" ]; then
 	echo "**************************************************************************"
 	echo "You must compile FEMhub first using 'make' in the FEMhub root directory." >&2
-	echo "(If you have already compiled FEMhub, you must set the SAGE_ROOT variable in "
-	echo "the file '$0')".
 	echo "**************************************************************************"
 	exit 1
     fi
