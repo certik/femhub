@@ -4,7 +4,7 @@ Introduction
 
 `FEMhub <http://femhub.org>`_ is an open source distribution of finite element codes with a unified
 Python interface. It is available for download as desktop application, but all codes
-are also automatically available in the `Online Numerical Methods Laboratory <http://nb.femhub.org>`_
+are also automatically available in the `Online Numerical Methods Laboratory <http://lab.femhub.org>`_
 which is powered by high performance computers of the `hp-FEM group <http://hpfem.org>`_ at the
 `University of Nevada, Reno <http://unr.edu>`_. Every FEM code included in FEMhub can be used remotely via any web browser.
 
@@ -16,7 +16,7 @@ Our mailing list is an active place where you should get all answers quickly.
 
 The best way of reading this tutorial is to run the code at the same time.
 After making your way through the tutorial, you may want to view the `public
-worksheets <http://nb.femhub.org/pub>`_
+worksheets <http://lab.femhub.org/pub>`_
 that contains a variety of examples that may help you to get started. If you
 create an interesting model using FEMhub packages, let us know and we
 will be happy to add it to the existing examples.

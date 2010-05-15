@@ -1,16 +1,16 @@
 How to Use FEMhub Online Lab
 ============================
-FEMhub online lab can be used on your local machine, after you install the FEMhub package. Alternatively, if you do not want to download and install anything you can use FEMhub online lab hosted in the `server of hp-FEM group at University of Nevada, Reno <http://nb.femhub.org/>`_.
+FEMhub online lab can be used on your local machine, after you install the FEMhub package. Alternatively, if you do not want to download and install anything you can use FEMhub online lab hosted in the `server of hp-FEM group at University of Nevada, Reno <http://lab.femhub.org/>`_.
 
 FEMhub Online Lab in the Server at UNR 
 ---------------------------------------------------------------
 If you want to use FEMhub online lab hosted at the server of hp-FEM group, University of Nevada Reno,
 please follow the follwing instructions:
 
-Step 1: `Sign up <http://nb.femhub.org/register>`_ for a new FEMhub online lab account
+Step 1: `Sign up <http://lab.femhub.org/register>`_ for a new FEMhub online lab account
 This is automatic and fast. Report any problems to femhub@googlegroups.com.
 
-Step 2: Log into the `online lab <http://nb.femhub.org/>`_. Click on "published worksheets". Then click on
+Step 2: Log into the `online lab <http://lab.femhub.org/>`_. Click on "published worksheets". Then click on
 any link starting with "Num Methods", the simplest one being "Num Methods:
 Taylor Polynomial".
 

@@ -2,7 +2,7 @@ Download, Install and Run FEMhub
 ================================
 You can run download and install FEMhub easily on your local desktop. 
 Please follow the instructions below. If you do not want to download or 
-install anything you can use our `FEMhub Online Numerical Methods Laboratory <http://nb.femhub.org/>`_.
+install anything you can use our `FEMhub Online Numerical Methods Laboratory <http://lab.femhub.org/>`_.
 
 Binary
 ------
@@ -15,14 +15,14 @@ the instructions on running FEMhub below.
 
 Building from Sources
 ---------------------
-You can get the tarball of sources here `here <http://femhub.org/pub/>`_. The most recent stable version is femhub-0.9.8. You can also try 0.9.9.beta6. Please follow the following instructions to build from sources for different operating systems.
+You can get the tarball of sources here `here <http://femhub.org/pub/>`_. The most recent stable version is femhub-0.9.9. Please follow the following instructions to build from sources for different operating systems.
 
 Linux Distributions
 ~~~~~~~~~~~~~~~~~~~
 To download the sources you can use the following command in Ubuntu Linux:
 ::
 
-  \$ wget http://femhub.org/pub/femhub-0.9.8.tar   
+  \$ wget http://femhub.org/pub/femhub-0.9.9.tar   
 
 After you download the sources, please read below on how to build FEMhub and work around common issues:
 
@@ -37,11 +37,11 @@ For example in Ubuntu Linux you can do
 
 2. Extract the tarball:
 ::
-      \$ tar xf femhub-0.9.8-*.tar
+      \$ tar xf femhub-0.9.9-*.tar
 
 3. cd into the  femhub directory and type make:
 ::
-      \$ cd femhub-0.9.8
+      \$ cd femhub-0.9.9
       \$ make
 
 You can take advantage of several cores on your computer by executing
@@ -54,7 +54,7 @@ Mac OS X
 ~~~~~~~~
 You can use the following command to download the tarball of sources:
 ::
-  \$ curl -O http://femhub.org/pub/femhub-0.9.8.tar
+  \$ curl -O http://femhub.org/pub/femhub-0.9.9.tar
 
 
 1. Make sure you have the dependencies and 2GB free disk space.
@@ -66,11 +66,11 @@ WARNING: If "gcc -v" outputs 4.0.0, you  *must* upgrade XCode (free from Apple),
 2. Extract the tarball:
 ::
 
-  \$ tar -xf femhub-0.9.8-*.tar
+  \$ tar -xf femhub-0.9.9-*.tar
 
 3. cd into the femhub directory and type make:
 ::
-  \$ cd femhub-0.9.8
+  \$ cd femhub-0.9.9
   \$ make
  
 
@@ -87,9 +87,9 @@ Download and install the Linux emulator Cygwin from `here <http://www.cygwin.com
 
 This is a bit tedious but you have to survive it. We would like to create one package containing all of those, to facilitate the download - any help is welcome. For some packages, there will be more choices - follow the magical word GNU. Then download, unpack, and build FEMhub as in Linux: 
 ::
-  \$ wget http://femhub.org/pub/femhub-0.9.8.tar
-  \$ tar -xf femhub-0.9.8.tar
-  \$ cd femhub-0.9.8
+  \$ wget http://femhub.org/pub/femhub-0.9.9.tar
+  \$ tar -xf femhub-0.9.9.tar
+  \$ cd femhub-0.9.9
   \$ make
 
 
@@ -142,7 +142,7 @@ from the command line, and type lab() after that.
 ::
     \$ ./femhub
     ----------------------------------------------------------------------
-    | Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
+    | Femhub Version 0.9.9, Release Date: 2010-05-05                     |
     | Type lab() for the GUI.                                            |
     ----------------------------------------------------------------------
     In [1]: lab()

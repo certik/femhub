@@ -1,5 +1,5 @@
 =========================
-FEMhub: Tutorial Examples 
+FEMhub Examples: Hermes2D
 =========================
 
 This tutorial should give you a good idea of how to use different FEM codes in FEMhub.
@@ -7,18 +7,15 @@ The document is under continuous development - if you find bugs or would like us
 improve something, let us know through the `mailing list <http://groups.google.com/group/femhub/>`_.
 
 
-Hermes2D Examples
------------------
-
 What is Hermes2D
-~~~~~~~~~~~~~~~~
+----------------
 `Hermes2D <http://hpfem.org/hermes2d>`_ is a C++ library for rapid prototyping
 of space and space-time adaptive hp-FEM solvers, and it is one of the FEM engines
 included in FEMhub. Although Hermes2D is written in C++ you do not need to know anything about C++ besides
 basic python when you use Hermes2D within FEMhub. For details on how to use Hermes2D itself please refer to `Hermes2D documentation <http://hpfem.org/hermes2d/doc/index.html>`_.
 
 Finite Element Mesh
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 Every finite element computation starts with partitioning the domain
 into a finite element mesh. Hermes uses triangles and quadrilaterals, and 
@@ -40,10 +37,11 @@ One also needs to enumerate all mesh vertices and assign markers to all boundary
 Boundary markers are used to link boundary conditions with the boundary edges.
 The following example Mesh will make clear about how to create mesh in FEMhub.
 
-Example: Mesh
-~~~~~~~~~~~~~
+Example Mesh
+------------
 
-First import the required modules::
+First import the required modules
+::
 
     # Import modules
     from hemres2d import Mesh, MeshView
@@ -132,8 +130,8 @@ and you will see the following output
 To view this example published on FEMhub online lab click `here <http://nb.femhub.org/pub/62>`_.
 
 
-Example: Poisson Equation
-~~~~~~~~~~~~~~~~~~~~~~~~
+Example Poisson Equation
+------------------------
 
 Let us solve the Poisson equation
 
@@ -297,7 +295,7 @@ The following figure shows the output.
 To view this example published on FEMhub online lab click `here <http://nb.femhub.org/pub/56>`_.
 
 Example Dirichlet BC
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 This example illustrates how to use non-homogeneous(nonzero) Dirichlet boundary conditions. 
 Suppose we would like to modify the previous Poisson model problem in the following way:
 
@@ -421,8 +419,8 @@ The output of the above code in the Online Lab is like this:
    :height: 450
    :alt: Solution of the Dirichlet problem.
 
-Neumann BC
-~~~~~~~~~
+Example Neumann BC
+------------------
 This example shows how to define Neumann boundary conditions. In addition, you will see how a Filter is used to visualize gradient of the solution 
 
 For this new model problem will have the form
@@ -550,7 +548,6 @@ The full code that you can run in the Online Lab is as follows:
 
 	# Positioning the images
 	print """<html><table border=1><tr><td><img src="cell://a.png"></span></td><td><img src="cell://b.png" width="540" height="405"></td></tr></table></html>"""
-
 
 After running the above code in the Online Lab you should see the following output:
 
