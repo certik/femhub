@@ -553,6 +553,110 @@ After running the above code in the Online Lab you should see the following outp
 
 .. image:: ../img/neumann.png
    :align: left
-   :width: 815
-   :height: 378
+   :width:75% 
    :alt: Solution of the Neumann problem.
+
+Example BC-Newton
+-----------------
+This example explains how to use Newton boundary condition (sometimes called Robin) which is of the form
+
+.. math::
+
+    \dd{u}{n} + c_1 u = c_2, \ \ \ \ c_1 \ne 0.
+
+The Laplace equation describes, among
+many other things, stationary heat transfer in a homogeneous linear
+material.
+Analogous to Neumann conditions, Newton conditions yield surface integrals. However,
+this time they are both in the bilinear form and in the linear form.
+
+The following parameters can be changed
+::
+	P_INIT = 3               # uniform polynomial degree in the mesh
+	UNIFORM_REF_LEVEL = 2    # number of initial uniform mesh refinements
+	CORNER_REF_LEVEL = 12    # number of mesh refinements towards the re-entrant corner
+
+The full code for the example is:
+::
+	# Import modules
+	from hermes2d import Mesh, MeshView, H1Shapeset, PrecalcShapeset, H1Space, \
+		LinSystem, WeakForm, DummySolver, Solution, ScalarView
+	from hermes2d.examples.c06 import set_bc, set_forms
+
+	# Initialize the mesh
+	mesh = Mesh()
+
+	# Create a mesh from a list of nodes, elements, boundary and nurbs.
+	mesh.create([
+	       [0, -1],
+	       [1, -1],
+	       [-1, 0],
+	       [0, 0],
+	       [1, 0],
+	       [-1, 1],
+	       [0, 1],
+	       [0.707106781, 0.707106781]
+	   ], [
+	       [0, 1, 4, 3, 0],
+	       [3, 4, 7, 0],  
+	       [3, 7, 6, 0],
+	       [2, 3, 6, 5, 0]
+	   ], [
+	       [0, 1, 1],
+	       [1, 4, 2],
+	       [3, 0, 4],
+	       [4, 7, 2],
+	       [7, 6, 2],
+	       [2, 3, 4],
+	       [6, 5, 2],
+	       [5, 2, 3]
+	   ], [
+	       [4, 7, 45],
+	       [7, 6, 45]
+	   ])
+	   
+	# Mesh refinements
+	for i in range(UNIFORM_REF_LEVEL): mesh.refine_all_elements()
+	mesh.refine_towards_vertex(3, CORNER_REF_LEVEL)
+
+	# Initialize shapeset and cache
+	shapeset = H1Shapeset()
+	pss = PrecalcShapeset(shapeset)
+
+	# Create an H1 space
+	space = H1Space(mesh, shapeset)
+	space.set_uniform_order(P_INIT)
+
+	# Set boundary conditions
+	set_bc(space)
+
+	# Enumerate degrees of freedom
+	space.assign_dofs()
+
+	# Initialize the discrete problem
+	wf = WeakForm(1)
+	set_forms(wf)
+
+	# Initialize the linear system and solver
+	solver = DummySolver()
+	sys = LinSystem(wf, solver)
+	sys.set_spaces(space)
+	sys.set_pss(pss)
+
+	# Assemble the stiffness matrix and solve the system
+	sln = Solution()
+	sys.assemble()
+	sys.solve_system(sln)
+
+	# Display the solution
+	sln.plot(filename="a.png")
+
+	# Display the mesh
+	mesh.plot(space=space, filename="b.png")
+
+After running the above code in the Online Lab you should see the following output:
+
+.. image:: ../img/newton.png
+   :align: left
+   :width: 75%
+   :alt: Solution of the Newton problem.
