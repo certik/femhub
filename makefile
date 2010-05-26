@@ -3,7 +3,7 @@
 NUM_THREADS=15
 
 all:
-	cd spkg && ./install all 2>&1 | tee -a ../install.log
+	cd spkg && ./install_tee
 
 clean:
 	echo "Deleted spkg/build"
