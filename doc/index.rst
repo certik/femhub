@@ -20,6 +20,8 @@ FEMhub Documentation
     src/howto
     src/libfemhub
     src/vbox
+    src/lxc
+
 .. #####
 
     src/wrappers
