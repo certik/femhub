@@ -657,6 +657,86 @@ The full code for the example is:
 After running the above code in the Online Lab you should see the following output:
 
 .. image:: ../img/newton.png
-   :align: left
+   :align: center
    :width: 75%
    :alt: Solution of the Newton problem.
+
+
+Example General 2nd-Order Linear Equation
+-----------------------------------------
+This example solves a general second-order linear equation with non-constant
+coefficients, and shows how integration orders in linear and bilinear forms
+can be defined manually. The linear second-order equation is of the form 
+
+.. math::
+
+         -\frac{\partial}{\partial x}\left(a_{11}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial x}\left(a_{12}(x,y)\frac{\partial u}{\partial y}\right) - \frac{\partial}{\partial y}\left(a_{21}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial y}\left(a_{22}(x,y)\frac{\partial u}{\partial y}\right) + a_1(x,y)\frac{\partial u}{\partial x} + a_{21}(x,y)\frac{\partial u}{\partial y} + a_0(x,y)u = rhs(x,y),
+
+equipped with Dirichlet and/or Neumann boundary conditions. Its goal is to show how to 
+use space-dependent coefficients and how to define quadrature orders explicitly.
+Domain: arbitrary
+
+The following parameters can be changed
+::
+	P_INIT = 2             # Initial polynomial degree of all mesh elements.
+	INIT_REF_NUM = 4       # Number of initial uniform refinements
+
+The full code for the example is:
+::
+	# Import modules
+	from hermes2d import Mesh, MeshView, OrderView, H1Shapeset, PrecalcShapeset, H1Space, \
+		LinSystem, WeakForm, DummySolver, Solution, ScalarView, VonMisesFilter, \
+		OrderView
+	from hermes2d.examples.c07 import set_bc, set_forms
+	from hermes2d.examples import get_07_mesh
+
+	# Initialize and load the mesh
+	mesh = Mesh()
+	mesh.load(get_07_mesh())
+
+	# Initial mesh refinements
+	for i in range(INIT_REF_NUM):
+	    mesh.refine_all_elements()
+
+	# Initialize the shapeset and the cache
+	shapeset = H1Shapeset()
+	pss = PrecalcShapeset(shapeset)
+
+	# Create finite element space
+	space = H1Space(mesh, shapeset)
+	space.set_uniform_order(P_INIT)
+	set_bc(space)
+
+	# Enumerate degrees of freedom
+	space.assign_dofs()
+
+	# Initialize the weak formulation
+	wf = WeakForm(1)
+	set_forms(wf)
+
+	# Initialize the linear system and solver
+	solver = DummySolver()
+	ls = LinSystem(wf, solver)
+	ls.set_spaces(space)
+	ls.set_pss(pss)
+
+	# Assemble the stiffness matrix and solve the system
+	sln = Solution()
+	ls.assemble()
+	ls.solve_system(sln)
+
+	# View the solution
+	sln.plot(filename="a.png")
+
+	# View the mesh
+	mesh.plot(space=space, filename="b.png")
+
+	# Positioning the images
+	print """<html><table border=1><tr><td><span><img src="cell://a.png"></span></td><td><img src="cell://b.png" width="540" height="405"></td></tr></table></html>"""
+
+After running the above code in the Online Lab you should see the following output:
+
+.. image:: ../img/general.png
+   :align: center
+   :width: 75%
+   :alt: Solution of the General problem.
