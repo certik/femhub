@@ -40,7 +40,10 @@ Only use this mode to install FEMhub."
     if systemwide_python:
         parser.print_help()
     else:
-        import IPython
+        try:
+            import IPython
+        except ImportError:
+            raise Exception("You need to install 'ipython'")
         IPython.ipapi.launch_new_instance()
 
 def cmd(s):
