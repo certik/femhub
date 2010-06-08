@@ -47,7 +47,12 @@ Only use this mode to install FEMhub."
             import IPython
         except ImportError:
             raise Exception("You need to install 'ipython'")
-        IPython.ipapi.launch_new_instance()
+        print """\
+----------------------------------------------------------------------
+| FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
+| Type lab() for the GUI.                                            |
+----------------------------------------------------------------------"""
+        IPython.Shell.start().mainloop(banner='')
 
 def cmd(s):
     r = os.system(s)
