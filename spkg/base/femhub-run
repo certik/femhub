@@ -184,6 +184,11 @@ def get_dependencies(pkg):
             "sfepy": ["swig", "scipy"],
             "fipy": ["python"],
             "libfemhub": ["python"],
+            "python_gnutls": ["gnutls"],
+            # This is actually a femhub-lab:
+            "femhub": ["pexpect", "twisted", "setuptools",
+                "jinja", "libgpg_error", "libgcrypt", "python_gnutls",
+                "docutils", "pygments", "sphinx"],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
@@ -195,11 +200,17 @@ def get_dependencies(pkg):
 
 def build(cpu_count=0):
     print "Building FEMhub"
+    # Only add the packages that you want to have in FEMhub. Don't add
+    # dependencies (those are handled in the get_dependencies() function)
     packages_list = [
             "ipython",
             "hermes2d",
             "mayavi",
             "libfemhub",
+            "fipy",
+            "sfepy",
+            "sympy",
+            "femhub-lab",
             ]
     for pkg in packages_list:
         install_package(pkg, cpu_count=cpu_count)
