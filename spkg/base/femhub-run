@@ -55,8 +55,10 @@ def download_packages():
     print "Downloading standard spkg packages"
     cmd("cd $SAGE_ROOT/spkg/standard; ./download_packages")
 
+    candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s-*.spkg" % \
+            pkg))
 
-def install_package(pkg, install_dependencies=True):
+def install_package(pkg, install_dependencies=True, force_install=False):
     """
     Installs the package "pkg".
 
@@ -64,6 +66,9 @@ def install_package(pkg, install_dependencies=True):
     without a version).
 
     "install_dependencies" ... if True, it will also install all dependencies
+
+    "force_install" ... if True, it will install the package even if it has
+                    been already installed
 
     Examples:
 
@@ -73,6 +78,10 @@ def install_package(pkg, install_dependencies=True):
 
     """
     pkg = pkg_make_absolute(pkg)
+    if is_installed(pkg):
+        if not force_install:
+            print "Package '%s' is already installed" % pkg_make_relative(pkg)
+            return
     if install_dependencies:
         print "Installing dependencies for %s..." % pkg
         for dep in get_dependencies(pkg):
@@ -91,6 +100,17 @@ def install_package(pkg, install_dependencies=True):
     if cpu_count > 1:
         os.environ["MAKE"] = "make -j %d" % (cpu_count + 1)
     cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
+    cmd("touch $SAGE_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
+
+def is_installed(pkg):
+    pkg = pkg_make_relative(pkg)
+    candidates = glob(expandvars("$SAGE_ROOT/spkg/installed/%s" % pkg))
+    if len(candidates) == 1:
+        return True
+    elif len(candidates) == 0:
+        return False
+    else:
+        raise Exception("Internal error: got more candidates in is_installed")
 
 def pkg_make_absolute(pkg):
     if os.path.exists(pkg):
