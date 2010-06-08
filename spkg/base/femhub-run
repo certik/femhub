@@ -210,7 +210,8 @@ def build(cpu_count=0):
     packages_list = [
             "ipython",
             "hermes2d",
-            "mayavi",
+            # requires: setupdocs>=1.0, doesn't work without a net...
+            #"mayavi",
             "libfemhub",
             "fipy",
             "sfepy",
