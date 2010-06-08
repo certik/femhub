@@ -27,15 +27,18 @@ Only use this mode to install FEMhub."
     parser.add_option("-b", "--build",
             action="store_true", dest="build",
             default=False, help="build FEMhub")
+    parser.add_option("-j",
+            action="store", type="int", dest="cpu_count", metavar="NCPU",
+            default=0, help="number of cpu to use (0 = all)")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
         return
     if options.install:
-        install_package(options.install)
+        install_package(options.install, cpu_count=options.cpu_count)
         return
     if options.build:
-        build()
+        build(cpu_count=options.cpu_count)
         return
     if systemwide_python:
         parser.print_help()
@@ -58,7 +61,8 @@ def download_packages():
     candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s-*.spkg" % \
             pkg))
 
-def install_package(pkg, install_dependencies=True, force_install=False):
+def install_package(pkg, install_dependencies=True, force_install=False,
+        cpu_count=0):
     """
     Installs the package "pkg".
 
@@ -69,6 +73,9 @@ def install_package(pkg, install_dependencies=True, force_install=False):
 
     "force_install" ... if True, it will install the package even if it has
                     been already installed
+
+    "cpu_count" ... number of processors to use (0 means the number of
+            processors in the  machine)
 
     Examples:
 
@@ -85,14 +92,16 @@ def install_package(pkg, install_dependencies=True, force_install=False):
     if install_dependencies:
         print "Installing dependencies for %s..." % pkg
         for dep in get_dependencies(pkg):
-            install_package(dep, install_dependencies=False)
+            install_package(dep, install_dependencies=False,
+                    cpu_count=cpu_count)
     print "Installing %s..." % pkg
     femhub_scripts = ["sage-env", "sage-make_relative"]
-    try:
-        import multiprocessing
-        cpu_count = multiprocessing.cpu_count()
-    except ImportError:
-        cpu_count = 1
+    if cpu_count == 0:
+        try:
+            import multiprocessing
+            cpu_count = multiprocessing.cpu_count()
+        except ImportError:
+            cpu_count = 1
 
     cmd("mkdir -p $SAGE_ROOT/local/bin")
     for script in femhub_scripts:
@@ -184,59 +193,16 @@ def get_dependencies(pkg):
     return deps
 
 
-def build():
+def build(cpu_count=0):
     print "Building FEMhub"
-    base_list = [
-            "termcap",
-            "zlib",
-            "readline",
-            "python",
+    packages_list = [
             "ipython",
-            "cython",
-            "sympy",
-
-            "fortran",
-            "lapack",
-            "blas",
-            "freetype",
-            "libpng",
-            "numpy",
-            "scipy",
-            "matplotlib",
-
-            "cmake",
             "hermes2d",
-        ]
-    other = [
-            "pexpect",
-            "twisted",
-            "setuptools",
-            "jinja",
-            "libgpg_error",
-            "libgcrypt",
-            "gnutls",
-            "python_gnutls",
-            "docutils",
-            "pygments",
-            "sphinx",
-            "femhub-lab",
-
-
-            "judy",
-            "mesa",
-            "vtk-cvs",
-            "configobj",
             "mayavi",
-            "pyparsing",
-            "swig",
-            "sfepy",
-            "pysparse",
-            "fipy",
             "libfemhub",
             ]
-    packages_list = base_list
     for pkg in packages_list:
-        install_package(pkg, install_dependencies=False)
+        install_package(pkg, cpu_count=cpu_count)
     print
     print "Finished building FEMhub."
 
