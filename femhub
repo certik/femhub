@@ -28,8 +28,8 @@ if [ ! -f "$SAGE_ROOT/local/bin/python" ]; then
 else
     PYTHON="$SAGE_ROOT/local/bin/python "
     FEMHUB_SYSTEMWIDE_PYTHON="no"
-    # this might or might not be necessary:
-    #. "$SAGE_ROOT/local/bin/sage-env"
+    # this is necessary to reset the PYTHONPATH and other stuff:
+    . "$SAGE_ROOT/local/bin/sage-env"
 fi
 export FEMHUB_SYSTEMWIDE_PYTHON
 
