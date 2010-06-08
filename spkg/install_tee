@@ -1,5 +1,0 @@
-#! /bin/sh
-
-(./install all 2>&1; echo $? >RES ) | tee -a ../install.log
-ERR=$(cat RES)
-exit $ERR
