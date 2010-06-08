@@ -53,21 +53,27 @@ def download_packages():
     cmd("cd $SAGE_ROOT/spkg/standard; ./download_packages")
 
 
-def install_package(pkg):
+def install_package(pkg, install_dependencies=True):
     """
     Installs the package "pkg".
 
     "pkg" can be either a full path, or just the name of the package (with or
     without a version).
 
+    "install_dependencies" ... if True, it will also install all dependencies
+
     Examples:
 
-    >>>install_package("spkg/standard/readline-6.0.spkg")
-    >>>install_package("readline-6.0.spkg")
-    >>>install_package("readline")
+    >>> install_package("spkg/standard/readline-6.0.spkg")
+    >>> install_package("readline-6.0.spkg")
+    >>> install_package("readline")
 
     """
     pkg = pkg_make_absolute(pkg)
+    if install_dependencies:
+        print "Installing dependencies for %s..." % pkg
+        for dep in get_dependencies(pkg):
+            install_package(dep, install_dependencies=False)
     print "Installing %s..." % pkg
     femhub_scripts = ["sage-env", "sage-make_relative"]
     try:
@@ -103,6 +109,57 @@ def pkg_make_absolute(pkg):
         print "    " + "\n    ".join(candidates)
 
     raise Exception("Unknown package")
+
+def pkg_make_relative(pkg):
+    pkg = pkg_make_absolute(pkg)
+    # This is quite robust:
+    pkg_with_version = pkg[pkg.rfind("/")+1:pkg.rfind(".spkg")]
+    # This might be a bit fragile:
+    pkg_name = pkg_with_version[:pkg_with_version.find("-")]
+    return pkg_name
+
+def make_unique(l):
+    m = []
+    for item in l:
+        if item not in m:
+            m.append(item)
+    return m
+
+def get_dependencies(pkg):
+    """
+    Gets all (including indirect) dependencies for the package "pkg".
+
+    For simplicity, the dependency graph is currently hardwired in this
+    function.
+    """
+    pkg_name = pkg_make_relative(pkg)
+    dependency_graph = {
+            "python": ["termcap", "zlib", "readline"],
+            "ipython": ["python"],
+            "cython": ["python"],
+            "sympy": ["python"],
+            "lapack": ["fortran"],
+            "blas": ["fortran", "lapack"],
+            "numpy": ["python", "lapack", "blas"],
+            "scipy": ["numpy"],
+            "matplotlib": ["freetype", "libpng", "python"],
+            "hermes2d": ["cmake", "scipy", "judy"],
+            "vtk": ["mesa", "cmake"],
+            "mayavi": ["python", "configobj", "vtk"],
+            "pyparsing": ["python"],
+            "pysparse": ["python"],
+            "swig": ["python"],
+            "sfepy": ["swig", "scipy"],
+            "fipy": ["python"],
+            "libfemhub": ["python"],
+            }
+    deps = []
+    for dep in dependency_graph.get(pkg_name, []):
+        deps.extend(get_dependencies(dep))
+        deps.append(dep)
+    deps = make_unique(deps)
+    return deps
+
 
 def build():
     print "Building FEMhub"
@@ -156,7 +213,7 @@ def build():
             ]
     packages_list = base_list
     for pkg in packages_list:
-        install_package(pkg)
+        install_package(pkg, install_dependencies=False)
     print
     print "Finished building FEMhub."
 
