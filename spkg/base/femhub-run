@@ -71,9 +71,16 @@ def install_package(pkg):
     print "Installing %s..." % pkg
     femhub_scripts = ["sage-env", "sage-make_relative"]
     try:
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
+    except ImportError:
+        cpu_count = 1
+    try:
         cmd("mkdir -p $SAGE_ROOT/local/bin")
         for script in femhub_scripts:
             cmd("cp $SAGE_ROOT/spkg/base/%s $SAGE_ROOT/local/bin/" % script)
+        if cpu_count > 1:
+            os.environ["MAKE"] = "make -j %d" % (cpu_count + 1)
         cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
     except CmdException as e:
         print e
