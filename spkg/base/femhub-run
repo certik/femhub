@@ -109,6 +109,18 @@ def build():
             "ipython",
             "cython",
             "sympy",
+
+            "fortran",
+            "lapack",
+            "blas",
+            "freetype",
+            "libpng",
+            "numpy",
+            "scipy",
+            "matplotlib",
+
+            "cmake",
+            "hermes2d",
         ]
     other = [
             "pexpect",
@@ -124,17 +136,7 @@ def build():
             "sphinx",
             "femhub-lab",
 
-            "fortran",
-            "lapack",
-            "blas",
-            #"atlas",
-            "numpy",
-            "scipy",
-            "freetype",
-            "libpng",
-            "matplotlib",
 
-            "cmake",
             "judy",
             "mesa",
             "vtk-cvs",
@@ -143,7 +145,6 @@ def build():
             "pyparsing",
             "swig",
             "sfepy",
-            "hermes2d",
             "pysparse",
             "fipy",
             "libfemhub",
