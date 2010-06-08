@@ -185,6 +185,7 @@ def get_dependencies(pkg):
             "fipy": ["python"],
             "libfemhub": ["python"],
             "python_gnutls": ["gnutls"],
+            # TODO: fix "-" in package names (look at how Debian does it)
             # This is actually a femhub-lab:
             "femhub": ["pexpect", "twisted", "setuptools",
                 "jinja", "libgpg_error", "libgcrypt", "python_gnutls",
