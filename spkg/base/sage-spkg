@@ -129,11 +129,11 @@ echo "$PKG_NAME"
 echo "Machine:"
 uname -a
 
-if [ -f "$INSTALLED/$PKG_NAME" -a $FORCE -eq 0 ]; then
-    echo "FEMhub: $1 is already installed"
-    touch "$INSTALLED/$PKG_NAME"
-    exit 0
-fi
+#if [ -f "$INSTALLED/$PKG_NAME" -a $FORCE -eq 0 ]; then
+#    echo "FEMhub: $1 is already installed"
+#    touch "$INSTALLED/$PKG_NAME"
+#    exit 0
+#fi
 
 cd "$SAGE_PACKAGES/build"
 
@@ -267,10 +267,10 @@ if [ $? -eq 0 ]; then
 
    # Mark that the new package has been installed. 
    # This file will eventually be a certificate like in OS X.
-   echo "PACKAGE NAME: $PKG_NAME" > "$PKG_NAME"
-   echo "INSTALL DATE: `date`" >> "$PKG_NAME"
-   echo "UNAME: `uname -a`" >> "$PKG_NAME"
-   echo "FEMhub VERSION: `grep FEMhub $SAGE_LOCAL/bin/sage-banner`" >> "$PKG_NAME"
+   #echo "PACKAGE NAME: $PKG_NAME" > "$PKG_NAME"
+   #echo "INSTALL DATE: `date`" >> "$PKG_NAME"
+   #echo "UNAME: `uname -a`" >> "$PKG_NAME"
+   #echo "FEMhub VERSION: `grep FEMhub $SAGE_LOCAL/bin/sage-banner`" >> "$PKG_NAME"
    echo "Successfully installed $PKG_NAME"
 
    cd $BASEDIR
