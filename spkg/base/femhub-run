@@ -75,15 +75,13 @@ def install_package(pkg):
         cpu_count = multiprocessing.cpu_count()
     except ImportError:
         cpu_count = 1
-    try:
-        cmd("mkdir -p $SAGE_ROOT/local/bin")
-        for script in femhub_scripts:
-            cmd("cp $SAGE_ROOT/spkg/base/%s $SAGE_ROOT/local/bin/" % script)
-        if cpu_count > 1:
-            os.environ["MAKE"] = "make -j %d" % (cpu_count + 1)
-        cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
-    except CmdException as e:
-        print e
+
+    cmd("mkdir -p $SAGE_ROOT/local/bin")
+    for script in femhub_scripts:
+        cmd("cp $SAGE_ROOT/spkg/base/%s $SAGE_ROOT/local/bin/" % script)
+    if cpu_count > 1:
+        os.environ["MAKE"] = "make -j %d" % (cpu_count + 1)
+    cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
 
 def pkg_make_absolute(pkg):
     if os.path.exists(pkg):
