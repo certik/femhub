@@ -182,7 +182,7 @@ def get_dependencies(pkg):
             "pysparse": ["python"],
             "swig": ["python"],
             "sfepy": ["swig", "scipy"],
-            "fipy": ["python"],
+            "fipy": ["python", "pysparse"],
             "libfemhub": ["python"],
             "python_gnutls": ["gnutls"],
             # TODO: fix "-" in package names (look at how Debian does it)
