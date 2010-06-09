@@ -53,11 +53,14 @@ Only use this mode to install FEMhub."
 | Type lab() for the GUI.                                            |
 ----------------------------------------------------------------------"""
         try:
-            from sagenb.notebook.notebook_object import lab
-            namespace = {"lab": lab}
+            import sagenb
+            namespace = "yes"
         except ImportError:
             print "Install the 'femhub-lab' package to make lab() available"
             namespace = {}
+        if namespace == "yes":
+            from sagenb.notebook.notebook_object import lab
+            namespace = {"lab": lab}
         IPython.Shell.start(user_ns=namespace).mainloop(banner='')
 
 def cmd(s):
