@@ -58,7 +58,7 @@ $WGET $FEMHUB_STANDARD/matplotlib-0.99.1.p4.spkg
 $WGET $FEMHUB_STANDARD/sympy-5d78c29.spkg
 
 # femhub things:
-$WGET $FEMHUB_STANDARD/cmake-2.8.1.spkg
+$WGET $FEMHUB_STANDARD/cmake-2.8.1.p2.spkg
 $WGET $FEMHUB_STANDARD/judy-1.0.5.p1.spkg
 $WGET $FEMHUB_STANDARD/mesa-7.4.4.p3.spkg
 $WGET $FEMHUB_STANDARD/vtk-cvs-20090316-minimal.p6.spkg
