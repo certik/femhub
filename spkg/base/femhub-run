@@ -63,9 +63,6 @@ def download_packages():
     print "Downloading standard spkg packages"
     cmd("cd $SAGE_ROOT/spkg/standard; ./download_packages")
 
-    candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s-*.spkg" % \
-            pkg))
-
 def install_package(pkg, install_dependencies=True, force_install=False,
         cpu_count=0):
     """
