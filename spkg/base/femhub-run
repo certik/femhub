@@ -201,9 +201,8 @@ def get_dependencies(pkg):
             "femhub": ["pexpect", "twisted", "setuptools",
                 "jinja", "libgpg_error", "libgcrypt", "python_gnutls",
                 "docutils", "pygments",
-                # this doesn't install without a net connection, because we
-                # need jinja2 (we only have 1.2):
-                #"sphinx",
+                "jinja2",
+                "sphinx",
                 ],
             }
     deps = []
