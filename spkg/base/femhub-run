@@ -30,6 +30,12 @@ Only use this mode to install FEMhub.
     parser.add_option("-j",
             action="store", type="int", dest="cpu_count", metavar="NCPU",
             default=0, help="number of cpu to use (0 = all)")
+    parser.add_option("--shell",
+            action="store_true", dest="shell",
+            default=False, help="starts a FEMhub shell")
+    parser.add_option("-s", "--script",
+            action="store", type="str", dest="script", metavar="SCRIPT",
+            default=None, help="runs '/bin/bash SCRIPT' in a FEMhub shell")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -39,6 +45,13 @@ Only use this mode to install FEMhub.
         return
     if options.build:
         build(cpu_count=options.cpu_count)
+        return
+    if options.shell:
+        print "Type CTRL-D to exit the FEMhub shell."
+        cmd("/bin/bash --rcfile $SAGE_ROOT/spkg/base/femhub-shell-rc")
+        return
+    if options.script:
+        cmd("cd $CUR; /bin/bash " + options.script)
         return
     if systemwide_python:
         parser.print_help()

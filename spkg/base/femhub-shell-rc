@@ -1,0 +1,4 @@
+# This script gets executed using "/bin/bash --rcfile femhub-shell-rc" when you
+# do "./femhub --shell", so that the prompt gets changed.
+
+PS1="FEMhub> "
