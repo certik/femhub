@@ -14,7 +14,7 @@ def main():
         print """\
 ***************************************************
 FEMhub is not installed. Running systemwide Python.
-Only use this mode to install FEMhub."
+Only use this mode to install FEMhub.
 ***************************************************"""
 
     parser = OptionParser(usage="[options] args")
