@@ -52,7 +52,13 @@ Only use this mode to install FEMhub."
 | FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
 | Type lab() for the GUI.                                            |
 ----------------------------------------------------------------------"""
-        IPython.Shell.start().mainloop(banner='')
+        try:
+            from sagenb.notebook.notebook_object import lab
+            namespace = {"lab": lab}
+        except ImportError:
+            print "Install the 'femhub-lab' package to make lab() available"
+            namespace = {}
+        IPython.Shell.start(user_ns=namespace).mainloop(banner='')
 
 def cmd(s):
     r = os.system(s)
