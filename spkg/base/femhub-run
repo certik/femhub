@@ -77,6 +77,7 @@ Only use this mode to install FEMhub.
         IPython.Shell.start(user_ns=namespace).mainloop(banner='')
 
 def cmd(s):
+    s = expandvars(s)
     r = os.system(s)
     if r != 0:
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
