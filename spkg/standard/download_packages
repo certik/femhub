@@ -11,7 +11,6 @@
 # to do some FEMhub modifications, we provide our own packages.
 
 SAGE_STANDARD=http://www.sagemath.org/packages/standard
-SPD_STANDARD=http://spdproject.googlecode.com/files
 FEMHUB_STANDARD=http://femhub.org/stpack
 
 if [ `uname` = 'Darwin' ]; then
@@ -27,11 +26,11 @@ $WGET $SAGE_STANDARD/zlib-1.2.3.p5.spkg
 $WGET $FEMHUB_STANDARD/readline-6.0.spkg
 $WGET $FEMHUB_STANDARD/bzip2-1.0.5.spkg
 $WGET $SAGE_STANDARD/python-2.6.4.p8.spkg
-$WGET $SPD_STANDARD/ipython-bzr1174.spkg
+$WGET $FEMHUB_STANDARD/ipython-bzr1174.spkg
 $WGET $SAGE_STANDARD/cython-0.12.1.spkg
 
 # notebook:
-$WGET $SPD_STANDARD/pexpect-2.0.p3.spkg
+$WGET $FEMHUB_STANDARD/pexpect-2.0.p3.spkg
 $WGET $SAGE_STANDARD/twisted-9.0.p2.spkg
 $WGET $FEMHUB_STANDARD/setuptools-0.6c11.p0.spkg
 $WGET $SAGE_STANDARD/jinja-1.2.p0.spkg
