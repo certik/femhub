@@ -60,21 +60,22 @@ Only use this mode to install FEMhub.
             import IPython
         except ImportError:
             raise Exception("You need to install 'ipython'")
-        print """\
+        banner = """\
 ----------------------------------------------------------------------
 | FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
-| Type lab() for the GUI.                                            |
-----------------------------------------------------------------------"""
+"""
         try:
             import sagenb
             namespace = "yes"
+            banner += "| Type lab() for the GUI.                                            |\n"
         except ImportError:
-            print "Install the 'femhub-lab' package to make lab() available"
+            banner += "| Install the 'femhub-lab' package to enable the lab() command.      |\n"
             namespace = {}
+        banner += "----------------------------------------------------------------------"
         if namespace == "yes":
             from sagenb.notebook.notebook_object import lab
             namespace = {"lab": lab}
-        IPython.Shell.start(user_ns=namespace).mainloop(banner='')
+        IPython.Shell.start(user_ns=namespace).mainloop(banner=banner)
 
 def cmd(s):
     s = expandvars(s)
