@@ -21,6 +21,9 @@ Only use this mode to install FEMhub.
     parser.add_option("-i", "--install",
             action="store", type="str", dest="install", metavar="PACKAGE",
             default="", help="install a spkg package")
+    parser.add_option("-f", "--force",
+            action="store_true", dest="force",
+            default=False, help="force the installation")
     parser.add_option("-d", "--download_packages",
             action="store_true", dest="download",
             default=False, help="download standard spkg packages")
@@ -41,7 +44,8 @@ Only use this mode to install FEMhub.
         download_packages()
         return
     if options.install:
-        install_package(options.install, cpu_count=options.cpu_count)
+        install_package(options.install, cpu_count=options.cpu_count,
+                force_install=options.force)
         return
     if options.build:
         build(cpu_count=options.cpu_count)
