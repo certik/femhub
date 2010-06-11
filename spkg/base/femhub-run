@@ -45,6 +45,9 @@ Only use this mode to install FEMhub.
     parser.add_option("--pack",
             action="store", type="str", dest="pack", metavar="PACKAGE",
             default=None, help="creates 'devel/PACKAGE.spkg' from 'devel/PACKAGE'")
+    parser.add_option("--devel-install",
+            action="store", type="str", dest="devel_install", metavar="PACKAGE",
+            default=None, help="installs 'devel/PACKAGE' into FEMhub directly")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -79,6 +82,23 @@ Only use this mode to install FEMhub.
         print "Creating devel/%(dir)s.spkg from devel/%(dir)s" % {"dir": dir}
         cmd("cd $SAGE_ROOT/devel; tar cjf %(dir)s.spkg %(dir)s" % \
                 {"dir": dir})
+        return
+    if options.devel_install:
+        dir = options.devel_install
+        if not os.path.exists(dir):
+            dir = expandvars("$SAGE_ROOT/devel/%s" % dir)
+        if not os.path.exists(dir):
+            raise Exception("Unknown package to pack")
+        dir = os.path.split(dir)[1]
+        print "Installing devel/%(dir)s into FEMhub" % {"dir": dir}
+        cmd("mkdir -p $SAGE_ROOT/spkg/build/")
+        cmd("rm -rf $SAGE_ROOT/spkg/build/%(dir)s" % {"dir": dir})
+        cmd("cp -r $SAGE_ROOT/devel/%(dir)s $SAGE_ROOT/spkg/build/" % \
+                {"dir": dir})
+        setup_cpu(options.cpu_count)
+        cmd("cd $SAGE_ROOT/spkg/build/%(dir)s; /bin/bash spkg-install" % \
+                {"dir": dir})
+        cmd("rm -rf $SAGE_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
     if systemwide_python:
         parser.print_help()
