@@ -56,32 +56,45 @@ Only use this mode to install FEMhub.
     if systemwide_python:
         parser.print_help()
     else:
-        try:
-            import IPython
-        except ImportError:
-            raise Exception("You need to install 'ipython'")
-        banner = """\
-----------------------------------------------------------------------
-| FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
-"""
-        try:
-            import sagenb
-            namespace = "yes"
-            banner += "| Type lab() for the GUI.                                            |\n"
-        except ImportError:
-            banner += "| Install the 'femhub-lab' package to enable the lab() command.      |\n"
-            namespace = {}
-        banner += "----------------------------------------------------------------------"
-        if namespace == "yes":
-            from sagenb.notebook.notebook_object import lab
-            namespace = {"lab": lab}
-        IPython.Shell.start(user_ns=namespace).mainloop(banner=banner)
+        start_femhub()
 
 def cmd(s):
     s = expandvars(s)
     r = os.system(s)
     if r != 0:
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
+
+def start_femhub():
+    try:
+        import IPython
+    except ImportError:
+        raise Exception("You need to install 'ipython'")
+    banner = """\
+----------------------------------------------------------------------
+| FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
+"""
+    try:
+        import sagenb
+        namespace = "yes"
+        banner += "| Type lab() for the GUI.                                            |\n"
+    except ImportError:
+        banner += "| Install the 'femhub-lab' package to enable the lab() command.      |\n"
+        namespace = {}
+    banner += "----------------------------------------------------------------------"
+    if namespace == "yes":
+        from sagenb.notebook.notebook_object import lab
+        namespace = {"lab": lab}
+
+    #os.environ["IPYTHONDIR"] = expandvars("$DOT_SAGE/ipython")
+    #os.environ["IPYTHONRC"] = "ipythonrc"
+    #if not os.path.exists(os.environ["IPYTHONRC"]):
+    #    cmd('mkdir -p "$DOT_SAGE"')
+    #    cmd('cp -r "$SAGE_ROOT/spkg/base/ipython" "$DOT_SAGE/"')
+    #os.environ["MPLCONFIGDIR"] = expandvars("$DOT_SAGE/matplotlib")
+    #if not os.path.exists(os.environ["MPLCONFIGDIR"]):
+    #    cmd('cp -r "$SAGE_ROOT/spkg/base/matplotlib" "$DOT_SAGE/"')
+
+    IPython.Shell.start(user_ns=namespace).mainloop(banner=banner)
 
 def download_packages():
     print "Downloading standard spkg packages"
