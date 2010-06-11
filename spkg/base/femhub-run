@@ -113,7 +113,7 @@ def setup_cpu(cpu_count):
         except ImportError:
             cpu_count = 1
     if cpu_count > 1:
-        os.environ["MAKE"] = "make -j %d" % cpu_count
+        os.environ["MAKEFLAGS"] = "-j %d" % cpu_count
 
 def cmd(s):
     s = expandvars(s)
