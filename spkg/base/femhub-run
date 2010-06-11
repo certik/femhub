@@ -51,12 +51,23 @@ Only use this mode to install FEMhub.
         cmd("/bin/bash --rcfile $SAGE_ROOT/spkg/base/femhub-shell-rc")
         return
     if options.script:
+        setup_cpu(options.cpu_count)
         cmd("cd $CUR; /bin/bash " + options.script)
         return
     if systemwide_python:
         parser.print_help()
     else:
         start_femhub()
+
+def setup_cpu(cpu_count):
+    if cpu_count == 0:
+        try:
+            import multiprocessing
+            cpu_count = multiprocessing.cpu_count() + 1
+        except ImportError:
+            cpu_count = 1
+    if cpu_count > 1:
+        os.environ["MAKE"] = "make -j %d" % cpu_count
 
 def cmd(s):
     s = expandvars(s)
@@ -146,18 +157,10 @@ def install_package(pkg, install_dependencies=True, force_install=False,
                     cpu_count=cpu_count)
     print "Installing %s..." % pkg
     femhub_scripts = ["sage-env", "sage-make_relative"]
-    if cpu_count == 0:
-        try:
-            import multiprocessing
-            cpu_count = multiprocessing.cpu_count()
-        except ImportError:
-            cpu_count = 1
-
+    setup_cpu(cpu_count)
     cmd("mkdir -p $SAGE_ROOT/local/bin")
     for script in femhub_scripts:
         cmd("cp $SAGE_ROOT/spkg/base/%s $SAGE_ROOT/local/bin/" % script)
-    if cpu_count > 1:
-        os.environ["MAKE"] = "make -j %d" % (cpu_count + 1)
     cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
     cmd("touch $SAGE_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
 
