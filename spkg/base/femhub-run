@@ -80,19 +80,19 @@ def start_femhub():
     except ImportError:
         banner += "| Install the 'femhub-lab' package to enable the lab() command.      |\n"
         namespace = {}
-    banner += "----------------------------------------------------------------------"
+    banner += "----------------------------------------------------------------------\n"
     if namespace == "yes":
         from sagenb.notebook.notebook_object import lab
         namespace = {"lab": lab}
 
-    #os.environ["IPYTHONDIR"] = expandvars("$DOT_SAGE/ipython")
-    #os.environ["IPYTHONRC"] = "ipythonrc"
-    #if not os.path.exists(os.environ["IPYTHONRC"]):
-    #    cmd('mkdir -p "$DOT_SAGE"')
-    #    cmd('cp -r "$SAGE_ROOT/spkg/base/ipython" "$DOT_SAGE/"')
-    #os.environ["MPLCONFIGDIR"] = expandvars("$DOT_SAGE/matplotlib")
-    #if not os.path.exists(os.environ["MPLCONFIGDIR"]):
-    #    cmd('cp -r "$SAGE_ROOT/spkg/base/matplotlib" "$DOT_SAGE/"')
+    os.environ["IPYTHONDIR"] = expandvars("$DOT_SAGE/ipython")
+    os.environ["IPYTHONRC"] = "ipythonrc"
+    if not os.path.exists(os.environ["IPYTHONRC"]):
+        cmd('mkdir -p "$DOT_SAGE"')
+        cmd('cp -r "$SAGE_ROOT/spkg/base/ipython" "$DOT_SAGE/"')
+    os.environ["MPLCONFIGDIR"] = expandvars("$DOT_SAGE/matplotlib")
+    if not os.path.exists(os.environ["MPLCONFIGDIR"]):
+        cmd('cp -r "$SAGE_ROOT/spkg/base/matplotlib" "$DOT_SAGE/"')
 
     IPython.Shell.start(user_ns=namespace).mainloop(banner=banner)
 
