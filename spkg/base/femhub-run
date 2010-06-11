@@ -42,6 +42,9 @@ Only use this mode to install FEMhub.
     parser.add_option("--unpack",
             action="store", type="str", dest="unpack", metavar="PACKAGE",
             default=None, help="unpacks the PACKAGE into the 'devel/' dir")
+    parser.add_option("--pack",
+            action="store", type="str", dest="pack", metavar="PACKAGE",
+            default=None, help="creates 'devel/PACKAGE.spkg' from 'devel/PACKAGE'")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -65,6 +68,17 @@ Only use this mode to install FEMhub.
         pkg = pkg_make_absolute(options.unpack)
         cmd("mkdir -p $SAGE_ROOT/devel")
         cmd("cd $SAGE_ROOT/devel; tar xjf %s" % pkg)
+        return
+    if options.pack:
+        dir = options.pack
+        if not os.path.exists(dir):
+            dir = expandvars("$SAGE_ROOT/devel/%s" % dir)
+        if not os.path.exists(dir):
+            raise Exception("Unknown package to pack")
+        dir = os.path.split(dir)[1]
+        print "Creating devel/%(dir)s.spkg from devel/%(dir)s" % {"dir": dir}
+        cmd("cd $SAGE_ROOT/devel; tar cjf %(dir)s.spkg %(dir)s" % \
+                {"dir": dir})
         return
     if systemwide_python:
         parser.print_help()
