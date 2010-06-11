@@ -184,13 +184,19 @@ def pkg_make_absolute(pkg):
     if len(candidates) == 0:
         candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s*.spkg" % \
             pkg))
+    if len(candidates) == 0:
+        raise Exception("Package not found")
     if len(candidates) == 1:
         return candidates[0]
-    else:
-        print "Too many candidates:"
-        print "    " + "\n    ".join(candidates)
+    standard_packages = get_standard_packages(just_names=True)
+    for p in candidates:
+        if os.path.split(p)[1] in standard_packages:
+            return p
 
-    raise Exception("Unknown package")
+    print "Too many candidates:"
+    print "    " + "\n    ".join(candidates)
+
+    raise Exception("Ambiguous package name.")
 
 def pkg_make_relative(pkg):
     pkg = pkg_make_absolute(pkg)
@@ -251,9 +257,11 @@ def get_dependencies(pkg):
     deps = make_unique(deps)
     return deps
 
-def get_standard_packages():
+def get_standard_packages(just_names=False):
     """
     Returns the list of standard packages.
+
+    just_names ... if True, only the names of the packages are returned
 
     Packages are copied from various sources (see the *_STANDARD variables
     below).  You can also check (and update) the versions on the web:
@@ -319,9 +327,14 @@ def get_standard_packages():
             "libfemhub-05e3941",
             ]
 
-    packages = \
-            [SAGE_STANDARD   + "/" + p + ".spkg" for p in sage_packages] + \
-            [FEMHUB_STANDARD + "/" + p + ".spkg" for p in femhub_packages]
+    if just_names:
+        packages = \
+                [p + ".spkg" for p in sage_packages] + \
+                [p + ".spkg" for p in femhub_packages]
+    else:
+        packages = \
+                [SAGE_STANDARD   + "/" + p + ".spkg" for p in sage_packages] + \
+                [FEMHUB_STANDARD + "/" + p + ".spkg" for p in femhub_packages]
     return packages
 
 def build(cpu_count=0):
