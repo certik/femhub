@@ -106,7 +106,7 @@ def start_femhub(debug=False):
 
 def download_packages():
     print "Downloading standard spkg packages"
-    cmd("mkdir $SAGE_ROOT/spkg/standard")
+    cmd("mkdir -p $SAGE_ROOT/spkg/standard")
     packages = get_standard_packages()
     for p in packages:
         cmd("cd $SAGE_ROOT/spkg/standard; ../base/femhub-wget %s" % p)
