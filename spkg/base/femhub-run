@@ -272,7 +272,8 @@ def get_dependencies(pkg):
     """
     pkg_name = pkg_make_relative(pkg)
     dependency_graph = {
-            "python": ["termcap", "zlib", "readline", "bzip2"],
+            "python": ["termcap", "zlib", "readline", "bzip2", "gnutls",
+                "libpng"],
             "ipython": ["python"],
             "cython": ["python"],
             "sympy": ["python"],
@@ -291,6 +292,8 @@ def get_dependencies(pkg):
             "sfepy": ["swig", "scipy"],
             "fipy": ["python", "pysparse", "setuptools"],
             "libfemhub": ["python"],
+            "libgcrypt": ["libgpg_error"],
+            "gnutls": ["libgcrypt"],
             "python_gnutls": ["gnutls"],
             # TODO: fix "-" in package names (look at how Debian does it)
             # This is actually a femhub-lab:
