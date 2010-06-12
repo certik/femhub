@@ -122,7 +122,7 @@ Git Repository
 
 If you use git, you can download FEMhub and compile by following these instructions:
 ::
-    \$ git clone http://hpfem.org/git/femhub.git
+    \$ git clone http://git.hpfem.org/git/femhub.git
     \$ cd femhub
     \$ cd spkg/standard
     \$ ./download_packages     # downloads the required packages

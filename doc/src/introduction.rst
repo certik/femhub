@@ -21,7 +21,7 @@ that contains a variety of examples that may help you to get started. If you
 create an interesting model using FEMhub packages, let us know and we
 will be happy to add it to the existing examples.
 
-The source code can be viewed in the `git repository <http://hpfem.org/git/gitweb.cgi/femhub.git/tree>`_.
+The source code can be viewed in the `git repository <http://git.hpfem.org/femhub.git>`_.
 
 
 Officially Supported Platforms

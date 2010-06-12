@@ -5,26 +5,26 @@ Following tips are useful for developers.
 
 Browse Git Repository
 ----------------------
-FEMhub (script and the build system) repository: http://hpfem.org/git/gitweb.cgi/femhub.git
+FEMhub (script and the build system) repository: http://git.hpfem.org/femhub.git
 
-FEMhub Online Lab repository: git clone http://hpfem.org/git/gitweb.cgi/femhub-lab.git
+FEMhub Online Lab repository: git clone http://git.hpfem.org/femhub-lab.git
 
-Libfemhub: http://hpfem.org/git/gitweb.cgi/libfemhub.git
+Libfemhub: http://git.hpfem.org/libfemhub.git
 
 Clone Git Repository
 --------------------
 
 To clone the repository of FEMhub (script and the build system):
 ::
-  \$ git clone http://hpfem.org/git/femhub.git
+  \$ git clone http://git.hpfem.org/git/femhub.git
 
 To clone the repository of FEMhub Online Lab:
 ::
-  \$ git clone http://hpfem.org/git/femhub-lab.git
+  \$ git clone http://git.hpfem.org/git/femhub-lab.git
 
 To clone the reopsitory of Libfemhub:
 ::
-  \$ git clone http://hpfem.org/git/libfemhub.git
+  \$ git clone http://git.hpfem.org/git/libfemhub.git
 
 
 How to Test Patches
@@ -51,7 +51,7 @@ How to Compile FEMhub from Git
 -----------------------
 To compile from git (as opposed to the tarball):
 ::
-  \$ git clone http://hpfem.org/git/femhub.git
+  \$ git clone http://git.hpfem.org/git/femhub.git
   \$ cd femhub
   \$ cd spkg/standard/
   \$ ./download_packages
@@ -64,7 +64,7 @@ Creating New FEMhub Release
 ---------------------------
 How to create a new release:
 ::
-  \$ git clone http://hpfem.org/git/femhub.git
+  \$ git clone http://git.hpfem.org/git/femhub.git
   \$ cd femhub
   \$ cd spkg/standard/
   \$ ./download_packages
