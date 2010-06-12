@@ -293,7 +293,8 @@ def get_dependencies(pkg):
             "fipy": ["python", "pysparse", "setuptools"],
             "libfemhub": ["python"],
             "libgcrypt": ["libgpg_error"],
-            "gnutls": ["libgcrypt"],
+            "opencdk": ["zlib", "libgcrypt"],
+            "gnutls": ["libgcrypt", "opencdk"],
             "python_gnutls": ["gnutls"],
             # TODO: fix "-" in package names (look at how Debian does it)
             # This is actually a femhub-lab:
@@ -348,6 +349,7 @@ def get_standard_packages(just_names=False):
             "scipy-0.7.p5",
             "freetype-2.3.5.p2",
             "libpng-1.2.35.p1",
+            "opencdk-0.6.6.p3",
             ]
 
     femhub_packages = [
