@@ -69,6 +69,7 @@ Only use this mode to install FEMhub.
         return
     if options.unpack:
         pkg = pkg_make_absolute(options.unpack)
+        print "Unpacking '%(pkg)s' into 'devel/'" % {"pkg": pkg}
         cmd("mkdir -p $SAGE_ROOT/devel")
         cmd("cd $SAGE_ROOT/devel; tar xjf %s" % pkg)
         return
