@@ -90,6 +90,7 @@ Only use this mode to install FEMhub.
             dir = expandvars("$SAGE_ROOT/devel/%s" % dir)
         if not os.path.exists(dir):
             raise Exception("Unknown package to pack")
+        dir = os.path.normpath(dir)
         dir = os.path.split(dir)[1]
         print "Installing devel/%(dir)s into FEMhub" % {"dir": dir}
         cmd("mkdir -p $SAGE_ROOT/spkg/build/")
