@@ -224,7 +224,7 @@ def is_installed(pkg):
 
 def pkg_make_absolute(pkg):
     if os.path.exists(pkg):
-        return pkg
+        return os.path.abspath(pkg)
 
     pkg_default = "$SAGE_ROOT/spkg/standard"
     if os.path.exists(pkg_default):
