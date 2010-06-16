@@ -61,7 +61,7 @@ Only use this mode to install FEMhub.
         return
     if options.shell:
         print "Type CTRL-D to exit the FEMhub shell."
-        cmd("/bin/bash --rcfile $SAGE_ROOT/spkg/base/femhub-shell-rc")
+        cmd("cd $CUR; /bin/bash --rcfile $SAGE_ROOT/spkg/base/femhub-shell-rc")
         return
     if options.script:
         setup_cpu(options.cpu_count)
