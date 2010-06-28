@@ -349,8 +349,8 @@ def get_standard_packages(just_names=False):
             "blas-20070724",
             "scipy-0.7.p5",
             "freetype-2.3.5.p2",
-            "libpng-1.2.35.p1",
-            "opencdk-0.6.6.p3",
+            "libpng-1.2.35.p2",
+            "opencdk-0.6.6.p4",
             ]
 
     femhub_packages = [
