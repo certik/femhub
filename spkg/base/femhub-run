@@ -391,6 +391,10 @@ def get_standard_packages(just_names=False):
             "pysparse-1.1-6301cea",
             "fipy-2.1-51f1360",
             "libfemhub-05e3941",
+            "hdf5-1.6.9",
+            "h5py-1.2.1.p1",
+            "tables",
+            "nose-0.11.1.p0",
             ]
 
     if just_names:
@@ -418,6 +422,10 @@ def build(cpu_count=0):
             "sfepy",
             "sympy",
             "femhub-lab",
+            "hdf5-1.6.9",
+            "h5py-1.2.1.p1",
+            "tables",
+            "nose-0.11.1.p0",
             ]
     for pkg in packages_list:
         install_package(pkg, cpu_count=cpu_count)
