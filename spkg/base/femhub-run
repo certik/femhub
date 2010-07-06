@@ -291,7 +291,9 @@ def get_dependencies(pkg):
             "pysparse": ["python"],
             "swig": ["python"],
             "sfepy": ["swig", "scipy"],
-            "fipy": ["python", "pysparse", "setuptools"],
+            "py": ["setuptools"],
+            "setuptools": ["python"],
+            "fipy": ["pysparse", "setuptools"],
             "libfemhub": ["python"],
             "libgcrypt": ["libgpg_error"],
             "opencdk": ["zlib", "libgcrypt"],
@@ -363,6 +365,8 @@ def get_standard_packages(just_names=False):
             "libgcrypt-1.4.3.p2",
             "gnutls-2.2.1.p3",
             "femhub-lab-2ffaa67",
+
+            "py-1.3.1",
 
             "fortran-20071120.p8",
             "numpy-1.3.0.p2",
