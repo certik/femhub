@@ -226,6 +226,10 @@ def pkg_make_absolute(pkg):
     if os.path.exists(pkg):
         return os.path.abspath(pkg)
 
+    pkg_current = expandvars("$CUR/%s" % pkg)
+    if os.path.exists(pkg_current):
+        return pkg_current
+
     pkg_default = "$SAGE_ROOT/spkg/standard"
     if os.path.exists(pkg_default):
         return pkg_default
