@@ -393,7 +393,7 @@ def get_standard_packages(just_names=False):
             "libfemhub-05e3941",
             "hdf5-1.6.9",
             "h5py-1.2.1.p1",
-            "tables",
+            "pytables-2.1",
             "nose-0.11.1.p0",
             ]
 
@@ -424,7 +424,7 @@ def build(cpu_count=0):
             "femhub-lab",
             "hdf5-1.6.9",
             "h5py-1.2.1.p1",
-            "tables",
+            "pytables",
             "nose-0.11.1.p0",
             ]
     for pkg in packages_list:
