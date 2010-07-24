@@ -226,6 +226,10 @@ def pkg_make_absolute(pkg):
     if os.path.exists(pkg):
         return os.path.abspath(pkg)
 
+    pkg_current = expandvars("$CUR/%s" % pkg)
+    if os.path.exists(pkg_current):
+        return pkg_current
+
     pkg_default = "$SAGE_ROOT/spkg/standard"
     if os.path.exists(pkg_default):
         return pkg_default
@@ -291,7 +295,9 @@ def get_dependencies(pkg):
             "pysparse": ["python"],
             "swig": ["python"],
             "sfepy": ["swig", "scipy"],
-            "fipy": ["python", "pysparse", "setuptools"],
+            "py": ["setuptools"],
+            "setuptools": ["python"],
+            "fipy": ["pysparse", "setuptools"],
             "libfemhub": ["python"],
             "libgcrypt": ["libgpg_error"],
             "opencdk": ["zlib", "libgcrypt"],
@@ -364,6 +370,8 @@ def get_standard_packages(just_names=False):
             "gnutls-2.2.1.p3",
             "femhub-lab-2ffaa67",
 
+            "py-1.3.1",
+
             "fortran-20071120.p8",
             "numpy-1.3.0.p2",
             "matplotlib-0.99.1.p4",
@@ -383,6 +391,10 @@ def get_standard_packages(just_names=False):
             "pysparse-1.1-6301cea",
             "fipy-2.1-51f1360",
             "libfemhub-05e3941",
+            "hdf5-1.6.9",
+            "h5py-1.2.1.p1",
+            "pytables-2.1",
+            "nose-0.11.1.p0",
             ]
 
     if just_names:
@@ -410,6 +422,10 @@ def build(cpu_count=0):
             "sfepy",
             "sympy",
             "femhub-lab",
+            "hdf5-1.6.9",
+            "h5py-1.2.1.p1",
+            "pytables",
+            "nose-0.11.1.p0",
             ]
     for pkg in packages_list:
         install_package(pkg, cpu_count=cpu_count)
