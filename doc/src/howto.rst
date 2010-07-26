@@ -53,11 +53,8 @@ To compile from git (as opposed to the tarball):
 ::
   \$ git clone http://git.hpfem.org/git/femhub.git
   \$ cd femhub
-  \$ cd spkg/standard/
-  \$ ./download_packages
-  \$ cd ../..
-  \$ export MAKE="make -j9"  # optional
-  \$ make	
+  \$ ./femhub -d
+  \$ make
 
 
 Creating New FEMhub Release

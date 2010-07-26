@@ -112,7 +112,7 @@ If you encounter problems, let us know through the FEMhub mailing list: http://g
 If you want, you can also download a binary from `here <http://femhub.org/pub/>`_, however, if it doesn't work for you, compile from source, that should always work.
 
 NOTE:  On Linux if you get this error message:
-:: 
+::
   " restore segment prot after reloc: Permission denied "
 the problem is probably related to SE Linux: http://www.ittvis.com/services/techtip.asp?ttid=3092
 
@@ -124,21 +124,18 @@ If you use git, you can download FEMhub and compile by following these instructi
 ::
     \$ git clone http://git.hpfem.org/git/femhub.git
     \$ cd femhub
-    \$ cd spkg/standard
-    \$ ./download_packages     # downloads the required packages
-    \$ cd ../..
-    \$ export MAKE="make -j9"  # optional
+    \$ ./femhub -d
     \$ make
 
 Running FEMhub
 ---------------
 
 Go the femhub top directory, and just execute
-:: 
+::
 
- ./femhub 
+ ./femhub
 
-from the command line, and type lab() after that. 
+from the command line, and type lab() after that.
 ::
     \$ ./femhub
     ----------------------------------------------------------------------
