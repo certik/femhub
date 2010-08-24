@@ -58,7 +58,7 @@ And from your desktop computer
 Install the system. After installing it, remove the cd (iso image) by
 ::
 
-  \$ VBoxManage modifyvm ubuntu -dvd none
+  \$ VBoxManage modifyvm ubuntu --dvd none
 
 
 Stop the Image (Do not Save Changes)
