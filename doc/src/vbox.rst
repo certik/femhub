@@ -75,9 +75,7 @@ Networking
 
 In order to be able to login using ssh, do::
 
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guestssh/Protocol" TCP
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guestssh/GuestPort" 22
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guestssh/HostPort" 2222
+    \$ VBoxManage modifyvm "ubuntu" --natpf1 "guestssh,tcp,,2222,,22"
 
 Then you can login on the server using::
 
@@ -95,9 +93,14 @@ Then you can connect just by ssh pythonnb.
 
 To forward the port 8000, do::
 
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guest8000/Protocol" TCP
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guest8000/GuestPort" 8000
-  \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guest8000/HostPort" 8000
+    \$ VBoxManage modifyvm "ubuntu" --natpf1 "guesthttp,tcp,,8000,,8000"
+
+One can then delete any of the rules above by::
+
+    \$ VBoxManage modifyvm "ubuntu" --natpf1 delete "guestssh"
+
+(or guesthttp). One can use any names instead of guesthttp/guestssh.
+
 
 Import the Appliance
 --------------------
