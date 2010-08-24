@@ -1,13 +1,19 @@
 =================
 Manage VirtualBox
 =================
-To ensure higher security of your server you may want to host FEMhub in VirtualBox. Following are a few important tips on VirtualBox.
+
+To ensure higher security of your server you may want to host FEMhub in
+VirtualBox. This guide lists detailed step by step instructions how to setup
+virtual images from the command line. In case of any doubts or for more
+information, consult the excellent
+`official documentation <http://www.virtualbox.org/manual/UserManual.html>`_
+for VirtualBox.
 
 
 Install VirtualBox
 ------------------
 
-To install VirtualBox::
+To install VirtualBox (this guide is tested with 3.2.8)::
 
   \$ wajig install virtualbox-ose
 
@@ -27,7 +33,7 @@ Start the Image
 To start the virtual image do:
 ::
 
-  \$ VBoxHeadless -startvm ubuntu
+  \$ VBoxHeadless --startvm ubuntu
   VirtualBox Headless Interface 2.1.2
   (C) 2008-2009 Sun Microsystems, Inc.
   All rights reserved.
