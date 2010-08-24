@@ -95,3 +95,32 @@ To forward the port 8000, do:
   \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guest8000/GuestPort" 8000
   \$ VBoxManage setextradata ubuntu "VBoxInternal/Devices/pcnet/0/LUN#0/Config/guest8000/HostPort" 8000
 
+Import the Appliance
+--------------------
+
+First use dry run::
+
+    VBoxManage import ext/virtualbox_image/new_lab.ovf --dry-run
+
+Check that the name and other things are ok, or change them using the suggested
+cmd line options that it offers. In our case::
+
+    VBoxManage import ext/virtualbox_image/new_lab.ovf --dry-run --vsys 0 --vmname new_lab_backend
+
+Once satisfied, do it for real::
+
+    \$ VBoxManage import ext/virtualbox_image/new_lab.ovf --vsys 0 --vmname new_lab_backend
+    [...]
+    0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+    Successfully imported the appliance.
+
+And you are done, the new virtual machine will show up::
+
+    \$ VBoxManage list vms
+    Oracle VM VirtualBox Command Line Management Interface Version 3.2.8
+    (C) 2005-2010 Oracle Corporation
+    All rights reserved.
+
+    "ubuntu" {7b6c0b84-9070-4e64-9bc1-af659c1f5efb}
+    "new_lab" {42d7216a-1b7c-4376-a46c-719f9363c212}
+    "new_lab_backend" {edf1e2ee-1c8a-4f5d-957f-3adda9e25e6b}
