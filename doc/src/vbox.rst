@@ -110,6 +110,14 @@ To forward the port 8000, do::
 
     \$ VBoxManage modifyvm "ubuntu" --natpf1 "guesthttp,tcp,,8000,,8000"
 
+To see what rules are active, do::
+
+    \$ VBoxManage showvminfo new_lab_backend
+    [...]
+    NIC 1 Rule(0):   name = guesthttp, protocol = tcp, host ip = , host port = 8002, guest ip = , guest port = 8000
+    NIC 1 Rule(1):   name = guestssh, protocol = tcp, host ip = , host port = 2224, guest ip = , guest port = 22
+    [...]
+
 One can then delete any of the rules above by::
 
     \$ VBoxManage modifyvm "ubuntu" --natpf1 delete "guestssh"
