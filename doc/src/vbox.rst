@@ -55,6 +55,15 @@ And from your desktop computer
 
   \$ rdesktop localhost
 
+If you are already using the port 3389, then the VRDP will fail to start. You
+can specify a different port by
+::
+
+    \$ VBoxManage modifyvm ubuntu --vrdpport 5000,5010-5012
+
+then forward it using ``ssh -L 3389:localhost:5000 server`` and view it locally
+using ``rdesktop localhost``.
+
 Install the system. After installing it, remove the cd (iso image) by
 ::
 
