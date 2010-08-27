@@ -328,21 +328,16 @@ def get_standard_packages(just_names=False):
     Packages are copied from various sources (see the *_STANDARD variables
     below).  You can also check (and update) the versions on the web:
 
-    Sage: http://www.sagemath.org/packages/standard
     FEMhub: http://femhub.org/stpack
-
-    The idea is to copy most of the packages verbatim from Sage, only if we
-    need to do some FEMhub modifications, we provide our own packages.
 
     """
 
-    SAGE_STANDARD =   "http://www.sagemath.org/packages/standard"
     FEMHUB_STANDARD = "http://femhub.org/stpack"
 
-    sage_packages = [
+    femhub_packages = [
             "termcap-1.3.1.p1",
-            "zlib-1.2.3.p5",
-            "python-2.6.4.p8",
+            "zlib-1.2.5",
+            "python-2.6.4.p9",
             "cython-0.12.1",
             "twisted-9.0.p2",
             "jinja-1.2.p0",
@@ -356,10 +351,8 @@ def get_standard_packages(just_names=False):
             "scipy-0.7.p5",
             "freetype-2.3.5.p2",
             "libpng-1.2.35.p2",
-            "opencdk-0.6.6.p4",
-            ]
-
-    femhub_packages = [
+            "opencdk-0.6.6.p5",
+            
             "ipython-bzr1174",
             "readline-6.0",
             "bzip2-1.0.5",
