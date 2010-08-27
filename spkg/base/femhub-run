@@ -392,11 +392,9 @@ def get_standard_packages(just_names=False):
 
     if just_names:
         packages = \
-                [p + ".spkg" for p in sage_packages] + \
                 [p + ".spkg" for p in femhub_packages]
     else:
         packages = \
-                [SAGE_STANDARD   + "/" + p + ".spkg" for p in sage_packages] + \
                 [FEMHUB_STANDARD + "/" + p + ".spkg" for p in femhub_packages]
     return packages
 
