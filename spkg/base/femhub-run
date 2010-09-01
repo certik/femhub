@@ -145,9 +145,13 @@ def start_femhub(debug=False):
         namespace = {}
     banner += "----------------------------------------------------------------------\n"
     if namespace == "yes":
-        def lab_wrapper(*args, **kwargs):
-            from sagenb.notebook.notebook_object import lab
-            lab(*args, **kwargs)
+        def lab_wrapper(new = True, *args, **kwargs):
+            if new:
+                from onlinelab import run_lab_new
+                run_lab_new()
+            else:
+                from sagenb.notebook.notebook_object import lab
+                lab(*args, **kwargs)
         namespace = {"lab": lab_wrapper}
 
     os.environ["IPYTHONDIR"] = expandvars("$DOT_SAGE/ipython")
