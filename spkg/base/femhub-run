@@ -315,7 +315,11 @@ def get_dependencies(pkg):
                 "jinja2",
                 "sphinx",
                 ],
-            "onlinelab": ["Django", "twisted", "simplejson", "pysqlite",]
+            "Django": ["python",],
+            "simplejson": ["python",],
+            "sqlite": ["python",],
+            "pysqlite": ["python", "sqlite",],
+            "onlinelab": ["python", "Django", "simplejson", "pysqlite",],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
@@ -367,7 +371,7 @@ def get_standard_packages(just_names=False):
             "libgcrypt-1.4.3.p2",
             "gnutls-2.2.1.p3",
             "femhub-lab-2ffaa67",
-            "onlinelab-1.0",
+            "onlinelab-64b4d4d",
 
             "py-1.3.1",
 
@@ -396,7 +400,8 @@ def get_standard_packages(just_names=False):
             "nose-0.11.1.p0",
             "Django-1.2.1",
             "simplejson-2.1.1",
-            "pysqlite-2.3.3",
+            "sqlite-3.7.2",
+            "pysqlite-2.6.0",
             ]
 
     if just_names:
@@ -422,11 +427,11 @@ def build(cpu_count=0):
             "sfepy",
             "sympy",
             "femhub-lab",
-            #"onlinelab",
             "hdf5-1.6.9",
             "h5py-1.2.1.p1",
             "pytables",
             "nose-0.11.1.p0",
+            "onlinelab",
             ]
     for pkg in packages_list:
         install_package(pkg, cpu_count=cpu_count)
