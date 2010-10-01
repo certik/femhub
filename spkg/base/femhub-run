@@ -61,7 +61,7 @@ Only use this mode to install FEMhub.
         return
     if options.shell:
         print "Type CTRL-D to exit the FEMhub shell."
-        cmd("cd $CUR; /bin/bash --rcfile $SAGE_ROOT/spkg/base/femhub-shell-rc")
+        cmd("cd $CUR; /bin/bash --rcfile $FEMHUB_ROOT/spkg/base/femhub-shell-rc")
         return
     if options.script:
         setup_cpu(options.cpu_count)
@@ -70,37 +70,37 @@ Only use this mode to install FEMhub.
     if options.unpack:
         pkg = pkg_make_absolute(options.unpack)
         print "Unpacking '%(pkg)s' into 'devel/'" % {"pkg": pkg}
-        cmd("mkdir -p $SAGE_ROOT/devel")
-        cmd("cd $SAGE_ROOT/devel; tar xjf %s" % pkg)
+        cmd("mkdir -p $FEMHUB_ROOT/devel")
+        cmd("cd $FEMHUB_ROOT/devel; tar xjf %s" % pkg)
         return
     if options.pack:
         dir = options.pack
         if not os.path.exists(dir):
-            dir = expandvars("$SAGE_ROOT/devel/%s" % dir)
+            dir = expandvars("$FEMHUB_ROOT/devel/%s" % dir)
         if not os.path.exists(dir):
             raise Exception("Unknown package to pack")
         dir = os.path.split(dir)[1]
         print "Creating devel/%(dir)s.spkg from devel/%(dir)s" % {"dir": dir}
-        cmd("cd $SAGE_ROOT/devel; tar cjf %(dir)s.spkg %(dir)s" % \
+        cmd("cd $FEMHUB_ROOT/devel; tar cjf %(dir)s.spkg %(dir)s" % \
                 {"dir": dir})
         return
     if options.devel_install:
         dir = options.devel_install
         if not os.path.exists(dir):
-            dir = expandvars("$SAGE_ROOT/devel/%s" % dir)
+            dir = expandvars("$FEMHUB_ROOT/devel/%s" % dir)
         if not os.path.exists(dir):
             raise Exception("Unknown package to pack")
         dir = os.path.normpath(dir)
         dir = os.path.split(dir)[1]
         print "Installing devel/%(dir)s into FEMhub" % {"dir": dir}
-        cmd("mkdir -p $SAGE_ROOT/spkg/build/")
-        cmd("rm -rf $SAGE_ROOT/spkg/build/%(dir)s" % {"dir": dir})
-        cmd("cp -r $SAGE_ROOT/devel/%(dir)s $SAGE_ROOT/spkg/build/" % \
+        cmd("mkdir -p $FEMHUB_ROOT/spkg/build/")
+        cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
+        cmd("cp -r $FEMHUB_ROOT/devel/%(dir)s $FEMHUB_ROOT/spkg/build/" % \
                 {"dir": dir})
         setup_cpu(options.cpu_count)
-        cmd("cd $SAGE_ROOT/spkg/build/%(dir)s; /bin/bash spkg-install" % \
+        cmd("cd $FEMHUB_ROOT/spkg/build/%(dir)s; /bin/bash spkg-install" % \
                 {"dir": dir})
-        cmd("rm -rf $SAGE_ROOT/spkg/build/%(dir)s" % {"dir": dir})
+        cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
     if systemwide_python:
         parser.print_help()
@@ -159,10 +159,10 @@ def start_femhub(debug=False):
     os.environ["IPYTHONRC"] = "ipythonrc"
     if not os.path.exists(os.environ["IPYTHONRC"]):
         cmd('mkdir -p "$DOT_SAGE"')
-        cmd('cp -r "$SAGE_ROOT/spkg/base/ipython" "$DOT_SAGE/"')
+        cmd('cp -r "$FEMHUB_ROOT/spkg/base/ipython" "$DOT_SAGE/"')
     os.environ["MPLCONFIGDIR"] = expandvars("$DOT_SAGE/matplotlib")
     if not os.path.exists(os.environ["MPLCONFIGDIR"]):
-        cmd('cp -r "$SAGE_ROOT/spkg/base/matplotlib" "$DOT_SAGE/"')
+        cmd('cp -r "$FEMHUB_ROOT/spkg/base/matplotlib" "$DOT_SAGE/"')
 
     if debug:
         print "Starting the main loop..."
@@ -170,10 +170,10 @@ def start_femhub(debug=False):
 
 def download_packages():
     print "Downloading standard spkg packages"
-    cmd("mkdir -p $SAGE_ROOT/spkg/standard")
+    cmd("mkdir -p $FEMHUB_ROOT/spkg/standard")
     packages = get_standard_packages()
     for p in packages:
-        cmd("cd $SAGE_ROOT/spkg/standard; ../base/femhub-wget %s" % p)
+        cmd("cd $FEMHUB_ROOT/spkg/standard; ../base/femhub-wget %s" % p)
 
 def install_package(pkg, install_dependencies=True, force_install=False,
         cpu_count=0):
@@ -209,17 +209,17 @@ def install_package(pkg, install_dependencies=True, force_install=False,
             install_package(dep, install_dependencies=False,
                     cpu_count=cpu_count)
     print "Installing %s..." % pkg
-    femhub_scripts = ["sage-env", "sage-make_relative"]
+    femhub_scripts = ["femhub-env", "femhub-make_relative"]
     setup_cpu(cpu_count)
-    cmd("mkdir -p $SAGE_ROOT/local/bin")
+    cmd("mkdir -p $FEMHUB_ROOT/local/bin")
     for script in femhub_scripts:
-        cmd("cp $SAGE_ROOT/spkg/base/%s $SAGE_ROOT/local/bin/" % script)
-    cmd("$SAGE_ROOT/spkg/base/sage-spkg %s" % pkg)
-    cmd("touch $SAGE_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
+        cmd("cp $FEMHUB_ROOT/spkg/base/%s $FEMHUB_ROOT/local/bin/" % script)
+    cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
+    cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
 
 def is_installed(pkg):
     pkg = pkg_make_relative(pkg)
-    candidates = glob(expandvars("$SAGE_ROOT/spkg/installed/%s" % pkg))
+    candidates = glob(expandvars("$FEMHUB_ROOT/spkg/installed/%s" % pkg))
     if len(candidates) == 1:
         return True
     elif len(candidates) == 0:
@@ -235,14 +235,14 @@ def pkg_make_absolute(pkg):
     if os.path.exists(pkg_current):
         return pkg_current
 
-    pkg_default = "$SAGE_ROOT/spkg/standard"
+    pkg_default = "$FEMHUB_ROOT/spkg/standard"
     if os.path.exists(pkg_default):
         return pkg_default
 
-    candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s-*.spkg" % \
+    candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/%s-*.spkg" % \
             pkg))
     if len(candidates) == 0:
-        candidates = glob(expandvars("$SAGE_ROOT/spkg/standard/%s*.spkg" % \
+        candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/%s*.spkg" % \
             pkg))
     if len(candidates) == 0:
         raise Exception("Package not found")

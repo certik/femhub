@@ -7,61 +7,61 @@
 # 
 #  AUTHORS:   William Stein                            2005-12
 #             David Kirkby <david.kirkby@onetel.net>   2005-12-17
-#
+#  Edited by  hp-FEM group, University of Nevada, Reno
 ###########################################################################
 
 ##########################################################################
 #
 #  If you want to set all environment variables for your shell like
-#  they are during the build of SAGE packages, type 
+#  they are during the build of SPKG packages, type 
 #
-#             source local/bin/sage-env 
+#             source local/bin/femhub-env 
 #
-#  from the SAGE_ROOT directory.   To do the same from a /bin/bash
-#  script use ". local/bin/sage-env". 
+#  from the FEMHUB_ROOT directory.   To do the same from a /bin/bash
+#  script use ". local/bin/femhub-env". 
 # 
 ##########################################################################
 
 
 SAVEDIR="`pwd`"
 
-if [ "$SAGE_ROOT" = "" ]; then
+if [ "$FEMHUB_ROOT" = "" ]; then
     if [ -f femhub -a -d spkg ]; then
-       SAGE_ROOT="`pwd`"
-       export SAGE_ROOT
+       FEMHUB_ROOT="`pwd`"
+       export FEMHUB_ROOT
     else
        if [ -f ../../femhub -a -d ../../spkg ]; then
            cd ../../
-           SAGE_ROOT="`pwd`"
-           export SAGE_ROOT
+           FEMHUB_ROOT="`pwd`"
+           export FEMHUB_ROOT
        else
-           echo "You must set the SAGE_ROOT environment variable or"
-           echo "run this script from the SAGE_ROOT or "
-           echo "SAGE_ROOT/local/bin/ directory."
+           echo "You must set the FEMHUB_ROOT environment variable or"
+           echo "run this script from the FEMHUB_ROOT or "
+           echo "FEMHUB_ROOT/local/bin/ directory."
         fi
     fi
 else
     if [ -f femhub -a -d spkg ]; then
-       if [ "$SAGE_ROOT" != "`pwd`" ]; then
-           echo "Warning: Attempted to overwrite SAGE_ROOT enviroment variable"             
+       if [ "$FEMHUB_ROOT" != "`pwd`" ]; then
+           echo "Warning: Attempted to overwrite FEMHUB_ROOT enviroment variable"             
        fi
     else
        if [ -f ../../femhub -a -d ../../spkg ]; then
            cd ../../
-           if [ "$SAGE_ROOT" != "`pwd`" ]; then
-              echo "Warning: Attempted to overwrite SAGE_ROOT enviroment variable"             
+           if [ "$FEMHUB_ROOT" != "`pwd`" ]; then
+              echo "Warning: Attempted to overwrite FEMHUB_ROOT enviroment variable"             
            fi
        else
-           echo "You must set the SAGE_ROOT environment variable or"
-           echo "run this script from the SAGE_ROOT or "
-           echo "SAGE_ROOT/local/bin/ directory."  
+           echo "You must set the FEMHUB_ROOT environment variable or"
+           echo "run this script from the FEMHUB_ROOT or "
+           echo "FEMHUB_ROOT/local/bin/ directory."  
        fi
     fi  
 fi
 cd "$SAVEDIR"
 
-if [ "$SAGE_ROOT" = "" ]; then
-    echo "SAGE_ROOT must be set"
+if [ "$FEMHUB_ROOT" = "" ]; then
+    echo "FEMHUB_ROOT must be set"
     exit 1
 fi
 
@@ -94,11 +94,18 @@ fi
 
 # Setting SAGE-related location environment variables.
 BUILD=build
+SAGE_ROOT="$FEMHUB_ROOT"        && export SAGE_ROOT
 SAGE_PACKAGES="$SAGE_ROOT/spkg" && export SAGE_PACKAGES
 SAGE_LOCAL="$SAGE_ROOT/local"   && export SAGE_LOCAL
 SAGE_DATA="$SAGE_ROOT/data"     && export SAGE_DATA
 SAGE_DOC="$SAGE_ROOT/devel/sage/doc" && export SAGE_DOC
 PATH="$SAGE_ROOT:$SAGE_LOCAL/bin:$PATH" && export PATH
+
+# Setting project neutral envrironment variables for FEMhub
+SPKG_PACKAGES="$FEMHUB_ROOT/spkg" && export SPKG_PACKAGES
+SPKG_LOCAL="$FEMHUB_ROOT/local"   && export SPKG_LOCAL
+SPKG_DATA="$FEMHUB_ROOT/data"     && export SPKG_DATA
+SPKG_DOC="$FEMHUB_ROOT/devel/sage/doc" && export SPKG_DOC
 
 # We offer a toolchain option, so if $SAGE_LOCAL/toolchain/toolchain-env exists source it.
 # Since the user might do something crazy we do not do any checks, but hope for the best.
@@ -133,7 +140,7 @@ GPDOCDIR="$SAGE_LOCAL/share/pari/doc" && export GPDOCDIR
 SINGULARPATH="$SAGE_LOCAL/share/singular" && export SINGULARPATH
 
 if [ "$SAGE_SERVER" = "" ]; then
-    SAGE_SERVER="http://www.sagemath.org/"
+    SAGE_SERVER="http://www.femhub.org/"
     export SAGE_SERVER
 fi
 

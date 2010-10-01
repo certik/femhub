@@ -10,27 +10,27 @@ if [ "x$CUR" = "x" ]; then
     exit 1
 fi
 
-SAGE_ROOT=`readlink -n "$0" 2> /dev/null` || \
-SAGE_ROOT=`realpath    "$0" 2> /dev/null` || \
-SAGE_ROOT="$0"
+FEMHUB_ROOT=`readlink -n "$0" 2> /dev/null` || \
+FEMHUB_ROOT=`realpath    "$0" 2> /dev/null` || \
+FEMHUB_ROOT="$0"
 
-SAGE_ROOT="${SAGE_ROOT%/*}/"
+FEMHUB_ROOT="${FEMHUB_ROOT%/*}/"
 
 # Make root absolute:
-cd "$SAGE_ROOT"
-SAGE_ROOT=`pwd`
-export SAGE_ROOT
+cd "$FEMHUB_ROOT"
+FEMHUB_ROOT=`pwd`
+export FEMHUB_ROOT
 export CUR
 
-if [ ! -f "$SAGE_ROOT/local/bin/python" ]; then
+if [ ! -f "$FEMHUB_ROOT/local/bin/python" ]; then
     PYTHON=
     FEMHUB_SYSTEMWIDE_PYTHON="yes"
 else
-    PYTHON="$SAGE_ROOT/local/bin/python "
+    PYTHON="$FEMHUB_ROOT/local/bin/python "
     FEMHUB_SYSTEMWIDE_PYTHON="no"
     # this is necessary to reset the PYTHONPATH and other stuff:
-    . "$SAGE_ROOT/local/bin/sage-env"
+    . "$FEMHUB_ROOT/local/bin/femhub-env"
 fi
 export FEMHUB_SYSTEMWIDE_PYTHON
 
-$PYTHON"$SAGE_ROOT/spkg/base/femhub-run" "$@"
+$PYTHON"$FEMHUB_ROOT/spkg/base/femhub-run" "$@"

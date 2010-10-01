@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# William Stein, 2005-12-20 -- removed "m" option from tar,
+# Author: William Stein, 2005-12-20 
+# Edited by hp-FEM group, University of Nevada, REno
+# -- removed "m" option from tar,
 # which was seriously confusing the build process on some
 # (too fast?) machines, especially for mpfr. 
 
@@ -12,9 +14,11 @@
 #  A package may assume that the following environment 
 #  variables are defined:
 #
-#      SAGE_ROOT   -- root directory of sage install
-#      SAGE_LOCAL  -- $SAGE_ROOT/local
-#      SAGE_DATA   -- $SAGE_ROOT/data
+#      FEMHUB_ROOT   -- root directory of sage install
+#      SPKG_LOCAL  -- $FEMHUB_ROOT/local
+#      SAGE_LOCAL  -- $FEMHUB_ROOT/local
+#      SAGE_DATA   -- $FEMHUB_ROOT/data
+#      SPKG_DATA   -- $FEMHUB_ROOT/data
 #      LIBRARY_PATH, PYTHONPATH, LD_LIBRARY_PATH, DYLD_LIBRARY_PATH
 #      CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS, MAKE
 #
@@ -23,7 +27,7 @@
 #
 #  This script does the following:
 #
-#      1. Set environment variables (by calling sage-env)
+#      1. Set environment variables (by calling femhub-env)
 #      2. Decompress package into a build directory
 #      3. Run the script in the package called spkg-install
 #      4. Return error 1 if anything goes wrong.
@@ -40,7 +44,7 @@ mymkdir()
 # The following sets environment variables for building
 # packages.  (Using dot suggested by W. Cheung.)
 
-. "$SAGE_ROOT/local/bin/sage-env"
+. "$FEMHUB_ROOT/local/bin/femhub-env"
 
 cd "$SAGE_PACKAGES"
 
@@ -213,7 +217,7 @@ if [ ! -f spkg-install ]; then
       echo "python setup.py install" >> spkg-install
   else
       if [ -f configure ]; then
-         echo "./configure --prefix=\$SAGE_ROOT/local/" >> spkg-install
+         echo "./configure --prefix=\$FEMHUB_ROOT/local/" >> spkg-install
          echo "make" >> spkg-install
          echo "make install" >> spkg-install 
       else
@@ -282,11 +286,11 @@ if [ $? -eq 0 ]; then
            echo "*************************************"
            echo "Error testing package ** $PKG_NAME **"
            echo "*************************************"
-           rm -f $SAGE_ROOT/spkg/installed/$PKG_NAME
+           rm -f $FEMHUB_ROOT/spkg/installed/$PKG_NAME
            echo "FEMhub: An error occurred while testing $PKG_NAME"
            echo "Please email to FEMhub mailinglist: femhub@googlegroups.com"
            echo "explaining the problem and send the relevant part of"
-           echo "of $SAGE_ROOT/install.log.  Describe your computer, operating system, etc."
+           echo "of $FEMHUB_ROOT/install.log.  Describe your computer, operating system, etc."
            echo "If you want to try to fix the problem, yourself *don't* just cd to"
            echo "`pwd` and type 'make check' or whatever is appropriate."
            echo "Instead set all environment variables correctly, then cd to"
@@ -317,7 +321,7 @@ else
    echo "FEMhub: An error occurred while installing $PKG_NAME"
    echo "Please email FEMhub mailinlist: femhub@googlegroups.com"
    echo "explaining the problem and send the relevant part of"
-   echo "of $SAGE_ROOT/install.log.  Describe your computer, operating system, etc."
+   echo "of $FEMHUB_ROOT/install.log.  Describe your computer, operating system, etc."
    echo "If you want to try to fix the problem, do:"
    echo "  femhub --shell"
    echo "  cd `pwd`"
@@ -331,7 +335,7 @@ fi
 echo "Making FEMhub/Python scripts relocatable..."
 
 cd "$SAGE_LOCAL"/bin
-./sage-make_relative
+./femhub-make_relative
 
 echo "Finished installing $PKG_NAME.spkg" 
 
