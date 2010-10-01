@@ -16,8 +16,6 @@
 #
 #      FEMHUB_ROOT   -- root directory of sage install
 #      SPKG_LOCAL  -- $FEMHUB_ROOT/local
-#      SAGE_LOCAL  -- $FEMHUB_ROOT/local
-#      SAGE_DATA   -- $FEMHUB_ROOT/data
 #      SPKG_DATA   -- $FEMHUB_ROOT/data
 #      LIBRARY_PATH, PYTHONPATH, LD_LIBRARY_PATH, DYLD_LIBRARY_PATH
 #      CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS, MAKE
