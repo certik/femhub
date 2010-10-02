@@ -93,7 +93,7 @@ Creating FEMhub Package
 -----------------------
 If you have developed new codes to add new functionality to FEMhub you might want to create a package instead of a regular patch.
 
-FEMhub packages are .tar.bz2 files but they have the extension .spkg to avoid confusion. You can see FEMhub standard packages if go to FEMhub top directory and do 
+FEMhub packages are .tar files but they have the extension .spkg to avoid confusion. SPKG means "Software Package". You can see FEMhub standard packages if you go to FEMhub top directory and do 
 ::
   \$ cd spkg/standard
 
@@ -101,7 +101,7 @@ You can extract an spkg by typing
 ::
   \$ tar -jxvf packagename-version.spkg
 
-After you extract you will see a script file named ``spkg-install`` which contains the install script. Besides that you may usually see a directory ``src/``
+After you extract you will see a script file named ``spkg-install`` which contains the install script. Besides that you may sometimes see a directory ``src/``
 
 The script ``spkg-install`` is run during installation of the FEMhub package. You can modify spkg-install according to your need.
 
@@ -123,9 +123,9 @@ After you create mypackage-version.spkg you can install it in FEMhub easily. To 
 
 A sample ``spkg-install`` script
 ::
-  if [ "$SAGE_LOCAL" = "" ]; then
-     echo "SAGE_LOCAL undefined ... exiting";
-     echo "Maybe run 'sage -sh'?"
+  if [ "$SPKG_LOCAL" = "" ]; then
+     echo "SPKG_LOCAL undefined ... exiting";
+     echo "Maybe run 'femhub --shell'?"
      exit 1
   fi
 
@@ -134,9 +134,9 @@ A sample ``spkg-install`` script
   PY_VER=`python -c "import sys;print '%d.%d' % sys.version_info[:2]"`
   echo "Detected Python version: $PY_VER"
 
-  cmake -DCMAKE_INSTALL_PREFIX="$SAGE_LOCAL" \
-      -DPYTHON_INCLUDE_PATH="$SAGE_LOCAL/include/python$PY_VER" \
-      -DPYTHON_LIBRARY="$SAGE_LOCAL/lib/python2.6/config/libpython2.6.dll.a" \
+  cmake -DCMAKE_INSTALL_PREFIX="$SPKG_LOCAL" \
+      -DPYTHON_INCLUDE_PATH="$SPKG_LOCAL/include/python$PY_VER" \
+      -DPYTHON_LIBRARY="$SPKG_LOCAL/lib/python2.6/config/libpython2.6.dll.a" \
     .
   if [ $? -ne 0 ]; then
      echo "Error configuring $PACKAGE_NAME."
@@ -155,6 +155,8 @@ A sample ``spkg-install`` script
      exit 1
   fi
 
+In the spkg-install script above you can see a variable SPKG_LOCAL which points to path/to/femhub/local.
+
 Installing SPKG Package
 -----------------------
 You can install any spkg package in femhub directly by typing
@@ -172,6 +174,6 @@ Testing Your Patches of FEMhub Package
 You can test your patches of FEMhub packages without creating spkg tarball by following these steps:
 ::
  \$ cd mypackage-version
- \$ path_to_femhub/femhub -sh # this launches FEMhub shell
+ \$ path_to_femhub/femhub --shell # this launches FEMhub shell
  \$ bash spkg-install
   CTRL+D # exits this shell after the previous command completes
