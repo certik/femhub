@@ -138,7 +138,7 @@ def start_femhub(debug=False):
 | FEMhub Version 0.9.9, Release Date: 2010-05-05                     |
 """
     try:
-        import sagenb
+        #import sagenb
         namespace = "yes"
         banner += "| Type lab() for the GUI.                                            |\n"
     except ImportError:
