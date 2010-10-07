@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+from time import sleep
 from glob import glob
 from os.path import expandvars
 from optparse import OptionParser
@@ -150,8 +151,7 @@ def start_femhub(debug=False):
                 from sagenb.notebook.notebook_object import lab
                 lab(*args, **kwargs)
             else:
-                from onlinelab import run_lab_new
-                run_lab_new()
+                run_lab()
 
         namespace = {"lab": lab_wrapper}
 
@@ -451,6 +451,26 @@ def build(cpu_count=0):
         install_package(pkg, cpu_count=cpu_count)
     print
     print "Finished building FEMhub."
+
+def wait_for_ctrl_c():
+    try:
+        while 1:
+            sleep(1)
+    except KeyboardInterrupt:
+        pass
+
+def run_lab():
+    """
+    Runs the online lab.
+    """
+    cmd("onlinelab core start --home=$SPKG_LOCAL/share/onlinelab/core-home")
+    cmd("onlinelab service start --home=$SPKG_LOCAL/share/onlinelab/service-home")
+    try:
+        print "Online lab started. Press CTRL+C to kill it"
+        wait_for_ctrl_c()
+    finally:
+        cmd("onlinelab core stop --home=$SPKG_LOCAL/share/onlinelab/core-home")
+        cmd("onlinelab service stop --home=$SPKG_LOCAL/share/onlinelab/service-home")
 
 if __name__ == "__main__":
     main()
