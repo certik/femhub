@@ -9,6 +9,9 @@ from optparse import OptionParser
 class CmdException(Exception):
     pass
 
+class PackageBuildFailed(Exception):
+    pass
+
 def main():
     systemwide_python = (os.environ["FEMHUB_SYSTEMWIDE_PYTHON"] == "yes")
     if systemwide_python:
@@ -54,9 +57,11 @@ Only use this mode to install FEMhub.
         download_packages()
         return
     if options.install:
-        install_package(options.install, cpu_count=options.cpu_count,
-                force_install=options.force)
-        return
+        try:
+            install_package(options.install, cpu_count=options.cpu_count,
+                    force_install=options.force)
+        except PackageBuildFailed:
+            pass
     if options.build:
         build(cpu_count=options.cpu_count)
         return
@@ -217,8 +222,8 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     try:
         cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
     except CmdException:
-        print "Package %s failed to install" % pkg
-        return
+        #print "Package %s failed to install" % pkg
+        raise PackageBuildFailed()
     cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
 
 def is_installed(pkg):
@@ -451,10 +456,13 @@ def build(cpu_count=0):
             "onlinelab",
             "MeshEditorFlex",
             ]
-    for pkg in packages_list:
-        install_package(pkg, cpu_count=cpu_count)
-    print
-    print "Finished building FEMhub."
+    try:
+        for pkg in packages_list:
+            install_package(pkg, cpu_count=cpu_count)
+        print
+        print "Finished building FEMhub."
+    except PackageBuildFailed:
+        print "FEMhub build failed."
 
 def wait_for_ctrl_c():
     try:
