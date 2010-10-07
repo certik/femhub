@@ -214,7 +214,11 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     cmd("mkdir -p $FEMHUB_ROOT/local/bin")
     for script in femhub_scripts:
         cmd("cp $FEMHUB_ROOT/spkg/base/%s $FEMHUB_ROOT/local/bin/" % script)
-    cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
+    try:
+        cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
+    except CmdException:
+        print "Package %s failed to install" % pkg
+        return
     cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
 
 def is_installed(pkg):
