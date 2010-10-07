@@ -317,7 +317,7 @@ if [ $? -eq 0 ]; then
 else
 
    echo "FEMhub: An error occurred while installing $PKG_NAME"
-   echo "Please email FEMhub mailinlist: femhub@googlegroups.com"
+   echo "Please email FEMhub mailing list: femhub@googlegroups.com"
    echo "explaining the problem and send the relevant part of"
    echo "of $FEMHUB_ROOT/install.log.  Describe your computer, operating system, etc."
    echo "If you want to try to fix the problem, do:"
