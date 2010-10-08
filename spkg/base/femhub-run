@@ -480,10 +480,11 @@ def run_lab():
     """
     Runs the online lab.
     """
+    print "Starting Online lab at http://localhost:8000/. Press CTRL+C to kill it"
+    print
     cmd("onlinelab core start --home=$SPKG_LOCAL/share/onlinelab/core-home")
     cmd("onlinelab service start --home=$SPKG_LOCAL/share/onlinelab/service-home")
     try:
-        print "Online lab started at http://localhost:8000/. Press CTRL+C to kill it"
         wait_for_ctrl_c()
     finally:
         cmd("onlinelab core stop --home=$SPKG_LOCAL/share/onlinelab/core-home")
