@@ -334,7 +334,7 @@ def get_dependencies(pkg):
             "python_pycurl": ["curl"],
             "onlinelab": ["python", "Django", "simplejson", "pysqlite",
                 "pyinotify", "argparse", "lockfile", "daemon", "psutil",
-                "tornado",
+                "tornado", "docutils",
                 ],
             "trilinos": ["python", "blas"],
             }
