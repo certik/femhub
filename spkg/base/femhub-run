@@ -329,6 +329,8 @@ def get_dependencies(pkg):
             "simplejson": ["python",],
             "sqlite": ["python",],
             "pysqlite": ["python", "sqlite",],
+            "tornado": ["python_pycurl"],
+            "python_pycurl": ["curl"],
             "onlinelab": ["python", "Django", "simplejson", "pysqlite",
 		"pyinotify", "argparse", "lockfile", "daemon", "psutil",
 		"tornado",
@@ -424,6 +426,8 @@ def get_standard_packages(just_names=False):
             "sqlite-3.7.2",
             "pysqlite-2.6.0",
             "MeshEditorFlex-1.0",
+            "curl-7.21.1",
+            "python_pycurl-7.19.0",
             ]
 
     if just_names:
