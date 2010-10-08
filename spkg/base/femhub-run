@@ -62,6 +62,7 @@ Only use this mode to install FEMhub.
                     force_install=options.force)
         except PackageBuildFailed:
             pass
+        return
     if options.build:
         build(cpu_count=options.cpu_count)
         return
