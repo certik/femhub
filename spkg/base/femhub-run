@@ -327,7 +327,7 @@ def get_dependencies(pkg):
                 "sphinx",
                 ],
             "Django": ["python",],
-            "simplejson": ["python",],
+            "simplejson": ["python", "setuptools"],
             "sqlite": ["python",],
             "pysqlite": ["python", "sqlite",],
             "tornado": ["python_pycurl"],
