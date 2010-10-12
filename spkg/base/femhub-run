@@ -141,7 +141,7 @@ def start_femhub(debug=False):
         print "  Done."
     banner = """\
 ----------------------------------------------------------------------
-| FEMhub Version 0.9.10.beta1, Release Date: 2010-Oct-11                     |
+| FEMhub Version 0.9.10.beta1, Release Date: 2010-Oct-11             |
 """
     try:
         #import sagenb
