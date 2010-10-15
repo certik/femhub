@@ -198,13 +198,19 @@ def install_package(pkg, install_dependencies=True, force_install=False,
             processors in the  machine)
 
     Examples:
-
+    >>> install_package("http://femhub.org/stpack/python-2.6.4.p9.spkg")
     >>> install_package("spkg/standard/readline-6.0.spkg")
     >>> install_package("readline-6.0.spkg")
     >>> install_package("readline")
 
     """
-    pkg = pkg_make_absolute(pkg)
+    if pkg.startswith(("http", "www")):
+        cmd("wget " + pkg + " -P /tmp/")
+        pkg_name = os.path.split(pkg)
+        pkg = "/tmp/" + pkg_name[1]
+    else:
+        pkg = pkg_make_absolute(pkg)
+
     if is_installed(pkg):
         if not force_install:
             print "Package '%s' is already installed" % pkg_make_relative(pkg)
@@ -226,6 +232,8 @@ def install_package(pkg, install_dependencies=True, force_install=False,
         #print "Package %s failed to install" % pkg
         raise PackageBuildFailed()
     cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
+    if pkg.startswith(("http", "www")):
+        cmd("rm /tmp/" + pkg_name[1])
 
 def is_installed(pkg):
     pkg = pkg_make_relative(pkg)
