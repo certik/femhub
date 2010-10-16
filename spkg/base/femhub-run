@@ -152,12 +152,12 @@ def start_femhub(debug=False):
         namespace = {}
     banner += "----------------------------------------------------------------------\n"
     if namespace == "yes":
-        def lab_wrapper(old = False, *args, **kwargs):
+        def lab_wrapper(old = False, auth=True, *args, **kwargs):
             if old:
                 from sagenb.notebook.notebook_object import lab
                 lab(*args, **kwargs)
             else:
-                run_lab(auth=True)
+                run_lab(auth=auth)
 
         namespace = {"lab": lab_wrapper}
 
