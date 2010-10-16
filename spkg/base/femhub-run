@@ -205,10 +205,16 @@ def install_package(pkg, install_dependencies=True, force_install=False,
 
     """
     if pkg.startswith(("http", "www")):
-        cmd("wget " + pkg + " -P /tmp/")
+        remote = True
+        try:
+            os.mkdir("/tmp/femhub_spkg_tmp")
+        except OSError:
+            pass
+        cmd("wget -P /tmp/femhub_spkg_tmp " + pkg)
         pkg_name = os.path.split(pkg)
-        pkg = "/tmp/" + pkg_name[1]
+        pkg = "/tmp/femhub_spkg_tmp/" + pkg_name[1]
     else:
+        remote = False
         pkg = pkg_make_absolute(pkg)
 
     if is_installed(pkg):
@@ -232,8 +238,10 @@ def install_package(pkg, install_dependencies=True, force_install=False,
         #print "Package %s failed to install" % pkg
         raise PackageBuildFailed()
     cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
-    if pkg.startswith(("http", "www")):
-        cmd("rm /tmp/" + pkg_name[1])
+
+    if remote:
+        from shutil import rmtree
+        rmtree("/tmp/femhub_spkg_tmp")
 
 def is_installed(pkg):
     pkg = pkg_make_relative(pkg)
