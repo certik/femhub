@@ -206,13 +206,11 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     """
     if pkg.startswith(("http", "www")):
         remote = True
-        try:
-            os.mkdir("/tmp/femhub_spkg_tmp")
-        except OSError:
-            pass
-        cmd("wget -P /tmp/femhub_spkg_tmp " + pkg)
+        import tempfile
+        tmpdir = tempfile.mkdtemp()
+        cmd("wget --directory-prefix=" + tmpdir + " " + pkg)
         pkg_name = os.path.split(pkg)
-        pkg = "/tmp/femhub_spkg_tmp/" + pkg_name[1]
+        pkg = os.path.join(tmpdir,pkg_name[1])
     else:
         remote = False
         pkg = pkg_make_absolute(pkg)
@@ -241,7 +239,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
 
     if remote:
         from shutil import rmtree
-        rmtree("/tmp/femhub_spkg_tmp")
+        rmtree(tmpdir)
 
 def is_installed(pkg):
     pkg = pkg_make_relative(pkg)
