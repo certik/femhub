@@ -440,7 +440,7 @@ def get_standard_packages(just_names=False):
             "simplejson-2.1.1",
             "sqlite-3.7.2",
             "pysqlite-2.6.0",
-            "MeshEditorFlex-1.0",
+            "mesheditorflex-1.0.p1",
             "curl-7.21.1",
             "python_pycurl-7.19.0",
             ]
@@ -473,7 +473,7 @@ def build(cpu_count=0):
             "pytables",
             "nose-0.11.1.p0",
             "onlinelab",
-            "MeshEditorFlex",
+            "mesheditorflex",
             ]
     try:
         for pkg in packages_list:
