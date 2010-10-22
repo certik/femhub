@@ -351,6 +351,7 @@ def get_dependencies(pkg):
                 "python_tornado", "docutils", "pygments",
                 ],
             "trilinos": ["python", "blas"],
+            "proteus": ["numpy", "cython"],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
