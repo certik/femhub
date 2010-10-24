@@ -352,6 +352,7 @@ def get_dependencies(pkg):
                 ],
             "trilinos": ["python", "blas"],
             "proteus": ["numpy", "cython"],
+            "phaml": ["blas", "lapack"],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
@@ -431,6 +432,7 @@ def get_standard_packages(just_names=False):
             "hermes1d-fb8163f",
             "hermes2d-ee3e3ab",
             "pysparse-1.1-6301cea",
+	    "phaml-03ffbdb",
             "fipy-2.1-51f1360",
             "libfemhub-c473ced",
             "hdf5-1.6.9",
@@ -464,6 +466,7 @@ def build(cpu_count=0):
             "hermes2d",
             # requires: setupdocs>=1.0, doesn't work without a net...
             #"mayavi",
+            "phaml-03ffbdb",
             "libfemhub",
             "fipy",
             "sfepy",
