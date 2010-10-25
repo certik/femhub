@@ -352,7 +352,7 @@ def get_dependencies(pkg):
                 ],
             "trilinos": ["python", "blas"],
             "proteus": ["numpy", "cython"],
-            "phaml": ["blas", "lapack"],
+            "phaml": ["blas", "lapack", "f2py"],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
@@ -416,6 +416,7 @@ def get_standard_packages(just_names=False):
             "py-1.3.1",
 
             "fortran-814646f",
+            "f2py-9de8d45",
             "numpy-1.5.0",
             "matplotlib-0.99.1.p4",
             "sympy-5d78c29",
@@ -432,7 +433,7 @@ def get_standard_packages(just_names=False):
             "hermes1d-fb8163f",
             "hermes2d-ee3e3ab",
             "pysparse-1.1-6301cea",
-            "phaml-03ffbdb",
+            "phaml-ff92b3e",
             "fipy-2.1-51f1360",
             "libfemhub-c473ced",
             "hdf5-1.6.9",
