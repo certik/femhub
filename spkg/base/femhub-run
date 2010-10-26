@@ -435,7 +435,7 @@ def get_standard_packages(just_names=False):
             "pysparse-1.1-6301cea",
             "phaml-ff92b3e",
             "fipy-2.1-51f1360",
-            "libfemhub-c473ced",
+            "libfemhub-8e1de6c",
             "hdf5-1.6.9",
             "h5py-1.2.1.p1",
             "pytables-2.1",
