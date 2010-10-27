@@ -353,6 +353,7 @@ def get_dependencies(pkg):
             "trilinos": ["python", "blas"],
             "proteus": ["numpy", "cython"],
             "phaml": ["blas", "lapack", "f2py"],
+            "umfpack": ["blas"],
             }
     deps = []
     for dep in dependency_graph.get(pkg_name, []):
@@ -447,6 +448,7 @@ def get_standard_packages(just_names=False):
             "mesheditorflex-1.0.p1",
             "curl-7.21.1",
             "python_pycurl-7.19.0",
+            "umfpack-5.5.0",
             ]
 
     if just_names:
