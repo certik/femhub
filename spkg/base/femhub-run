@@ -501,7 +501,8 @@ def run_lab(auth=False):
     """
     Runs the online lab.
     """
-    print "Starting Online Lab: Open your web browser at http://localhost:8000/. Press CTRL+C to kill it"
+    print "Starting Online Lab: Open your web browser at http://localhost:8000/"
+    print "Press CTRL+C to kill it"
     print
 
     if auth:
