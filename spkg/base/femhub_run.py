@@ -615,7 +615,42 @@ def run_lab(auth=False):
         cmd("onlinelab service stop --home=$SPKG_LOCAL/share/onlinelab/service-home")
 
 def extract_version(package_name):
-    return package_name[package_name.rfind("-")+1:]
+    """
+    Extracts the version from the package_name.
+
+    The version is defined as one of the following:
+
+    -3245s
+    -ab434
+    -1.1-343s
+    -2.3-4
+    -134-minimal-24
+
+    but not:
+
+    -ab-13
+    -ab-ab
+    -m14-m16
+
+    The leading "-" is discarded.
+
+    """
+    def numeric(c):
+        if c in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+            return True
+        return False
+
+    first_dash = package_name.find("-")
+    last_dash = package_name.rfind("-")
+    if first_dash == last_dash:
+        return package_name[first_dash+1:]
+    while not numeric(package_name[first_dash + 1]):
+        package_name = package_name[first_dash+1:]
+        first_dash = package_name.find("-")
+        last_dash = package_name.rfind("-")
+        if first_dash == last_dash:
+            return package_name[first_dash+1:]
+    return package_name[first_dash + 1:]
 
 if __name__ == "__main__":
     main()
