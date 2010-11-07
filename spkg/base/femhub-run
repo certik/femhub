@@ -116,35 +116,7 @@ Only use this mode to install FEMhub.
         cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
     if options.create_package:
-        packages = {
-                "libfemhub": "git://github.com/hpfem/libfemhub.git",
-                "onlinelab": "git://github.com/hpfem/femhub-online-lab.git",
-                "phaml": "git://github.com/hpfem/phaml.git",
-                    }
-        package = options.create_package
-        if package not in packages:
-            raise Exception("Unknown package")
-        git_repo = packages[package]
-        a = git_repo.rfind("/") + 1
-        b = git_repo.rfind(".git")
-        dir_name = git_repo[a:b]
-        print "Creating a package in the current directory."
-        print "Package name:", package
-        print "Git repository:", git_repo
-        tmp = tempfile.mkdtemp()
-        print "Using temporary directory:", tmp
-        cur = cmd("echo $CUR", capture=True).strip()
-        cmd("cd %s; git clone %s" % (tmp, git_repo))
-        commit = cmd("cd %s/%s; git rev-parse HEAD" % (tmp, dir_name),
-                capture=True).strip()
-        sha = commit[:7]
-        new_dir_name = "%s-%s" % (package, sha)
-        pkg_filename = "%s.spkg" % (new_dir_name)
-        cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
-        cmd("cd %s; tar cjf %s %s" % (tmp, pkg_filename, new_dir_name))
-        cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
-        print
-        print "Package created: %s" % (pkg_filename)
+        create_package(options.create_package)
         return
     if systemwide_python:
         parser.print_help()
@@ -174,6 +146,36 @@ def cmd(s, capture=False):
     if r != 0:
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
     return output
+
+def create_package(package):
+    packages = {
+        "libfemhub": "git://github.com/hpfem/libfemhub.git",
+        "onlinelab": "git://github.com/hpfem/femhub-online-lab.git",
+        "phaml":     "git://github.com/hpfem/phaml.git",
+            }
+    if package not in packages:
+        raise Exception("Unknown package")
+    git_repo = packages[package]
+    a = git_repo.rfind("/") + 1
+    b = git_repo.rfind(".git")
+    dir_name = git_repo[a:b]
+    print "Creating a package in the current directory."
+    print "Package name:", package
+    print "Git repository:", git_repo
+    tmp = tempfile.mkdtemp()
+    print "Using temporary directory:", tmp
+    cur = cmd("echo $CUR", capture=True).strip()
+    cmd("cd %s; git clone %s" % (tmp, git_repo))
+    commit = cmd("cd %s/%s; git rev-parse HEAD" % (tmp, dir_name),
+            capture=True).strip()
+    sha = commit[:7]
+    new_dir_name = "%s-%s" % (package, sha)
+    pkg_filename = "%s.spkg" % (new_dir_name)
+    cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
+    cmd("cd %s; tar cjf %s %s" % (tmp, pkg_filename, new_dir_name))
+    cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
+    print
+    print "Package created: %s" % (pkg_filename)
 
 def start_femhub(debug=False):
     if debug:
