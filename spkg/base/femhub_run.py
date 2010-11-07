@@ -368,22 +368,24 @@ def pkg_make_absolute(pkg):
     if os.path.exists(pkg_default):
         return pkg_default
 
-    candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/%s-*.spkg" % \
-            pkg))
-    if len(candidates) == 0:
-        candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/%s*.spkg" % \
-            pkg))
+    candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/*.spkg"))
     if len(candidates) == 0:
         raise Exception("Package '%s' not found" % pkg)
-    if len(candidates) == 1:
-        return candidates[0]
-    standard_packages = get_standard_packages(just_names=True)
+    cands = []
     for p in candidates:
-        if os.path.split(p)[1] in standard_packages:
+        path, ext = os.path.splitext(p)
+        assert ext == ".spkg"
+        directory, filename = os.path.split(path)
+        name, version = extract_name_version(filename)
+        if name == pkg:
             return p
+        if pkg in name:
+            cands.append(p)
+    if len(cands) == 1:
+        return cands[0]
 
     print "Too many candidates:"
-    print "    " + "\n    ".join(candidates)
+    print "    " + "\n    ".join(cands)
 
     raise Exception("Ambiguous package name.")
 
