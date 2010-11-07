@@ -274,7 +274,9 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     print "Installing %s..." % pkg
     femhub_scripts = ["femhub-env", "femhub-make_relative"]
     setup_cpu(cpu_count)
-    cmd("mkdir -p $FEMHUB_ROOT/local/bin")
+    # Create the standard POSIX directories:
+    for d in ["bin", "doc", "include", "lib", "man", "share"]:
+        cmd("mkdir -p $FEMHUB_ROOT/local/%s" % d)
     for script in femhub_scripts:
         cmd("cp $FEMHUB_ROOT/spkg/base/%s $FEMHUB_ROOT/local/bin/" % script)
     try:
