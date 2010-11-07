@@ -401,7 +401,7 @@ def get_dependencies(pkg):
                 ],
             "trilinos": ["python", "blas"],
             "proteus": ["numpy", "cython"],
-            "phaml": ["blas", "lapack", "cmake", "python"],
+            "phaml": ["blas", "lapack", "cmake", "numpy"],
             "umfpack": ["blas"],
             }
     deps = []
