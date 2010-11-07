@@ -390,6 +390,7 @@ def pkg_make_absolute(pkg):
     raise Exception("Ambiguous package name.")
 
 def pkg_make_relative(pkg):
+    # TODO: look at this part:
     pkg = pkg_make_absolute(pkg)
     # This is quite robust:
     pkg_with_version = pkg[pkg.rfind("/")+1:pkg.rfind(".spkg")]
