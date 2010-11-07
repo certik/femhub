@@ -33,4 +33,4 @@ else
 fi
 export FEMHUB_SYSTEMWIDE_PYTHON
 
-$PYTHON"$FEMHUB_ROOT/spkg/base/femhub-run" "$@"
+$PYTHON"$FEMHUB_ROOT/spkg/base/femhub_run.py" "$@"
