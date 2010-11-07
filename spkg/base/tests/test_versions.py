@@ -1,4 +1,4 @@
-from femhub_run import extract_version
+from femhub_run import extract_version, extract_name_version
 
 def test1():
     assert extract_version("onlinelab-9934211") == "9934211"
@@ -83,3 +83,11 @@ def test2():
             }
     for t in tests:
         assert extract_version(t) == tests[t]
+
+def test3():
+    assert extract_name_version("onlinelab-9934211") == ("onlinelab",
+            "9934211")
+    assert extract_name_version("termcap-1.3.1.p1") == ("termcap",
+            "1.3.1.p1")
+    assert extract_name_version("vtk-cvs-20090316-minimal.p6") == \
+            ("vtk-cvs", "20090316-minimal.p6")

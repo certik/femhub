@@ -634,6 +634,11 @@ def extract_version(package_name):
 
     The leading "-" is discarded.
 
+    Example:
+
+    >>> extract_version("jinja-2.5")
+    '2.5'
+
     """
     def numeric(c):
         if c in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
@@ -651,6 +656,20 @@ def extract_version(package_name):
         if first_dash == last_dash:
             return package_name[first_dash+1:]
     return package_name[first_dash + 1:]
+
+def extract_name_version(package_name):
+    """
+    Extracts the name and the version.
+
+    Example:
+
+    >>> extract_name_version("jinja-2.5")
+    ('jinja', '2.5')
+
+    """
+    version = extract_version(package_name)
+    name = package_name[:-len(version)-1]
+    return name, version
 
 if __name__ == "__main__":
     main()
