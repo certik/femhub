@@ -49,6 +49,11 @@ You can take advantage of several cores on your computer by executing
       \$ export MAKE="make -j9"
 before typing make to compile in parallel on 9 cores.
 
+Note: for installing mesa, you need the X11 header files currently, so you also
+need to do::
+
+    \$ sudo apt-get install libx11-dev x11proto-xext-dev
+
 
 Mac OS X
 ~~~~~~~~
