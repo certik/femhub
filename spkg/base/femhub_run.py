@@ -614,5 +614,8 @@ def run_lab(auth=False):
         cmd("onlinelab core stop --home=$SPKG_LOCAL/share/onlinelab/core-home")
         cmd("onlinelab service stop --home=$SPKG_LOCAL/share/onlinelab/service-home")
 
+def extract_version(package_name):
+    return package_name[package_name.rfind("-")+1:]
+
 if __name__ == "__main__":
     main()
