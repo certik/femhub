@@ -5,6 +5,8 @@ from time import sleep
 from glob import glob
 from os.path import expandvars
 from optparse import OptionParser
+import tempfile
+import subprocess
 
 class CmdException(Exception):
     pass
@@ -52,6 +54,10 @@ Only use this mode to install FEMhub.
     parser.add_option("--devel-install",
             action="store", type="str", dest="devel_install", metavar="PACKAGE",
             default=None, help="installs 'devel/PACKAGE' into FEMhub directly")
+    parser.add_option("--create-package",
+            action="store", type="str", dest="create_package",
+            metavar="PACKAGE", default=None,
+            help="creates 'PACKAGE.spkg' in the current directory using the official git repository sources")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -109,6 +115,37 @@ Only use this mode to install FEMhub.
                 {"dir": dir})
         cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
+    if options.create_package:
+        packages = {
+                "libfemhub": "git://github.com/hpfem/libfemhub.git",
+                "onlinelab": "git://github.com/hpfem/femhub-online-lab.git",
+                "phaml": "git://github.com/hpfem/phaml.git",
+                    }
+        package = options.create_package
+        if package not in packages:
+            raise Exception("Unknown package")
+        git_repo = packages[package]
+        a = git_repo.rfind("/") + 1
+        b = git_repo.rfind(".git")
+        dir_name = git_repo[a:b]
+        print "Creating a package in the current directory."
+        print "Package name:", package
+        print "Git repository:", git_repo
+        tmp = tempfile.mkdtemp()
+        print "Using temporary directory:", tmp
+        cur = cmd("echo $CUR", capture=True).strip()
+        cmd("cd %s; git clone %s" % (tmp, git_repo))
+        commit = cmd("cd %s/%s; git rev-parse HEAD" % (tmp, dir_name),
+                capture=True).strip()
+        sha = commit[:7]
+        new_dir_name = "%s-%s" % (package, sha)
+        pkg_filename = "%s.spkg" % (new_dir_name)
+        cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
+        cmd("cd %s; tar cjf %s %s" % (tmp, pkg_filename, new_dir_name))
+        cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
+        print
+        print "Package created: %s" % (pkg_filename)
+        return
     if systemwide_python:
         parser.print_help()
     else:
@@ -124,11 +161,19 @@ def setup_cpu(cpu_count):
     if cpu_count > 1:
         os.environ["MAKEFLAGS"] = "-j %d" % cpu_count
 
-def cmd(s):
+def cmd(s, capture=False):
     s = expandvars(s)
-    r = os.system(s)
+    if capture:
+        p = subprocess.Popen(s, shell=True, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+        output = p.communicate()[0]
+        r = p.returncode
+    else:
+        output = None
+        r = os.system(s)
     if r != 0:
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
+    return output
 
 def start_femhub(debug=False):
     if debug:
