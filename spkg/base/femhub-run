@@ -376,7 +376,7 @@ def get_dependencies(pkg):
             "py": ["setuptools"],
             "setuptools": ["python"],
             "fipy": ["pysparse", "setuptools"],
-            "libfemhub": ["python"],
+            "libfemhub": ["python", "matplotlib"],
             "libgcrypt": ["libgpg_error"],
             "opencdk": ["zlib", "libgcrypt"],
             "gnutls": ["libgcrypt", "opencdk"],
