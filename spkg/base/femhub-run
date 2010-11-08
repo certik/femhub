@@ -45,6 +45,9 @@ Only use this mode to install FEMhub.
     parser.add_option("-s", "--script",
             action="store", type="str", dest="script", metavar="SCRIPT",
             default=None, help="runs '/bin/bash SCRIPT' in a FEMhub shell")
+    parser.add_option("--python",
+            action="store", type="str", dest="python", metavar="SCRIPT",
+            default=None, help="runs 'python SCRIPT' in a FEMhub shell")
     parser.add_option("--unpack",
             action="store", type="str", dest="unpack", metavar="PACKAGE",
             default=None, help="unpacks the PACKAGE into the 'devel/' dir")
@@ -79,6 +82,9 @@ Only use this mode to install FEMhub.
     if options.script:
         setup_cpu(options.cpu_count)
         cmd("cd $CUR; /bin/bash " + options.script)
+        return
+    if options.python:
+        cmd("cd $CUR; /usr/bin/env python " + options.python)
         return
     if options.unpack:
         pkg = pkg_make_absolute(options.unpack)
