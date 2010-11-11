@@ -370,7 +370,7 @@ def get_dependencies(pkg):
             "blas": ["fortran", "lapack"],
             "numpy": ["python", "lapack", "blas"],
             "scipy": ["numpy"],
-            "matplotlib": ["freetype", "libpng", "python"],
+            "matplotlib": ["freetype", "libpng", "python", "numpy"],
             "hermes1d": ["cmake", "scipy", "cython", "matplotlib"],
             "hermes2d": ["cmake", "scipy", "judy", "cython", "matplotlib"],
             "vtk": ["mesa", "cmake"],
