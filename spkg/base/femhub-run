@@ -491,7 +491,7 @@ def get_standard_packages(just_names=False):
             "hermes1d-fb8163f",
             "hermes2d-ee3e3ab",
             "pysparse-1.1-6301cea",
-            "phaml-6932960",
+            "phaml-71974f0",
             "arpack-0ea3296",
             "fipy-2.1-51f1360",
             "libfemhub-eb97497",
