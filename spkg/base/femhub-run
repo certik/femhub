@@ -158,6 +158,7 @@ def create_package(package):
         "libfemhub": "git://github.com/hpfem/libfemhub.git",
         "onlinelab": "git://github.com/hpfem/femhub-online-lab.git",
         "phaml":     "git://github.com/hpfem/phaml.git",
+        "arpack":    "git://github.com/hpfem/arpack.git",
             }
     if package not in packages:
         raise Exception("Unknown package")
@@ -367,6 +368,7 @@ def get_dependencies(pkg):
             "cython": ["python"],
             "sympy": ["python"],
             "lapack": ["fortran"],
+            "arpack": ["fortran"],
             "blas": ["fortran", "lapack"],
             "numpy": ["python", "lapack", "blas"],
             "scipy": ["numpy"],
@@ -407,7 +409,7 @@ def get_dependencies(pkg):
                 ],
             "trilinos": ["python", "blas"],
             "proteus": ["numpy", "cython"],
-            "phaml": ["blas", "lapack", "cmake", "numpy"],
+            "phaml": ["blas", "lapack", "cmake", "numpy", "arpack"],
             "umfpack": ["blas"],
             }
     deps = []
@@ -490,6 +492,7 @@ def get_standard_packages(just_names=False):
             "hermes2d-ee3e3ab",
             "pysparse-1.1-6301cea",
             "phaml-6932960",
+            "arpack-0ea3296",
             "fipy-2.1-51f1360",
             "libfemhub-eb97497",
             "hdf5-1.6.9",
