@@ -155,10 +155,11 @@ def cmd(s, capture=False):
 
 def create_package(package):
     packages = {
-        "libfemhub": "git://github.com/hpfem/libfemhub.git",
-        "onlinelab": "git://github.com/hpfem/femhub-online-lab.git",
-        "phaml":     "git://github.com/hpfem/phaml.git",
-        "arpack":    "git://github.com/hpfem/arpack.git",
+        "libfemhub":      "git://github.com/hpfem/libfemhub.git",
+        "onlinelab":      "git://github.com/hpfem/femhub-online-lab.git",
+        "phaml":          "git://github.com/hpfem/phaml.git",
+        "arpack":         "git://github.com/hpfem/arpack.git",
+        "mesheditorflex": "git://github.com/hpfem/mesheditor-flex.git",
             }
     if package not in packages:
         raise Exception("Unknown package")
@@ -176,6 +177,9 @@ def create_package(package):
     commit = cmd("cd %s/%s; git rev-parse HEAD" % (tmp, dir_name),
             capture=True).strip()
     sha = commit[:7]
+    if os.path.exists("%s/%s/spkg-prepare" % (tmp, dir_name)):
+        print "spkg-prepare found, running it..."
+        cmd("cd %s/%s; sh spkg-prepare" % (tmp, dir_name))
     new_dir_name = "%s-%s" % (package, sha)
     pkg_filename = "%s.spkg" % (new_dir_name)
     cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
