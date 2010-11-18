@@ -22,74 +22,9 @@
 # 
 ##########################################################################
 
-
-SAVEDIR="`pwd`"
-
-if [ "$FEMHUB_ROOT" = "" ]; then
-    if [ -f femhub -a -d spkg ]; then
-       FEMHUB_ROOT="`pwd`"
-       export FEMHUB_ROOT
-    else
-       if [ -f ../../femhub -a -d ../../spkg ]; then
-           cd ../../
-           FEMHUB_ROOT="`pwd`"
-           export FEMHUB_ROOT
-       else
-           echo "You must set the FEMHUB_ROOT environment variable or"
-           echo "run this script from the FEMHUB_ROOT or "
-           echo "FEMHUB_ROOT/local/bin/ directory."
-        fi
-    fi
-else
-    if [ -f femhub -a -d spkg ]; then
-       if [ "$FEMHUB_ROOT" != "`pwd`" ]; then
-           echo "Warning: Attempted to overwrite FEMHUB_ROOT enviroment variable"             
-       fi
-    else
-       if [ -f ../../femhub -a -d ../../spkg ]; then
-           cd ../../
-           if [ "$FEMHUB_ROOT" != "`pwd`" ]; then
-              echo "Warning: Attempted to overwrite FEMHUB_ROOT enviroment variable"             
-           fi
-       else
-           echo "You must set the FEMHUB_ROOT environment variable or"
-           echo "run this script from the FEMHUB_ROOT or "
-           echo "FEMHUB_ROOT/local/bin/ directory."  
-       fi
-    fi  
-fi
-cd "$SAVEDIR"
-
 if [ "$FEMHUB_ROOT" = "" ]; then
     echo "FEMHUB_ROOT must be set"
     exit 1
-fi
-
-
-if [ 1 = 2 ]; then
-    echo "The following enviroment variables can be set by the user"
-    echo "AR          The archiver (e.g. ar, /usr/ccs/bin/ar or /usr/bin/ar)"
-    echo "AS          The assembler (e.g. as, /usr/ccs/bin/as or /usr/bin/as)"
-    echo "CC          The C compiler (e.g cc, /opt/SUNWspro/bin/cc or /usr/bin/gcc)"
-    echo "CFLAGS      Flag(s) for the C compiler (e.g.  -g -Wall -O2)"
-    echo "            (You are advised to a some optimisation flag(s), such as -O2 or -xO2 to CFLAGS)"
-    echo "CXX         The C++ compiler (e.g g++, /opt/SUNWspro/bin/CC or /usr/local/bin/g++)"
-    echo "CXXFLAGS    Flag(s) for the C++ compiler (e.g. -fast -fsimple=1 -x04)"
-    echo "LD          The linker (e.g. ld, /usr/ccs/bin/ld or /usr/bin/ld)"
-    echo "LDFLAGS     Linker flag(s) (e.g. -D token)"
-    echo "LN          Used to make links (e.g. ln, /usr/xpg4/bin/ln or /usr/bin/ln)"
-    echo "MAKE        The make program (e.g. make, /usr/bin/make or /usr/local/bin/gmake)"
-    echo "MAKEFLAGS   Flag(s) to make (e.g. -j4)."
-    echo "RANLIB      Archiver ranlib (e.g. ranlib, /usr/ccs/bin/ranlib etc)"
-    echo "SAGE64      Set to \"yes\" to build a 64-bit binary (Solaris SPARC or Solaris x86 only)"
-    echo "SHAREDFLAGS Flag(s) necessary for building a shared library (e.g. -fPIC or -xcode=pic32)"
-    echo "We attempt to set this to sensible values, but check below to"
-    echo "ensure they are OK. If you wish to override any then please use:"
-    echo "setenv NAME_OF_ENVIROMENT_VARIABLE value_of_enviroment_variable"
-    echo "(if you use tcsh, csh or a similar shell) or"
-    echo "NAME_OF_ENVIROMENT_VARIABLE value_of_enviroment_variable"
-    echo "export NAME_OF_ENVIROMENT_VARIABLE"
-    echo "if you use sh, bash or a similar shell"
 fi
 
 # Setting SAGE-related location environment variables.
@@ -106,12 +41,6 @@ SPKG_PACKAGES="$FEMHUB_ROOT/spkg" && export SPKG_PACKAGES
 SPKG_LOCAL="$FEMHUB_ROOT/local"   && export SPKG_LOCAL
 SPKG_DATA="$FEMHUB_ROOT/data"     && export SPKG_DATA
 SPKG_DOC="$FEMHUB_ROOT/devel/sage/doc" && export SPKG_DOC
-
-# We offer a toolchain option, so if $SAGE_LOCAL/toolchain/toolchain-env exists source it.
-# Since the user might do something crazy we do not do any checks, but hope for the best.
-if [ -f $SAGE_LOCAL/toolchain/toolchain-env ]; then
-  source $SAGE_LOCAL/toolchain/toolchain-env
-fi
 
 # Mac OS X-specific setup
 if [ `uname` = "Darwin" ]; then
@@ -292,22 +221,3 @@ export SHAREDFLAGS
 export UNAME
 export CC
 export CFLAGS
-
-if [ 1 = 2 ]; then
-echo "AR=$AR"
-echo "AS=$AS"
-echo "CC=$CC"
-echo "CFLAGS=$CFLAGS"
-echo "CXX=$CXX"
-echo "CXXFLAGS=$CXXFLAGS"
-echo "LD=$LD"
-echo "LDFLAGS=$LDFLAGS"
-echo "LN=$LN"
-echo "MAKE=$MAKE"
-echo "MAKEFLAGS=$MAKEFLAGS (MFLAGS will be exported the same too)"
-echo "RANLIB=$RANLIB"
-echo "SAGE64=$SAGE64"
-echo "SHAREDFLAGS=$SHAREDFLAGS"
-echo "If any of the above are wrong, or are not optimal, override"
-echo "them by setting the appropiate enviroment variable."
-fi
