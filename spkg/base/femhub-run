@@ -64,10 +64,10 @@ Only use this mode to install FEMhub.
     parser.add_option("--upload-package",
             action="store", type="str", dest="upload_package",
             metavar="PACKAGE", default=None,
-            help="upload 'PACKAGE.spkg' from the current directory to the server")
+            help="upload 'PACKAGE.spkg' from the current directory to the server (for FEMhub developers only)")
     parser.add_option("--upload",
             action="store_true", dest="upload",
-            default=False, help="Uploads the package immidiately after creating it")
+            default=False, help="Uploads the package immediately after creating it (for FEMhub developers only)")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -204,7 +204,7 @@ def create_package(package, upload=False):
         upload_package(pkg_filename)
 
 def upload_package(package):
-    cmd("scp %s 134.197.117.197:/var/www3/femhub.org/packages/stpack" % (package))
+    cmd("scp %s spilka.math.unr.edu:/var/www3/femhub.org/packages/femhub_st/" % (package))
     print "Package uploaded: %s" % (package)
 
 def start_femhub(debug=False):
