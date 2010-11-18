@@ -61,6 +61,13 @@ Only use this mode to install FEMhub.
             action="store", type="str", dest="create_package",
             metavar="PACKAGE", default=None,
             help="creates 'PACKAGE.spkg' in the current directory using the official git repository sources")
+    parser.add_option("--upload-package",
+            action="store", type="str", dest="upload_package",
+            metavar="PACKAGE", default=None,
+            help="upload 'PACKAGE.spkg' from the current directory to the server")
+    parser.add_option("--upload",
+            action="store_true", dest="upload",
+            default=False, help="Uploads the package immidiately after creating it")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -122,8 +129,12 @@ Only use this mode to install FEMhub.
         cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
     if options.create_package:
-        create_package(options.create_package)
+        create_package(options.create_package, upload=options.upload)
         return
+    if options.upload_package:
+        upload_package(options.upload_package)
+        return
+
     if systemwide_python:
         parser.print_help()
     else:
@@ -153,7 +164,7 @@ def cmd(s, capture=False):
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
     return output
 
-def create_package(package):
+def create_package(package, upload=False):
     packages = {
         "libfemhub":      "git://github.com/hpfem/libfemhub.git",
         "onlinelab":      "git://github.com/hpfem/femhub-online-lab.git",
@@ -187,6 +198,14 @@ def create_package(package):
     cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
     print
     print "Package created: %s" % (pkg_filename)
+
+    if upload:
+        print "Package uploading: %s" % (pkg_filename)
+        upload_package(pkg_filename)
+
+def upload_package(package):
+    cmd("scp %s 134.197.117.197:/var/www3/femhub.org/packages/stpack" % (package))
+    print "Package uploaded: %s" % (package)
 
 def start_femhub(debug=False):
     if debug:
