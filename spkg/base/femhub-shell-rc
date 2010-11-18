@@ -2,4 +2,5 @@
 # do "./femhub --shell", so that the prompt gets changed.
 
 . $HOME/.bashrc
+. $SPKG_LOCAL/bin/femhub-env
 PS1="FEMhub: "$PS1
