@@ -191,7 +191,8 @@ def create_package(package, upload=False):
     if os.path.exists("%s/%s/spkg-prepare" % (tmp, dir_name)):
         print "spkg-prepare found, running it..."
         cmd("cd %s/%s; sh spkg-prepare" % (tmp, dir_name))
-    new_dir_name = "%s-%s" % (package, sha)
+    datetimestr = cmd("date +%Y%m%d%M%S", capture=True).strip()
+    new_dir_name = "%s-%s_%s" % (package, datetimestr, sha)
     pkg_filename = "%s.spkg" % (new_dir_name)
     cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
     cmd("cd %s; tar cjf %s %s" % (tmp, pkg_filename, new_dir_name))
