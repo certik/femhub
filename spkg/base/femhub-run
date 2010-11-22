@@ -71,6 +71,9 @@ Only use this mode to install FEMhub.
     parser.add_option("--upload",
             action="store_true", dest="upload",
             default=False, help="Uploads the package immediately after creating it (for FEMhub developers only)")
+    parser.add_option("--release-binary",
+            action="store_true", dest="release_binary",
+            default=False, help="Creates a binary release using the current state (for FEMhub developers only)")
     options, args = parser.parse_args()
     if options.download:
         download_packages()
@@ -136,6 +139,9 @@ Only use this mode to install FEMhub.
         return
     if options.upload_package:
         upload_package(options.upload_package)
+        return
+    if options.release_binary:
+        release_binary()
         return
 
     if systemwide_python:
@@ -210,6 +216,22 @@ def create_package(package, upload=False):
 def upload_package(package):
     cmd("scp %s spilka.math.unr.edu:/var/www3/femhub.org/packages/femhub_st/" % (package))
     print "Package uploaded: %s" % (package)
+
+def release_binary():
+    tmp = tempfile.mkdtemp()
+    femhub_dir = "femhub-%s" % version
+    print "Using temporary directory:", tmp
+    cur = cmd("echo $CUR", capture=True).strip()
+    cmd("mkdir %s/%s" % (tmp, femhub_dir))
+    print "Copying femhub into the temporary directory..."
+    cmd("cp -r * %s/%s/" % (tmp, femhub_dir))
+    print "Removing source SPKG packages"
+    cmd("rm -f %s/%s/spkg/standard/*" % (tmp, femhub_dir))
+    print "Creating a binary tarball"
+    cmd("cd %s; tar czf %s.tar.gz %s" % (tmp, femhub_dir, femhub_dir))
+    cmd("cp %s/%s.tar.gz ." % (tmp, femhub_dir))
+    print
+    print "Package created: %s.tar.gz" % (femhub_dir)
 
 def start_femhub(debug=False):
     if debug:
