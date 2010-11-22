@@ -8,6 +8,9 @@ from optparse import OptionParser
 import tempfile
 import subprocess
 
+version = "0.9.10.beta1"
+release_date = "November 21, 2010"
+
 class CmdException(Exception):
     pass
 
@@ -217,27 +220,21 @@ def start_femhub(debug=False):
         raise Exception("You need to install 'ipython'")
     if debug:
         print "  Done."
-    banner = """\
-----------------------------------------------------------------------
-| FEMhub Version 0.9.10.beta1, Release Date: 2010-Oct-11             |
-"""
-    try:
-        #import sagenb
-        namespace = "yes"
-        banner += "| Type lab() for the GUI.                                            |\n"
-    except ImportError:
-        banner += "| Install the 'femhub-lab' package to enable the lab() command.      |\n"
-        namespace = {}
-    banner += "----------------------------------------------------------------------\n"
-    if namespace == "yes":
-        def lab_wrapper(old = False, auth=True, *args, **kwargs):
-            if old:
-                from sagenb.notebook.notebook_object import lab
-                lab(*args, **kwargs)
-            else:
-                run_lab(auth=auth)
+    banner_length = 70
+    l = "| FEMhub Version %s, Release Date: %s" % (version, release_date)
+    l += " " * (banner_length - len(l) - 1) + "|"
+    banner = "-" * banner_length + "\n" + l + "\n"
+    l = "| Type lab() for the GUI."
+    l += " " * (banner_length - len(l) - 1) + "|"
+    banner += l + "\n" + "-" * banner_length + "\n"
 
-        namespace = {"lab": lab_wrapper}
+    def lab_wrapper(old = False, auth=True, *args, **kwargs):
+        if old:
+            from sagenb.notebook.notebook_object import lab
+            lab(*args, **kwargs)
+        else:
+            run_lab(auth=auth)
+    namespace = {"lab": lab_wrapper}
 
     os.environ["IPYTHONDIR"] = expandvars("$DOT_SAGE/ipython")
     os.environ["IPYTHONRC"] = "ipythonrc"
