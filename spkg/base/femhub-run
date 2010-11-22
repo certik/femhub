@@ -419,7 +419,7 @@ def get_dependencies(pkg):
             "hermes1d": ["cmake", "scipy", "cython", "matplotlib"],
             "hermes2d": ["cmake", "scipy", "judy", "cython", "matplotlib"],
             "vtk": ["mesa", "cmake"],
-            "mayavi": ["python", "configobj", "vtk"],
+            "mayavi": ["python", "configobj", "vtk", "setuptools"],
             "pyparsing": ["python"],
             "pysparse": ["python"],
             "swig": ["python"],
