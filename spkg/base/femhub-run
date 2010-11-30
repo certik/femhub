@@ -440,14 +440,6 @@ def get_dependencies(pkg):
             "opencdk": ["zlib", "libgcrypt"],
             "gnutls": ["libgcrypt", "opencdk"],
             "python_gnutls": ["gnutls"],
-            # TODO: fix "-" in package names (look at how Debian does it)
-            # This is actually a femhub-lab:
-            "femhub": ["pexpect", "twisted", "setuptools",
-                "jinja", "libgpg_error", "libgcrypt", "python_gnutls",
-                "docutils", "pygments",
-                "jinja2",
-                "sphinx",
-                ],
             "python_django": ["python",],
             "simplejson": ["python", "setuptools"],
             "sqlite": ["python",],
@@ -513,7 +505,6 @@ def get_standard_packages(just_names=False):
             "libgcrypt-1.4.3.p2",
             "gnutls-2.2.1.p3",
 
-            "femhub-lab-2ffaa67",
             "pyinotify-0.7.2",
             "python_argparse-1.1",
             "python_lockfile-0.8",
