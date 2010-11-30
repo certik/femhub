@@ -182,6 +182,7 @@ def create_package(package, upload=False):
         "arpack":         "git://github.com/hpfem/arpack.git",
         "mesheditorflex": "git://github.com/hpfem/mesheditor-flex.git",
         "cython":         "git://github.com/hpfem/cython.git",
+        "hermes2d":       "git://github.com/hpfem/hermes.git",
             }
     if package not in packages:
         raise Exception("Unknown package")
@@ -205,6 +206,9 @@ def create_package(package, upload=False):
     datetimestr = time.strftime("%Y%m%d%M%S")
     new_dir_name = "%s-%s_%s" % (package, datetimestr, sha)
     pkg_filename = "%s.spkg" % (new_dir_name)
+    if package == "hermes2d":
+        # the hermes2d package is special, as we need to do "cd hermes2d":
+        dir_name += "/hermes2d"
     cmd("cd %s; mv %s %s" % (tmp, dir_name, new_dir_name))
     cmd("cd %s; tar cjf %s %s" % (tmp, pkg_filename, new_dir_name))
     cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
