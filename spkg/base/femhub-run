@@ -536,7 +536,7 @@ def get_standard_packages(just_names=False):
             "phaml-201011190816_71974f0",
             "arpack-201011191133_0ea3296",
             "fipy-2.1-51f1360",
-            "libfemhub-201011190730_16226bd",
+            "libfemhub-201011294106_6e289eb",
             "hdf5-1.6.9",
             "h5py-1.2.1.p1",
             "pytables-2.1",
