@@ -95,7 +95,10 @@ Only use this mode to install FEMhub.
         return
     if options.script:
         setup_cpu(options.cpu_count)
-        cmd("cd $CUR; /bin/bash " + options.script)
+        try: 
+            cmd("cd $CUR; /bin/bash " + options.script)
+        except CmdException: 
+            print "FEMhub script exited with an error."
         return
     if options.python:
         cmd("cd $CUR; /usr/bin/env python " + options.python)
