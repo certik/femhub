@@ -225,7 +225,7 @@ def create_package(package, upload=False):
         upload_package(pkg_filename)
 
 def upload_package(package):
-    cmd("scp %s spilka.math.unr.edu:/var/www3/femhub.org/packages/femhub_st/" % (package))
+    cmd("cd $CUR; scp %s spilka.math.unr.edu:/var/www3/femhub.org/packages/femhub_st/" % (package))
     print "Package uploaded: %s" % (package)
 
 def release_binary():
