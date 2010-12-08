@@ -69,9 +69,6 @@ Only use this mode to install FEMhub.
             action="store", type="str", dest="upload_package",
             metavar="PACKAGE", default=None,
             help="upload 'PACKAGE.spkg' from the current directory to the server (for FEMhub developers only)")
-    parser.add_option("--upload",
-            action="store_true", dest="upload",
-            default=False, help="Uploads the package immediately after creating it (for FEMhub developers only)")
     parser.add_option("--release-binary",
             action="store_true", dest="release_binary",
             default=False, help="Creates a binary release using the current state (for FEMhub developers only)")
@@ -139,7 +136,7 @@ Only use this mode to install FEMhub.
         cmd("rm -rf $FEMHUB_ROOT/spkg/build/%(dir)s" % {"dir": dir})
         return
     if options.create_package:
-        create_package(options.create_package, upload=options.upload)
+        create_package(options.create_package)
         return
     if options.upload_package:
         upload_package(options.upload_package)
@@ -177,7 +174,7 @@ def cmd(s, capture=False):
         raise CmdException("Command '%s' failed with err=%d." % (s, r))
     return output
 
-def create_package(package, upload=False):
+def create_package(package):
     packages = {
         "libfemhub":      "git://github.com/hpfem/libfemhub.git",
         "onlinelab":      "git://github.com/hpfem/femhub-online-lab.git",
@@ -219,10 +216,6 @@ def create_package(package, upload=False):
     cmd("cp %s/%s %s/%s" % (tmp, pkg_filename, cur, pkg_filename))
     print
     print "Package created: %s" % (pkg_filename)
-
-    if upload:
-        print "Package uploading: %s" % (pkg_filename)
-        upload_package(pkg_filename)
 
 def upload_package(package):
     cmd("cd $CUR; scp %s spilka.math.unr.edu:/var/www3/femhub.org/packages/femhub_st/" % (package))
