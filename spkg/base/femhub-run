@@ -543,7 +543,7 @@ def get_standard_packages(just_names=False):
             "simplejson-2.1.1",
             "sqlite-3.7.2",
             "pysqlite-2.6.0",
-            "mesheditorflex-201011191109_a1f17ac",
+            "mesheditorflex-201012081048_d6f12f0",
             "curl-7.21.1",
             "python_pycurl-7.19.0",
             "umfpack-5.5.0",
