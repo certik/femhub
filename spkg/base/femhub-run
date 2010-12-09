@@ -479,7 +479,7 @@ def get_standard_packages(just_names=False):
             "termcap-1.3.1.p1",
             "zlib-1.2.5",
             "python-2.6.4.p9",
-            "cython-201011242608_32ca153",
+            "cython-201012094746_32ca153",
             "twisted-9.0.p2",
             "jinja-1.2.p0",
             "jinja2-2.1.1.p0",
