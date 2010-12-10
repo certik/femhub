@@ -372,7 +372,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     for script in femhub_scripts:
         cmd("cp $FEMHUB_ROOT/spkg/base/%s $FEMHUB_ROOT/local/bin/" % script)
     try:
-        cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
+        install_spkg_package(pkg)
     except CmdException:
         #print "Package %s failed to install" % pkg
         raise PackageBuildFailed()
@@ -734,6 +734,22 @@ def command_update():
 def command_list():
     print "List of installed packages:"
     cmd("ls spkg/installed")
+
+def install_spkg_package(absolute_path):
+    name, version = extract_name_version_from_path(absolute_path)
+    pkg_dir = "%s-%s" % (name, version)
+    cmd("cd spkg/build; rm -rf %s" % pkg_dir)
+    try:
+        cmd("cd spkg/build; tar xjf %s" % absolute_path, capture=True)
+    except CmdException:
+        try:
+            cmd("cd spkg/build; tar xf %s" % absolute_path, capture=True)
+        except CmdException:
+            print
+            print "Failed to unpack the spkg package using bzip2 and tar."
+            sys.exit(1)
+    cmd("cd spkg/build/%s; chmod +x spkg-install" % (pkg_dir))
+    cmd("cd spkg/build/%s; ./spkg-install" % (pkg_dir))
 
 
 if __name__ == "__main__":
