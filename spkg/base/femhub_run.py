@@ -717,6 +717,17 @@ def extract_name_version_from_path(p):
     directory, filename = os.path.split(path)
     return extract_name_version(filename)
 
+def command_update():
+    # This doesn't work, because of the following error:
+    # git-remote-https: relocation error: /usr/lib/libldap_r-2.4.so.2: symbol gnutls_certificate_get_x509_cas, version GNUTLS_1_4 not defined in file libgnutls.so.26 with link time reference
+    # The only solution is to ship our own git version, which we will do in the
+    # future, but for now we just keep this option commented out
+    #print "Updating the git repository"
+    #cmd("git pull https://github.com/hpfem/femhub.git master")
+
+    download_packages()
+    print "Done."
+
 
 if __name__ == "__main__":
     main()
