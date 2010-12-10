@@ -80,6 +80,9 @@ def test2():
             "curl-7.21.1": "7.21.1",
             "python_pycurl-7.19.0": "7.19.0",
             "umfpack-5.5.0": "5.5.0",
+
+            "onlinelab-201012090744_c4e10e9": "201012090744_c4e10e9",
+            "phaml-201011190816_71974f0": "201011190816_71974f0",
             }
     for t in tests:
         assert extract_version(t) == tests[t]
