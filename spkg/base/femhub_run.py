@@ -750,6 +750,9 @@ def install_spkg_package(absolute_path):
             sys.exit(1)
     cmd("cd spkg/build/%s; chmod +x spkg-install" % (pkg_dir))
     cmd("cd spkg/build/%s; ./spkg-install" % (pkg_dir))
+    print "Making FEMhub/Python scripts relocatable..."
+    cmd("cd $SPKG_LOCAL/bin ./femhub-make_relative")
+    print "Done installing the package."
 
 
 if __name__ == "__main__":
