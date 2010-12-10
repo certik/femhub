@@ -157,20 +157,7 @@ fi
 if [ ! -f "$PKG_SRC" ]; then
 
     echo "$0: file $PKG_NAME does not exist" 
-    echo "Attempting to download it."
-    CUR=`pwd`
-    cd "$SAGE_PACKAGES"
-    if [ ! -d optional ]; then
-        $MKDIR optional
-    fi
-    cd optional
-    sage-download_package "$1"
-    if [ ! -f "$PKG_NAME.spkg" ]; then 
-	echo "FEMhub: Failed to download package $PKG_NAME from $SAGE_SERVER"
 	exit 1
-    fi
-    PKG_SRC="`pwd`/$PKG_NAME.spkg"
-    cd "$CUR"
 fi
 
 # * The -i option below to ignore checksum errors, since 
