@@ -87,7 +87,11 @@ Only use this mode to install FEMhub.
     elif len(args) == 2:
         arg1, arg2 = args
         if arg1 == "install":
-            install_package(arg2)
+            try:
+                install_package(arg2, cpu_count=options.cpu_count,
+                        force_install=options.force)
+            except PackageBuildFailed:
+                pass
             return
         print "Unknown command"
         sys.exit(1)
@@ -96,6 +100,8 @@ Only use this mode to install FEMhub.
     else:
         print "Too many arguments"
         sys.exit(1)
+
+
     if options.download:
         download_packages()
         return
