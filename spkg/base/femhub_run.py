@@ -738,6 +738,7 @@ def command_list():
 def install_spkg_package(absolute_path):
     name, version = extract_name_version_from_path(absolute_path)
     pkg_dir = "%s-%s" % (name, version)
+    cmd("mkdir -p spkg/build")
     cmd("cd spkg/build; rm -rf %s" % pkg_dir)
     try:
         cmd("cd spkg/build; tar xjf %s" % absolute_path, capture=True)
