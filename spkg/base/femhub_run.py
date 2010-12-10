@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import sys
 from time import sleep
 from glob import glob
 from os.path import expandvars
@@ -16,6 +17,9 @@ class CmdException(Exception):
     pass
 
 class PackageBuildFailed(Exception):
+    pass
+
+class PackageNotFound(Exception):
     pass
 
 def main():
@@ -92,9 +96,9 @@ Only use this mode to install FEMhub.
         return
     if options.script:
         setup_cpu(options.cpu_count)
-        try: 
+        try:
             cmd("cd $CUR; /bin/bash " + options.script)
-        except CmdException: 
+        except CmdException:
             print "FEMhub script exited with an error."
         return
     if options.python:
@@ -316,7 +320,11 @@ def install_package(pkg, install_dependencies=True, force_install=False,
         pkg = os.path.join(tmpdir,pkg_name[1])
     else:
         remote = False
-        pkg = pkg_make_absolute(pkg)
+        try:
+            pkg = pkg_make_absolute(pkg)
+        except PackageNotFound, p:
+            print p
+            sys.exit()
 
     if is_installed(pkg):
         if not force_install:
@@ -370,33 +378,28 @@ def pkg_make_absolute(pkg):
 
     candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/*.spkg"))
     if len(candidates) == 0:
-        raise Exception("Package '%s' not found" % pkg)
+        raise PackageNotFound("Package '%s' not found" % pkg)
     cands = []
     for p in candidates:
-        path, ext = os.path.splitext(p)
-        assert ext == ".spkg"
-        directory, filename = os.path.split(path)
-        name, version = extract_name_version(filename)
+        name, version = extract_name_version_from_path(p)
         if name == pkg:
             return p
         if pkg in name:
             cands.append(p)
-    if len(cands) == 1:
+    if len(cands) == 0:
+        raise PackageNotFound("Package '%s' not found" % pkg)
+    elif len(cands) == 1:
         return cands[0]
 
     print "Too many candidates:"
     print "    " + "\n    ".join(cands)
 
-    raise Exception("Ambiguous package name.")
+    raise PackageNotFound("Ambiguous package name.")
 
 def pkg_make_relative(pkg):
-    # TODO: look at this part:
     pkg = pkg_make_absolute(pkg)
-    # This is quite robust:
-    pkg_with_version = pkg[pkg.rfind("/")+1:pkg.rfind(".spkg")]
-    # This might be a bit fragile:
-    pkg_name = pkg_with_version[:pkg_with_version.find("-")]
-    return pkg_name
+    name, version = extract_name_version_from_path(pkg)
+    return name
 
 def make_unique(l):
     m = []
@@ -673,6 +676,22 @@ def extract_name_version(package_name):
     version = extract_version(package_name)
     name = package_name[:-len(version)-1]
     return name, version
+
+def extract_name_version_from_path(p):
+    """
+    Extracts the name and the version from the full path.
+
+    Example:
+
+    >> extract_name_version_from_path("/home/bla/jinja-2.5.spkg")
+    ('jinja', '2.5')
+
+    """
+    path, ext = os.path.splitext(p)
+    assert ext == ".spkg"
+    directory, filename = os.path.split(path)
+    return extract_name_version(filename)
+
 
 if __name__ == "__main__":
     main()
