@@ -77,6 +77,25 @@ Only use this mode to install FEMhub.
             action="store_true", dest="release_binary",
             default=False, help="Creates a binary release using the current state (for FEMhub developers only)")
     options, args = parser.parse_args()
+    if len(args) == 1:
+        arg, = args
+        if arg == "update":
+            command_update()
+            return
+        print "Unknown command"
+        sys.exit(1)
+    elif len(args) == 2:
+        arg1, arg2 = args
+        if arg1 == "install":
+            install_package(arg2)
+            return
+        print "Unknown command"
+        sys.exit(1)
+    elif len(args) == 0:
+        pass
+    else:
+        print "Too many arguments"
+        sys.exit(1)
     if options.download:
         download_packages()
         return
@@ -324,7 +343,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
             pkg = pkg_make_absolute(pkg)
         except PackageNotFound, p:
             print p
-            sys.exit()
+            sys.exit(1)
 
     if is_installed(pkg):
         if not force_install:
