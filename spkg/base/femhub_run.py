@@ -82,6 +82,9 @@ Only use this mode to install FEMhub.
         if arg == "update":
             command_update()
             return
+        elif arg == "list":
+            command_list()
+            return
         print "Unknown command"
         sys.exit(1)
     elif len(args) == 2:
@@ -727,6 +730,10 @@ def command_update():
 
     download_packages()
     print "Done."
+
+def command_list():
+    print "List of installed packages:"
+    cmd("ls spkg/installed")
 
 
 if __name__ == "__main__":
