@@ -393,16 +393,15 @@ def is_installed(pkg):
         raise Exception("Internal error: got more candidates in is_installed")
 
 def pkg_make_absolute(pkg):
-    if os.path.exists(pkg):
-        return os.path.abspath(pkg)
+    if pkg.endswith(".spkg"):
+        if os.path.exists(pkg):
+            return os.path.abspath(pkg)
 
-    pkg_current = expandvars("$CUR/%s" % pkg)
-    if os.path.exists(pkg_current):
-        return pkg_current
+        pkg_current = expandvars("$CUR/%s" % pkg)
+        if os.path.exists(pkg_current):
+            return pkg_current
 
-    pkg_default = "$FEMHUB_ROOT/spkg/standard"
-    if os.path.exists(pkg_default):
-        return pkg_default
+        raise PackageNotFound("Package '%s' not found in the current directory" % pkg)
 
     candidates = glob(expandvars("$FEMHUB_ROOT/spkg/standard/*.spkg"))
     if len(candidates) == 0:
