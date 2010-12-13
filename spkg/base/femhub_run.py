@@ -76,6 +76,9 @@ Only use this mode to install FEMhub.
     parser.add_option("--release-binary",
             action="store_true", dest="release_binary",
             default=False, help="Creates a binary release using the current state (for FEMhub developers only)")
+    parser.add_option("--lab",
+            action="store_true", dest="run_lab",
+            default=False, help="Runs lab(auth=False)")
     options, args = parser.parse_args()
     if len(args) == 1:
         arg, = args
@@ -175,6 +178,9 @@ Only use this mode to install FEMhub.
         return
     if options.release_binary:
         release_binary()
+        return
+    if options.run_lab:
+        run_lab(auth=False)
         return
 
     if systemwide_python:
