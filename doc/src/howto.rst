@@ -63,20 +63,25 @@ How to create a new release:
 ::
   \$ git clone http://git.hpfem.org/git/femhub.git
   \$ cd femhub
-  \$ cd spkg/standard/
-  \$ ./download_packages
-  \$ vim sage_scripts/sage-banner  # edit the version & date in the banner
+  \$ ./femhub -d
+  \$ vim spkg/base/femhub-run  # edit the version & date in the banner
   \$ git ci -a -m "FEMhub version bumped to 0.9.9"
   \$ git tag femhub-0.9.9
-  \$ git push --tags spilka:/home/git/repos/femhub.git master
-  \$ cd ../../..
+  \$ git push --tags remote_repo:/home/git/repos/femhub.git master  #replace
+  "remote_repo" with remote repository where you want to push
+  \$ cd ..
   \$ cp -a femhub femhub-0.9.9
-  \$ tar cf femhub-0.9.1.tar femhub-0.9.9
+  \$ tar cf femhub-0.9.9.tar femhub-0.9.9
 
 
 Binary Distribution
 -------------------
-Unpack the tarball of source code, and rename it (for example, to femhub-0.9.9-ubuntu64 or any platform for which you would like to release the binary). Then build it on that corresponding platform following the instructions above. Immidiately after the build is complete create .tar.gz of that directory. This is the binary version of FEMhub for the particular platform.
+Unpack the tarball of source code, and rename it (for example, to
+**femhub-0.9.9-ubuntu64** or any platform for which you would like to release
+the binary). Then build it on that corresponding platform following the
+instructions above.
+Immediately after the build is complete create **.tar.gz** of that directory.
+This is the binary version of FEMhub for the particular platform.
 
 
 Windows

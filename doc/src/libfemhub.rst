@@ -14,6 +14,6 @@ To develop the libfemhub package you can clone it:
 After you create patches or make required changes you can apply these changes by following these steps:
 ::
   \$ cd libfemhub/
-  \$ path_to_femhub/femhub -sh # this launches FEMhub shell 
+  \$ path_to_femhub/femhub -shell # this launches FEMhub shell
   \$ bash spkg-install
    CTRL+D # exits this shell after the previous command completes

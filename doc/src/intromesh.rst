@@ -2,8 +2,12 @@
 Mesh Generation in Web Browser
 ==============================
 
-This is a documentation for online Finite Element MeshEditor for `FEMhub <http://femhub.org>`_.
+This is a documentation for online Finite Element Mesh Editor for `FEMhub <http://femhub.org>`_.
 It is an ongoing project of hp-FEM group at University of Nevada, Reno. This work is available under the GPL license (Version 2, 1991).
+
+**Note:** Following instructions are for the **old version** of the Online Lab. To read the
+instructions for the new version of the Online Lab please `click here
+<http://hpfem.org/mesheditor-flex/doc>`_.
 
 Domain Editor Based on JavaScript
 ----------------------------------

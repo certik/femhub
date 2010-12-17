@@ -1,7 +1,7 @@
 Download, Install and Run FEMhub
 ================================
-You can run download and install FEMhub easily on your local desktop. 
-Please follow the instructions below. If you do not want to download or 
+You can run download and install FEMhub easily on your local desktop.
+Please follow the instructions below. If you do not want to download or
 install anything you can use our `FEMhub Online Numerical Methods Laboratory <http://lab.femhub.org/>`_.
 
 Binary
@@ -10,19 +10,27 @@ Binary
 You can view a list of the binaries of all versions `here <http://femhub.org/pub/>`_. From there you can download the
 version you want.
 
-If you downloaded a binary, you do not need to do anything, just extract it and you are reday to go. Follow
-the instructions on running FEMhub below. 
+If you downloaded a binary, you do not need to do anything, just extract it and
+you are reday to go. For example, in ubuntu machine you will do the following:
+::
+    \$ wget http://femhub.org/pub/femhub-0.9.10.beta2-ubuntu64.tar.gz
+    \$ tar xzf femhub-0.9.10.beta2-ubuntu64.tar.gz
+
+Then follow the instructions on running FEMhub below.
 
 Building from Sources
 ---------------------
-You can get the tarball of sources here `here <http://femhub.org/pub/>`_. The most recent stable version is femhub-0.9.9. Please follow the following instructions to build from sources for different operating systems.
+You can get the tarball of sources `here <http://femhub.org/pub/>`_. The most
+recent stable version is femhub-0.9.9 but you can try our latest beta version
+which contains the new version of the online lab.
+Please follow the instructions below to build from sources for different operating systems.
 
 Linux Distributions
 ~~~~~~~~~~~~~~~~~~~
 To download the sources you can use the following command in Ubuntu Linux:
 ::
 
-  \$ wget http://femhub.org/pub/femhub-0.9.9.tar   
+  \$ wget http://femhub.org/pub/femhub-0.9.10.beta1.tar
 
 After you download the sources, please read below on how to build FEMhub and work around common issues:
 
@@ -37,17 +45,13 @@ For example in Ubuntu Linux you can do
 
 2. Extract the tarball:
 ::
-      \$ tar xf femhub-0.9.9-*.tar
+
+  \$ tar xf femhub-0.9.10.beta1.tar
 
 3. cd into the  femhub directory and type make:
 ::
-      \$ cd femhub-0.9.9
+      \$ cd femhub-0.9.10.beta1
       \$ make
-
-You can take advantage of several cores on your computer by executing
-::
-      \$ export MAKE="make -j9"
-before typing make to compile in parallel on 9 cores.
 
 Note: for installing mesa (and vtk too), you need the X11 header files
 currently, so you also need to do::
@@ -71,26 +75,26 @@ WARNING: If "gcc -v" outputs 4.0.0, you  *must* upgrade XCode (free from Apple),
 2. Extract the tarball:
 ::
 
-  \$ tar -xf femhub-0.9.9-*.tar
+  \$ tar xf femhub-0.9.9-*.tar
 
 3. cd into the femhub directory and type make:
 ::
   \$ cd femhub-0.9.9
   \$ make
- 
+
 
 Microsoft Windows
 ~~~~~~~~~~~~~~~~~
 
-1. Make sure you have the dependencies and 2GB free disk space. 
+Make sure you have the dependencies and 2GB free disk space.
 
 Download and install the Linux emulator Cygwin from `here <http://www.cygwin.com/>`_ (the small icon in the top-right corner). While running setup.exe, you need to install
 ::
   cmake, gcc4, gfortran, git, gitk, libX11-devel, libXext-devel,
-  libXt-devel, libXt, libXext, make, m4, openssl-devel, perl, 
+  libXt-devel, libXt, libXext, make, m4, openssl-devel, perl,
   python, wget, xextproto.
 
-This is a bit tedious but you have to survive it. We would like to create one package containing all of those, to facilitate the download - any help is welcome. For some packages, there will be more choices - follow the magical word GNU. Then download, unpack, and build FEMhub as in Linux: 
+This is a bit tedious but you have to survive it. We would like to create one package containing all of those, to facilitate the download - any help is welcome. For some packages, there will be more choices - follow the magical word GNU. Then download, unpack, and build FEMhub as in Linux:
 ::
   \$ wget http://femhub.org/pub/femhub-0.9.9.tar
   \$ tar -xf femhub-0.9.9.tar
@@ -100,7 +104,7 @@ This is a bit tedious but you have to survive it. We would like to create one pa
 
 Other Operating Systems
 ~~~~~~~~~~~~~~~~~~~~~~~
-You may try building in other operating systems and please let us know how it goes. 
+You may try building in other operating systems and please let us know how it goes.
 NOTE: On some operating systems it might be necessary to install
 gas/as, gld/ld, gnm/nm, but on most these are automatically
 installed when you install the programs listed above.  Only OS X
@@ -115,12 +119,6 @@ After the building process starts, wait between 37 minutes to 1.5 hour depending
 If you encounter problems, let us know through the FEMhub mailing list: http://groups.google.com/group/femhub
 
 If you want, you can also download a binary from `here <http://femhub.org/pub/>`_, however, if it doesn't work for you, compile from source, that should always work.
-
-NOTE:  On Linux if you get this error message:
-::
-  " restore segment prot after reloc: Permission denied "
-the problem is probably related to SE Linux: http://www.ittvis.com/services/techtip.asp?ttid=3092
-
 
 Git Repository
 --------------
@@ -149,8 +147,7 @@ from the command line, and type lab() after that.
     ----------------------------------------------------------------------
     In [1]: lab()
 
-and a browser will start with the web notebook. If the browser does not 
-start automatically, just type this in your browser: http://localhost:8000/
+Then point your browser to http://localhost:8000/
 
 .. image:: img/femhub_lab.png
    :align: center
