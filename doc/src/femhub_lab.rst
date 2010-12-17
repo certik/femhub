@@ -1,120 +1,111 @@
 How to Use FEMhub Online Lab
 ============================
-FEMhub online lab can be used on your local machine, after you install the FEMhub package. Alternatively, if you do not want to download and install anything you can use FEMhub online lab hosted in the `server of hp-FEM group at University of Nevada, Reno <http://lab.femhub.org/>`_.
+FEMhub online lab can be used on your local machine, after you install the
+FEMhub package. Alternatively, if you do not want to download and install
+anything you can use FEMhub online lab hosted in the `server of hp-FEM group at
+University of Nevada, Reno <http://lab.femhub.org/>`_ (UNR).
 
-FEMhub Online Lab in the Server at UNR 
+FEMhub Online Lab in the Server at UNR
 ---------------------------------------------------------------
 If you want to use FEMhub online lab hosted at the server of hp-FEM group, University of Nevada Reno,
 please follow the follwing instructions:
 
-Step 1: `Sign up <http://lab.femhub.org/register>`_ for a new FEMhub online lab account
-This is automatic and fast. Report any problems to femhub@googlegroups.com.
+Step 1: To sign up for a new account go to the `Online Lab
+<http://lab.femhub.org/>`_ main page, and click **"Create account"** button at the
+bottom of the login window.
+This is automatic and fast. Report any problems to **femhub@googlegroups.com**.
 
-Step 2: Log into the `online lab <http://lab.femhub.org/>`_. Click on "published worksheets". Then click on
-any link starting with "Num Methods", the simplest one being "Num Methods:
-Taylor Polynomial".
+Step 2: Log into the `online lab <http://lab.femhub.org/>`_. Click the
+**"Browser"** icon. After the browser opens, click **"Fork Worksheet"** and
+then after selecting any published worksheet just click **Fork** button.
 
-Step 3: Click on "Edit a Copy" in the upper left corner and wait for the
-browser response. Scroll down below the first input window and click
-"Evaluate"(the "Evaluate" link appears once you click into the input window).
-This will load the program. Then there are two input windows with two different
-ways to plot a Taylor polynomial that are self-explanatory.
+Step 3: Once the selected worksheet is forked, it will appear on the right part
+of the online lab "Browser". Click it and scroll down the first input box, and click
+**"Evaluate"** at the bottom of each input box. Then the output will appear below
+the input box.
 
-Step 4: There are multiple other worksheets whose title begins with "Num
-Methods:". Try them out and give us your feedback!
+Step 4: There are multiple other worksheets to begin with. Try them out and give us your feedback!
 
-Step 5: You can try out worksheets starting with "Hermes2D:" that allow you to
-solve finite element problems via the internet. Feel free to adjust the
+Step 5: You can try out worksheets related to Hermes, FiPy, PHAML etc. that allow you
+to solve finite element problems via the internet. Feel free to adjust the
 existing worksheets to fit your own needs. We are working on expanding the
 possibilities.
+
+To write your own code in Python and evaluate, click the **"New Worksheet"**
+button in the online lab "Browser".
 
 
 FEMhub Online Lab on Your Local Machine
 ---------------------------------------
 
 First download and Install FEMhub following the instructions elsewhere on the documentation.
-Then go to the femhub top directory, and just execute **./femhub** from the command line, 
+Then go to the femhub top directory, and just execute **./femhub** from the command line,
 and after that type **lab()**.
 ::
     $ ./femhub
-    ----------------------------------------------------------------------
-    | Femhub (FEM Distribution), Version 0.9.8, Release Date: 2009-11-20 |
-    | Type lab() for the GUI.                                            |
-    ----------------------------------------------------------------------
+    ----------------------------------------------------------------
+    | Femhub Version 0.9.10, Release Date: November 21, 2010       |
+    | Type lab() for the GUI.                                      |
+    ----------------------------------------------------------------
     In [1]: lab()
 
-and a browser will start with the online lab. If the browser does not 
-start automatically, just type this in your browser: http://localhost:8000/
+Then open your web browser at http://localhost:8000/
 
 .. image:: img/femhub_lab.png
    :align: center
-   :width: 600
-   :height: 400
+   :width: 800
+   :height: 600
    :alt: Screenshot of FEMhub Online Lab
 
-Click "New Worksheet" to open a new worksheet, and in the text input window of the worksheet copy-paste the following:
+After you create an account and log in you will see a desktop like interface
+with a few icons. Click **"Browser"** icon and then click **"New Worksheet"**
+to open a new worksheet. In the text input window of the worksheet copy-paste the following:
 ::
-  # This example shows how to load the mesh,
-  # perform local and global refinements, and 
-  # how to convert quads to triangles and vice 
-  # versa. 
+    # Import libraries.
+    from sympy import Symbol, lambdify, cos, sin, exp, log
+    from numpy import abs
 
-  from hermes2d import Mesh, MeshView
+    # Define symbolic variable.
+    x = Symbol("x")
 
-  mesh = Mesh()
+    # The Newton's method.
+    def newton(f, dfdx, x, x0, eps = 1e-8):
+	f = lambdify(x, f, modules=["math"])
+	dfdx = lambdify(x, dfdx, modules=["math"])
 
-  # Creates a mesh from a list of nodes, elements, boundary and nurbs.
-  mesh.create([
-          [0, -1],
-          [1, -1],
-          [-1, 0],
-          [0, 0],
-          [1, 0],
-          [-1, 1],
-          [0, 1],
-          [0.707106781, 0.707106781]
-      ], [
-          [0, 1, 4, 3, 0],
-          [3, 4, 7, 0],   
-          [3, 7, 6, 0],
-          [2, 3, 6, 5, 0]
-      ], [
-          [0, 1, 1],
-          [1, 4, 2],
-          [3, 0, 4],
-          [4, 7, 2],
-          [7, 6, 2],
-          [2, 3, 4],
-          [6, 5, 2],
-          [5, 2, 6]
-      ], [
-          [4, 7, 45],
-          [7, 6, 45],
-      ])
+	x_k = x0
 
+	counter = 0
+	while True:
+	    counter += 1
+	    x_k_plus_one = x_k - f(x_k) / dfdx(x_k)
+	    print "Next approximation:", x_k_plus_one
+	    # Stopping criterion 1:
+	    if abs(x_k_plus_one - x_k) < eps: break
+	    # Stopping criterion 2:
+	    #if abs(f(x_k_plus_one)) < eps: break
+	    x_k = x_k_plus_one
+	print "Steps taken:", counter
 
-  # Perform sample initial refinements:
-  mesh.refine_all_elements();          # Refines all elements.
-  mesh.refine_towards_vertex(3, 4);    # Refines mesh towards vertex #3 (4x).
-  mesh.refine_towards_boundary(2, 4);  # Refines all elements along boundary 2 (4x).
-  #mesh.refine_element(86, 0);          # Refines element #86 isotropically.
-  #mesh.refine_element(112, 0);         # Refines element #112 isotropically.
-  #mesh.refine_element(84, 2);          # Refines element #84 anisotropically.
-  #mesh.refine_element(114, 1);         # Refines element #114 anisotropically.
+    # Example 1 (standard behavior). Enter function f(x), its derivative f'(x), symbol x, initial guess x_0, and tolerance epsilon:
+    newton(cos(x) - x, -sin(x) - 1, x, 1, 1e-8)
 
-  # This is how one can convert triangles to quads 
-  # and vice versa (see hermes2d/src/mesh.cpp for 
-  # additional mesh refinement options):
-  #mesh.convert_triangles_to_quads()
-  #mesh.convert_quads_to_triangles()
+    # Example 2 (standard behavior):
+    newton(1/(1+x**2) - x, -1 / (1+x**2) / (1+x**2) * 2*x - 1, x, 5, 1e-8)
 
-  # Visualize the mesh
-  mesh.plot(filename="a.png")
+    # Example 3 (linear problems):
+    newton(x - 2, 1, x, 4, 1e-8)
 
-Click "Evaluate" button and you should see the following output:
+    # Example 4 (failure if initial guess is far from true solution):
+    newton(log(x), 1/x, x, 10, 1e-8)
 
-.. image:: img/meshonlab.png
+    # Example 5 (problems with flat functions)
+    newton(x**8., 8.*x**7., x, 1, 1e-8)
+
+Click "Evaluate" button and you will see the output below the input box.
+
+.. image:: img/femhub_lab/worksheet.png
    :align: center
-   :width: 662
-   :height: 742
-   :alt: Screenshot of running an example on FEMhub online lab
+   :width: 800
+   :height: 600
+   :alt: Screenshot of FEMhub Online Lab
