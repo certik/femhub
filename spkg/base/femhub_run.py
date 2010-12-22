@@ -548,7 +548,7 @@ def get_standard_packages(just_names=False):
             "python_daemon-1.5.5",
             "python_psutil-0.1.3",
             "python_tornado-f732f98",
-            "onlinelab-201012090744_c4e10e9",
+            "onlinelab-201012222506_c4b2eea",
 
             "py-1.3.1",
 
@@ -582,7 +582,7 @@ def get_standard_packages(just_names=False):
             "simplejson-2.1.1",
             "sqlite-3.7.2",
             "pysqlite-2.6.0",
-            "mesheditorflex-201012081048_d6f12f0",
+            "mesheditorflex-201012223301_aabc985",
             "curl-7.21.1",
             "python_pycurl-7.19.0",
             "umfpack-5.5.0",
