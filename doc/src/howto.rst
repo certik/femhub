@@ -48,7 +48,7 @@ Next, merge the branch of interest into your local branch:
 
 
 How to Compile FEMhub from Git
------------------------
+------------------------------
 To compile from git (as opposed to the tarball):
 ::
   \$ git clone http://git.hpfem.org/git/femhub.git
@@ -94,11 +94,16 @@ In cygwin, do
 and run femhub by double-cclicking on the `femhub-windows` (bat) file in the root directory. If "http" doesn't work on windows, clone from: git://github.com/certik/femhub.git
 
 
-Creating FEMhub Package
------------------------
-If you have developed new codes to add new functionality to FEMhub you might want to create a package instead of a regular patch.
+Create and Test FEMhub Packages
+-------------------------------
+If you have developed new codes to add new functionality to FEMhub you might
+want to create a package instead of a regular patch. In order to develop any
+FEMhub package, first install FEMhub as described `here <http://femhub.org/doc/src/install_run.html>`_.
 
-FEMhub packages are .tar files but they have the extension .spkg to avoid confusion. SPKG means "Software Package". You can see FEMhub standard packages if you go to FEMhub top directory and do 
+FEMhub packages are .tar files but they have the extension .spkg to avoid
+confusion. SPKG means "Software Package". You can see the list of current
+standard packages included in FEMhub `here <http://femhub.org/codes.php>`_.
+Alternatively, you can see FEMhub standard packages if you go to FEMhub top directory and do
 ::
   \$ cd spkg/standard
 
@@ -110,6 +115,11 @@ After you extract you will see a script file named ``spkg-install`` which contai
 
 The script ``spkg-install`` is run during installation of the FEMhub package. You can modify spkg-install according to your need.
 
+There are two ways to create FEMhub packages:
+(1) Canonical Way: This method works for any package in FEMhub
+(2) Using Git: This method works just for some packages
+
+**(1)Canonical Way**
 You may follow the following steps to create a new FEMhub spkg package:
 
 1. First create a directory like this:
@@ -162,17 +172,60 @@ A sample ``spkg-install`` script
 
 In the spkg-install script above you can see a variable SPKG_LOCAL which points to path/to/femhub/local.
 
+(2) **Using Git**
+
+First clone the appropriate repository:
+::
+   \$ git clone http://github.com/hpfem/PACKAGE_NAME.git
+   \$ cd PACKAGE_NAME/
+
+Currently, the packages developed via Git are:
+::
+    Online Lab (PACKAGE_NAME = "femhub-online-lab"), git repository.
+    Libfemhub (PACKAGE_NAME = "libfemhub"), git repository.
+    Hermes (PACKAGE_NAME = "hermes"), git repository.
+    Mesh Editor (PACKAGE_NAME = "mesheditor-flex"), git repository.
+
+Before editing any files, we recommend that you create a new branch by typing
+::
+    "git checkout -b new_branch_name".
+
+After finishing and committing your changes to
+the package that you are developing, update the package in your local FEMhub as
+follows:
+::
+    path_to_femhub/femhub --shell # this launches a FEMhub subshell
+    bash spkg-install
+    CTRL+D # exits the FEMhub subshell
+
+Now your local FEMhub contains the updated package and you are ready to test
+your changes. Change dir to the main FEMhub directory "path_to_femhub/", run
+FEMhub typing "./femhub", and run the GUI via the "lab()" command.
+
 Installing SPKG Package
 -----------------------
 You can install any spkg package in femhub directly by typing
 ::
-  \$ ./femhub -i path/to/spkg-package 
+  \$ ./femhub -i path/to/spkg-package
 
 You can install the package directly from the internet too. For example, to install FiPy package you can type
 ::
   \$ ./femhub -i http://femhub.org/stpack/http:/fipy-2.1-51f1360.spkg
 
 Then you can test whether your package worked correctly in FEMhub. You can test your patches without creating spkg tar by following the instructions below.
+
+You may receive the following message when tying to install any package:
+::
+    Package 'onlinelab' is already installed
+
+To force the installation of the new package, type the following:
+::
+    \$ ./femhub -i path/to/spkg-package -f
+
+or to install from the internet:
+::
+   ./femhub -i http://femhub.org/stpack/http:/fipy-2.1-51f1360.spk -f
+
 
 Testing Your Patches of FEMhub Package
 --------------------------------------

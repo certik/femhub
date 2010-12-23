@@ -4,29 +4,41 @@ You can run download and install FEMhub easily on your local desktop.
 Please follow the instructions below. If you do not want to download or
 install anything you can use our `FEMhub Online Numerical Methods Laboratory <http://lab.femhub.org/>`_.
 
-Binary
-------
+Instructions for Regular Users: Binary
+--------------------------------------
+Regular users or nondevelopers are encouraged to download the latest binary
+release for their platform. Developers should follow the instructions on
+building from sources below.
 
 You can view a list of the binaries of all versions `here <http://femhub.org/pub/>`_. From there you can download the
 version you want.
 
 If you downloaded a binary, you do not need to do anything, just extract it and
-you are reday to go. For example, in ubuntu machine you will do the following:
+you are ready to go. For example, in ubuntu machine you would do the following:
 ::
     \$ wget http://femhub.org/pub/femhub-0.9.10.beta2-ubuntu64.tar.gz
     \$ tar xzf femhub-0.9.10.beta2-ubuntu64.tar.gz
 
 Then follow the instructions on running FEMhub below.
 
-Building from Sources
----------------------
-You can get the tarball of sources `here <http://femhub.org/pub/>`_. The most
-recent stable version is femhub-0.9.9 but you can try our latest beta version
-which contains the new version of the online lab.
-Please follow the instructions below to build from sources for different operating systems.
+Instructions for Developers: Building from Sources
+--------------------------------------------------
+You can build from sources in two ways:
 
-Linux Distributions
-~~~~~~~~~~~~~~~~~~~
+(1) Build using the tarball of the sources: If you want to build the latest
+(stable) release from source, use the femhub-*.tar file (not tar.gz, those are
+binaries), as explained below for each platform. You can get the tarball of sources
+`here <http://femhub.org/pub/>`_. The most recent stable version is femhub-0.9.9 but you can try our latest beta version which contains the new version of the online lab.
+
+(2) Build using the Git Repository: If you use git then instead of downloading the tarball of
+sources and building it, you can use the latest development version (which might contain bugs) available in our git
+repository.
+
+Building in Linux Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Latest release (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):*
+
 To download the sources you can use the following command in Ubuntu Linux:
 ::
 
@@ -58,9 +70,21 @@ currently, so you also need to do::
 
     \$ sudo apt-get install libx11-dev x11proto-xext-dev libxext-dev libxt-dev
 
+*Latest development version available in our git repository:*
+First make sure that you have git installed in your machine, and then issue the
+following commands to build FEMhub:
+::
+    \$ git clone http://git.hpfem.org/git/femhub.git
+    \$ cd femhub
+    \$ ./femhub -d
+    \$ make
 
-Mac OS X
-~~~~~~~~
+
+Building in Mac OS X
+~~~~~~~~~~~~~~~~~~~~
+*Latest release (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):*
+
 You can use the following command to download the tarball of sources:
 ::
   \$ curl -O http://femhub.org/pub/femhub-0.9.9.tar
@@ -82,9 +106,19 @@ WARNING: If "gcc -v" outputs 4.0.0, you  *must* upgrade XCode (free from Apple),
   \$ cd femhub-0.9.9
   \$ make
 
+*Latest development version available in our git repository:*
+First make sure that you have git installed in your machine, and then issue the
+following commands to build FEMhub:
+::
+    \$ git clone http://git.hpfem.org/git/femhub.git
+    \$ cd femhub
+    \$ ./femhub -d
+    \$ make
 
-Microsoft Windows
-~~~~~~~~~~~~~~~~~
+Building in Microsoft Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Latest release (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):*
 
 Make sure you have the dependencies and 2GB free disk space.
 
@@ -101,15 +135,22 @@ This is a bit tedious but you have to survive it. We would like to create one pa
   \$ cd femhub-0.9.9
   \$ make
 
+*Latest development version available in our git repository:*
+First make sure that you have git installed in your machine, and then issue the
+following commands to build FEMhub:
+::
+    \$ git clone http://git.hpfem.org/git/femhub.git
+    \$ cd femhub
+    \$ ./femhub -d
+    \$ make
 
-Other Operating Systems
-~~~~~~~~~~~~~~~~~~~~~~~
+Building in Other Operating Systems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You may try building in other operating systems and please let us know how it goes.
 NOTE: On some operating systems it might be necessary to install
 gas/as, gld/ld, gnm/nm, but on most these are automatically
 installed when you install the programs listed above.  Only OS X
 >= 10.4.x and certain Linux distributions are 100% supported.
-See below for a complete list.
 
 After Building Starts
 ~~~~~~~~~~~~~~~~~~~~~
@@ -120,18 +161,8 @@ If you encounter problems, let us know through the FEMhub mailing list: http://g
 
 If you want, you can also download a binary from `here <http://femhub.org/pub/>`_, however, if it doesn't work for you, compile from source, that should always work.
 
-Git Repository
---------------
-
-If you use git, you can download FEMhub and compile by following these instructions:
-::
-    \$ git clone http://git.hpfem.org/git/femhub.git
-    \$ cd femhub
-    \$ ./femhub -d
-    \$ make
-
 Running FEMhub
----------------
+==============
 
 Go the femhub top directory, and just execute
 ::

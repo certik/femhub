@@ -81,5 +81,21 @@ Credit
 
 FEMhub and the FEMhub Online Lab was developed by the `hp-FEM group <http://hpfem.org>`_ at the Department of Mathematics ans Statistics, University of Nevada, Reno.
 
-FEMhub build system and some packages are taken from `Sage <http://www.sagemath.org>`_.
-Distributed under the terms of the GNU General Public License (GPL)
+People who contributed to the FEMhub project, in the order of date of involvement:
+
+* Pavel Solin (project leader, University of Nevada, Reno, USA)
+* Ondrej Certik (University of Nevada, Reno, USA)
+* Robert Cimrman (New Technologies Research Centre, Pilsen, Czech Republic)
+* Sameer Regmi (University of Nevada, Reno, USA)
+* Aayush Poudel (University of Nevada, Reno, USA)
+* Ma Zhonghua (China University of Petroleum, Beijing)
+* Mateusz Paprocki (University of Wroclaw, Poland)
+* Matthew Dillon (University of Alaska - Fairbanks, USA)
+* Jesse Robertson (The Australian National University Acton, Canberra, Australia)
+* Christopher Kees (U.S. Army Engineer Research and Development Center, Vicksburg, MS, USA)
+* Quan Zou (University of Nevada, Reno, USA)
+* Pablo Angulo (Universidad Autonoma de Madrid)
+
+A few packages and files in FEMhub build system are taken from `Sage <http://www.sagemath.org>`_.
+
+Distributed under the terms of the GNU General Public License (GPL).
