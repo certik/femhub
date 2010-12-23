@@ -116,18 +116,21 @@ After you extract you will see a script file named ``spkg-install`` which contai
 The script ``spkg-install`` is run during installation of the FEMhub package. You can modify spkg-install according to your need.
 
 There are two ways to create FEMhub packages:
+
 (1) Canonical Way: This method works for any package in FEMhub
+
 (2) Using Git: This method works just for some packages
 
-**(1)Canonical Way**
+**(1) Canonical Way**
+
 You may follow the following steps to create a new FEMhub spkg package:
 
-1. First create a directory like this:
+First create a directory like this:
 ::
   \$ mkdir mypackage-version # first the name of your package and then version
 Then inside that directory put the script ``spkg-install``, and also create a directory ``src/``. Then put all your source codes within that ``src`` directory. Please see a sample of ``spkg-install`` script below.
 
-2. Then you can create the package by typing:
+Then you can create the package by typing:
 ::
   \$ cd ../    # go out of the mypackage-version directory you just created
   \$ tar cjf mypackage-version.spkg mypackage-version
@@ -172,7 +175,7 @@ A sample ``spkg-install`` script
 
 In the spkg-install script above you can see a variable SPKG_LOCAL which points to path/to/femhub/local.
 
-(2) **Using Git**
+**(2) Using Git**
 
 First clone the appropriate repository:
 ::

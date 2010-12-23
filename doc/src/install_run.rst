@@ -25,19 +25,19 @@ Instructions for Developers: Building from Sources
 --------------------------------------------------
 You can build from sources in two ways:
 
-(1) Build using the tarball of the sources: If you want to build the latest
+**(1) Build using the sources of the latest release:** If you want to build the latest
 (stable) release from source, use the femhub-*.tar file (not tar.gz, those are
 binaries), as explained below for each platform. You can get the tarball of sources
 `here <http://femhub.org/pub/>`_. The most recent stable version is femhub-0.9.9 but you can try our latest beta version which contains the new version of the online lab.
 
-(2) Build using the Git Repository: If you use git then instead of downloading the tarball of
+**(2) Build using the git repository:** If you use git, then instead of downloading the tarball of
 sources and building it, you can use the latest development version (which might contain bugs) available in our git
 repository.
 
 Building in Linux Distributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*Latest release (change the version 0.9.9 below to the version of the latest
-release, which you can find `here <http://femhub.org/pub/>`_):*
+**Build using the sources of the latest release** (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):
 
 To download the sources you can use the following command in Ubuntu Linux:
 ::
@@ -70,7 +70,8 @@ currently, so you also need to do::
 
     \$ sudo apt-get install libx11-dev x11proto-xext-dev libxext-dev libxt-dev
 
-*Latest development version available in our git repository:*
+**Build using the git repository:**
+
 First make sure that you have git installed in your machine, and then issue the
 following commands to build FEMhub:
 ::
@@ -82,8 +83,8 @@ following commands to build FEMhub:
 
 Building in Mac OS X
 ~~~~~~~~~~~~~~~~~~~~
-*Latest release (change the version 0.9.9 below to the version of the latest
-release, which you can find `here <http://femhub.org/pub/>`_):*
+**Build using the sources of the latest release** (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):
 
 You can use the following command to download the tarball of sources:
 ::
@@ -106,7 +107,8 @@ WARNING: If "gcc -v" outputs 4.0.0, you  *must* upgrade XCode (free from Apple),
   \$ cd femhub-0.9.9
   \$ make
 
-*Latest development version available in our git repository:*
+**Build using the git repository:**
+
 First make sure that you have git installed in your machine, and then issue the
 following commands to build FEMhub:
 ::
@@ -117,8 +119,8 @@ following commands to build FEMhub:
 
 Building in Microsoft Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*Latest release (change the version 0.9.9 below to the version of the latest
-release, which you can find `here <http://femhub.org/pub/>`_):*
+**Build using the sources of the latest release** (change the version 0.9.9 below to the version of the latest
+release, which you can find `here <http://femhub.org/pub/>`_):
 
 Make sure you have the dependencies and 2GB free disk space.
 
@@ -135,7 +137,8 @@ This is a bit tedious but you have to survive it. We would like to create one pa
   \$ cd femhub-0.9.9
   \$ make
 
-*Latest development version available in our git repository:*
+**Build using the git repository:**
+
 First make sure that you have git installed in your machine, and then issue the
 following commands to build FEMhub:
 ::
@@ -162,7 +165,7 @@ If you encounter problems, let us know through the FEMhub mailing list: http://g
 If you want, you can also download a binary from `here <http://femhub.org/pub/>`_, however, if it doesn't work for you, compile from source, that should always work.
 
 Running FEMhub
-==============
+--------------
 
 Go the femhub top directory, and just execute
 ::
@@ -185,3 +188,6 @@ Then point your browser to http://localhost:8000/
    :width: 600
    :height: 400
    :alt: Screenshot of Online Lab
+
+For more information about using the online lab `click here
+<femhub_lab.html>`_.
