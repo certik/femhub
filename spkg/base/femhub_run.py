@@ -345,7 +345,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
     >>> install_package("readline")
 
     """
-    if pkg.startswith(("http", "www")):
+    if pkg.startswith("http") or pkg.startswith("www"):
         remote = True
         import tempfile
         tmpdir = tempfile.mkdtemp()
