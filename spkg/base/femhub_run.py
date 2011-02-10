@@ -336,7 +336,8 @@ def install_package_spkg(pkg):
             print "Not a bz2 nor gzip archive, trying tar..."
             cmd("cd $FEMHUB_ROOT/spkg/build; tar xf %s" % pkg)
     name, version = extract_name_version_from_path(pkg)
-    cmd("cd $FEMHUB_ROOT/spkg/build/%s-%s; . $FEMHUB_ROOT/local/bin/femhub-env; sh spkg-install" % (name, version))
+    cmd("cd $FEMHUB_ROOT/spkg/build/%s-%s; chmod +x spkg-install" % (name, version))
+    cmd("cd $FEMHUB_ROOT/spkg/build/%s-%s; . $FEMHUB_ROOT/local/bin/femhub-env; ./spkg-install" % (name, version))
     #raise PackageBuildFailed()
 
 def install_package(pkg, install_dependencies=True, force_install=False,
