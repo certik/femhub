@@ -97,7 +97,7 @@ Only use this mode to install FEMhub.
                 install_package(arg2, cpu_count=options.cpu_count,
                         force_install=options.force)
             except PackageBuildFailed:
-                pass
+                print "Package build failed"
             return
         print "Unknown command"
         sys.exit(1)
@@ -322,6 +322,11 @@ def download_packages():
     for p in packages:
         cmd("cd $FEMHUB_ROOT/spkg/standard; ../base/femhub-wget %s" % p)
 
+def install_package_spkg(pkg):
+    print "Installing %s..." % pkg
+    cmd("cd $FEMHUB_ROOT/spkg`
+    #raise PackageBuildFailed()
+
 def install_package(pkg, install_dependencies=True, force_install=False,
         cpu_count=0):
     """
@@ -369,7 +374,6 @@ def install_package(pkg, install_dependencies=True, force_install=False,
         for dep in get_dependencies(pkg):
             install_package(dep, install_dependencies=False,
                     cpu_count=cpu_count)
-    print "Installing %s..." % pkg
     femhub_scripts = ["femhub-env"]
     setup_cpu(cpu_count)
     # Create the standard POSIX directories:
@@ -377,11 +381,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
         cmd("mkdir -p $FEMHUB_ROOT/local/%s" % d)
     for script in femhub_scripts:
         cmd("cp $FEMHUB_ROOT/spkg/base/%s $FEMHUB_ROOT/local/bin/" % script)
-    try:
-        cmd("$FEMHUB_ROOT/spkg/base/femhub-spkg %s" % pkg)
-    except CmdException:
-        #print "Package %s failed to install" % pkg
-        raise PackageBuildFailed()
+    install_package_spkg(pkg)
     cmd("touch $FEMHUB_ROOT/spkg/installed/%s" % pkg_make_relative(pkg))
 
     if remote:
