@@ -324,7 +324,9 @@ def download_packages():
 
 def install_package_spkg(pkg):
     print "Installing %s..." % pkg
-    cmd("cd $FEMHUB_ROOT/spkg`
+    cmd("mkdir -p $FEMHUB_ROOT/spkg/build")
+    cmd("mkdir -p $FEMHUB_ROOT/spkg/installed")
+    cmd("cd $FEMHUB_ROOT/spkg/build; tar xjf %s" % pkg)
     #raise PackageBuildFailed()
 
 def install_package(pkg, install_dependencies=True, force_install=False,
