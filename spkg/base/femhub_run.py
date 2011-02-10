@@ -370,7 +370,7 @@ def install_package(pkg, install_dependencies=True, force_install=False,
             install_package(dep, install_dependencies=False,
                     cpu_count=cpu_count)
     print "Installing %s..." % pkg
-    femhub_scripts = ["femhub-env", "femhub-make_relative"]
+    femhub_scripts = ["femhub-env"]
     setup_cpu(cpu_count)
     # Create the standard POSIX directories:
     for d in ["bin", "doc", "include", "lib", "man", "share"]:
